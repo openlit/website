@@ -1,0 +1,57 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face {
+    font-family: 'Geist';
+    src: url('/fonts/Geist-Bold.otf') format('opentype');
+    font-weight: bold;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Geist';
+    src: url('/fonts/Geist-SemiBold.otf') format('opentype');
+    font-weight: 600;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Geist';
+    src: url('/fonts/Geist-Medium.otf') format('opentype');
+    font-weight: 500;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'Geist';
+    src: url('/fonts/Geist-Regular.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: 'GeistMono';
+    src: url('/fonts/GeistMono-Regular.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
+.swiper-pagination-bullet{
+    @apply !bg-gray-200 dark:!bg-gray-700 !opacity-100;
+}
+
+.swiper-pagination-bullet-active{
+    @apply !bg-gray-950 dark:!bg-white;
+}
+
+@keyframes loop {
+    to {
+        offset-distance: 100%;
+    }
+}
