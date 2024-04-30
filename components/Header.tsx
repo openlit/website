@@ -1,48 +1,107 @@
+'use client'
 import siteMetadata from '@/data/siteMetadata'
-import headerNavLinks from '@/data/headerNavLinks'
-import Logo from '@/data/logo.svg'
-import Link from './Link'
-import MobileNav from './MobileNav'
-import ThemeSwitch from './ThemeSwitch'
-import SearchButton from './SearchButton'
+import headerNavLinks from 'data/headerNavLinks.js'
+import Link from '@/components/link'
+import {
+  NavigationMenu,
+  NavigationMenuItem,
+  NavigationMenuList,
+} from '@/components/ui/navigation-menu'
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 
-const Header = () => {
+import { GitHubLogoIcon } from '@radix-ui/react-icons'
+import { buttonVariants } from './ui/button'
+import { Menu } from 'lucide-react'
+import ThemeToggle from './theme-toggle'
+import Image from 'next/image'
+
+export default function Header() {
   return (
-    <header className="flex items-center justify-between py-10">
-      <div>
-        <Link href="/" aria-label={siteMetadata.headerTitle}>
-          <div className="flex items-center justify-between">
-            <div className="mr-3">
-              <Logo />
-            </div>
-            {typeof siteMetadata.headerTitle === 'string' ? (
-              <div className="hidden h-6 text-2xl font-semibold sm:block">
-                {siteMetadata.headerTitle}
-              </div>
-            ) : (
-              siteMetadata.headerTitle
-            )}
-          </div>
-        </Link>
-      </div>
-      <div className="flex items-center space-x-4 leading-5 sm:space-x-6">
-        {headerNavLinks
-          .filter((link) => link.href !== '/')
-          .map((link) => (
-            <Link
-              key={link.title}
-              href={link.href}
-              className="hidden font-medium text-gray-900 dark:text-gray-100 sm:block"
-            >
-              {link.title}
+    <header className="sticky top-0 z-40 w-full bg-white dark:bg-stone-950">
+      <NavigationMenu className="mx-auto">
+        <NavigationMenuList className="container flex h-14 w-screen justify-between px-4 ">
+          <NavigationMenuItem className="flex font-bold">
+            <Link href="/" className="ml-2 flex items-center text-xl font-bold">
+              <Image
+                className="size-10 flex-shrink-0 p-1 transition duration-75"
+                src="/static/images/logo.png"
+                alt="openlit's Logo"
+                priority
+                width={24}
+                height={24}
+              />
+              {siteMetadata.headerTitle}
             </Link>
-          ))}
-        <SearchButton />
-        <ThemeSwitch />
-        <MobileNav />
-      </div>
+          </NavigationMenuItem>
+
+          {/* mobile */}
+          <div className="flex md:hidden">
+            <ThemeToggle />
+            <Sheet>
+              <SheetTrigger className="px-2">
+                <Menu className="flex h-5 w-5 md:hidden" />
+              </SheetTrigger>
+
+              <SheetContent side={'left'}>
+                <SheetHeader>
+                  <SheetTitle className="text-xl font-bold">{siteMetadata.headerTitle}</SheetTitle>
+                </SheetHeader>
+                <nav className="mt-4 flex flex-col items-center justify-center gap-2">
+                  {headerNavLinks
+                    .filter((link) => link.href !== '/')
+                    .map((link) => (
+                      <Link
+                        key={link.title}
+                        href={link.href}
+                        className={buttonVariants({ variant: 'ghost' })}
+                      >
+                        {link.title}
+                      </Link>
+                    ))}
+                  <a
+                    href="https://github.com/leoMirandaa/shadcn-landing-page.git"
+                    target="_blank"
+                    className={`w-[110px] border ${buttonVariants({
+                      variant: 'secondary',
+                    })}`}
+                  >
+                    <GitHubLogoIcon className="mr-2 h-5 w-5" />
+                    Github
+                  </a>
+                </nav>
+              </SheetContent>
+            </Sheet>
+          </div>
+
+          {/* desktop */}
+          <nav className="hidden gap-2 md:flex">
+            {headerNavLinks
+              .filter((link) => link.href !== '/')
+              .map((link) => (
+                <Link
+                  key={link.title}
+                  href={link.href}
+                  className={`text-[17px] ${buttonVariants({
+                    variant: 'ghost',
+                  })}`}
+                >
+                  {link.title}
+                </Link>
+              ))}
+          </nav>
+          <div className="hidden gap-2 md:flex">
+            <a
+              href="https://github.com/openlit/openlit"
+              target="_blank"
+              className={`border ${buttonVariants({ variant: 'secondary' })}`}
+            >
+              <GitHubLogoIcon className="mr-2 h-5 w-5" />
+              Github
+            </a>
+            <ThemeToggle />
+          </div>
+        </NavigationMenuList>
+      </NavigationMenu>
     </header>
   )
 }
-
-export default Header

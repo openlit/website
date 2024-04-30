@@ -2,7 +2,7 @@
   "markdown": 1,
   "code": 1,
   "features": 1,
-  "next-js": 6,
+  "next-js": 5,
   "math": 1,
   "ols": 1,
   "github": 1,
@@ -12,9 +12,8 @@
   "holiday": 1,
   "canada": 1,
   "images": 1,
-  "feature": 2,
+  "feature": 1,
   "writings": 1,
   "book": 1,
-  "reflection": 1,
-  "multi-author": 1
+  "reflection": 1
 }

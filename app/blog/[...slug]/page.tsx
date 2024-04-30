@@ -1,25 +1,16 @@
 import 'css/prism.css'
 import 'katex/dist/katex.css'
 
-import PageTitle from '@/components/PageTitle'
-import { components } from '@/components/MDXComponents'
+import { components } from '@/components/mdx-components'
 import { MDXLayoutRenderer } from 'pliny/mdx-components'
 import { sortPosts, coreContent, allCoreContent } from 'pliny/utils/contentlayer'
 import { allBlogs, allAuthors } from 'contentlayer/generated'
 import type { Authors, Blog } from 'contentlayer/generated'
-import PostSimple from '@/layouts/PostSimple'
-import PostLayout from '@/layouts/PostLayout'
-import PostBanner from '@/layouts/PostBanner'
+import PostLayout from '@/layouts/post-layout'
 import { Metadata } from 'next'
 import siteMetadata from '@/data/siteMetadata'
 import { notFound } from 'next/navigation'
-
-const defaultLayout = 'PostLayout'
-const layouts = {
-  PostSimple,
-  PostLayout,
-  PostBanner,
-}
+import TracingBeam from '@/components/ui/tracing-beam'
 
 export async function generateMetadata({
   params,
@@ -106,17 +97,17 @@ export default async function Page({ params }: { params: { slug: string[] } }) {
     }
   })
 
-  const Layout = layouts[post.layout || defaultLayout]
-
   return (
-    <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
-      <Layout content={mainContent} authorDetails={authorDetails} next={next} prev={prev}>
-        <MDXLayoutRenderer code={post.body.code} components={components} toc={post.toc} />
-      </Layout>
-    </>
+    <TracingBeam className="max-w-[90%] pl-8 pr-4 md:pl-5">
+      <section className="relative py-6">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+        <PostLayout content={mainContent} authorDetails={authorDetails} next={next} prev={prev}>
+          <MDXLayoutRenderer code={post.body.code} components={components} toc={post.toc} />
+        </PostLayout>
+      </section>
+    </TracingBeam>
   )
 }

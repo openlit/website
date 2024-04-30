@@ -1,34 +1,88 @@
-import Link from './Link'
 import siteMetadata from '@/data/siteMetadata'
 import SocialIcon from '@/components/social-icons'
 
+import Image from 'next/image'
+
+const Item = ({ link, text }: { link?: string; text?: string }) =>
+  link &&
+  text && (
+    <a className="opacity-60 hover:text-brandPrimary hover:opacity-100" href={link}>
+      {text}
+    </a>
+  )
+
 export default function Footer() {
   return (
-    <footer>
-      <div className="mt-16 flex flex-col items-center">
-        <div className="mb-3 flex space-x-4">
+    <footer id="footer">
+      <section className="container grid grid-cols-2 gap-x-12 gap-y-8 pb-20 pt-10 md:grid-cols-4 xl:grid-cols-6">
+        <div className="col-span-full xl:col-span-2">
+          <a href="/" className="flex items-center text-xl font-bold">
+            <Image
+              className="size-10 flex-shrink-0 p-1 transition duration-75"
+              src="/static/images/logo.png"
+              alt="openlit's Logo"
+              priority
+              width={24}
+              height={24}
+            />
+            {siteMetadata.headerTitle}
+          </a>
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <h3 className="text-lg font-bold">Follow US</h3>
+          <Item link={siteMetadata.github} text="Github" />
+          <Item link={siteMetadata.twitter} text="Twitter" />
+          <Item link={siteMetadata.email} text="Email" />
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <h3 className="text-lg font-bold">Product</h3>
+          <Item link={'https://github.com/openlit/openlit/blob/main/SECURITY.md'} text="Security" />
+          <Item
+            link={'https://github.com/openlit/openlit/blob/main/CONTRIBUTING.md'}
+            text="Contributing"
+          />
+          <Item link={'https://github.com/openlit/openlit/blob/main/README.md'} text="Readme" />
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <h3 className="text-lg font-bold">Documentation</h3>
+          <Item link={'https://docs.openlit.com/latest/introduction'} text="Introduction" />
+          <Item link={'https://docs.openlit.com/latest/installation'} text="Installation" />
+          <Item link={'https://docs.openlit.com/latest/configuration'} text="Configuration" />
+          <Item
+            link={'https://docs.openlit.com/latest/integrations/introduction'}
+            text="Integrations"
+          />
+        </div>
+
+        <div className="flex flex-col gap-2">
+          <h3 className="text-lg font-bold">Community</h3>
+          <Item link={siteMetadata.slack} text="Slack" />
+          <Item link={siteMetadata.twitter} text="Twitter" />
+          <Item link={siteMetadata.github} text="Github" />
+          <Item link={siteMetadata.discord} text="Discord" />
+        </div>
+      </section>
+
+      <section className="container pb-8 text-center">
+        <div className="mb-3 flex justify-center space-x-4">
           <SocialIcon kind="mail" href={`mailto:${siteMetadata.email}`} size={6} />
           <SocialIcon kind="github" href={siteMetadata.github} size={6} />
-          <SocialIcon kind="facebook" href={siteMetadata.facebook} size={6} />
-          <SocialIcon kind="youtube" href={siteMetadata.youtube} size={6} />
-          <SocialIcon kind="linkedin" href={siteMetadata.linkedin} size={6} />
           <SocialIcon kind="twitter" href={siteMetadata.twitter} size={6} />
-          <SocialIcon kind="instagram" href={siteMetadata.instagram} size={6} />
-          <SocialIcon kind="threads" href={siteMetadata.threads} size={6} />
         </div>
-        <div className="mb-2 flex space-x-2 text-sm text-gray-500 dark:text-gray-400">
-          <div>{siteMetadata.author}</div>
-          <div>{` • `}</div>
-          <div>{`© ${new Date().getFullYear()}`}</div>
-          <div>{` • `}</div>
-          <Link href="/">{siteMetadata.title}</Link>
-        </div>
-        <div className="mb-8 text-sm text-gray-500 dark:text-gray-400">
-          <Link href="https://github.com/timlrx/tailwind-nextjs-starter-blog">
-            Tailwind Nextjs Theme
-          </Link>
-        </div>
-      </div>
+        <h3>
+          &copy; 2023 Observability tool by{' '}
+          <a
+            target="_blank"
+            href={siteMetadata.github}
+            className="text-primary border-primary transition-all hover:border-b-2"
+          >
+            OpenLIT
+          </a>
+        </h3>
+      </section>
     </footer>
   )
 }

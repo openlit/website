@@ -11,7 +11,7 @@
 }
 
 .footnotes {
-  @apply mt-12 border-t border-gray-200 pt-8 dark:border-gray-700;
+  @apply pt-1;
 }
 
 .data-footnote-backref {
@@ -48,4 +48,77 @@ input:-webkit-autofill:focus {
 .linkicon {
   display: inline-block;
   vertical-align: middle;
+}
+
+.shadow {
+  position: absolute;
+  background: hsl(26 95% 49% / 0%);
+  border-radius: 24px;
+  rotate: 35deg;
+  width: 260px;
+  top: 200px;
+  height: 400px;
+  filter: blur(150px);
+  animation: shadow-slide infinite 4s linear alternate;
+}
+
+@keyframes shadow-slide {
+  0% {
+    background: hsl(26 95% 49% / 20%);
+    right: 460px;
+  }
+
+  to {
+    background: hsl(26 95% 49% / 80%);
+    right: 160px;
+  }
+}
+
+@media (max-width: 1024px) {
+  .shadow {
+    top: 70px;
+  }
+
+  @keyframes shadow-slide {
+    0% {
+      background: hsl(26 95% 49% / 20%);
+      right: 460px;
+    }
+
+    to {
+      background: hsl(26 95% 49% / 50%);
+      right: 160px;
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .shadow {
+    top: 70px;
+    width: 100px;
+    height: 350px;
+    filter: blur(60px);
+  }
+
+  @keyframes shadow-slide {
+    0% {
+      background: hsl(26 95% 49% / 20%);
+      right: 280px;
+    }
+
+    to {
+      background: hsl(26 95% 49% / 30%);
+      right: 100px;
+    }
+  }
+}
+
+.no-visible-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.no-visible-scrollbar::-webkit-scrollbar {
+  display: none;
 }

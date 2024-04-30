@@ -3,13 +3,11 @@ import 'pliny/search/algolia.css'
 
 import { Space_Grotesk } from 'next/font/google'
 import { Analytics, AnalyticsConfig } from 'pliny/analytics'
-import { SearchProvider, SearchConfig } from 'pliny/search'
-import Header from '@/components/Header'
-import SectionContainer from '@/components/SectionContainer'
-import Footer from '@/components/Footer'
+import Header from '@/components/header'
+import Footer from '@/components/footer'
 import siteMetadata from '@/data/siteMetadata'
-import { ThemeProviders } from './theme-providers'
 import { Metadata } from 'next'
+import { cookies } from 'next/headers'
 
 const space_grotesk = Space_Grotesk({
   subsets: ['latin'],
@@ -58,10 +56,13 @@ export const metadata: Metadata = {
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
+  const cookieStore = cookies()
+  const theme = cookieStore.get('theme')
+
   return (
     <html
       lang={siteMetadata.language}
-      className={`${space_grotesk.variable} scroll-smooth`}
+      className={`${space_grotesk.variable} ${theme?.value || 'dark'} scroll-smooth`}
       suppressHydrationWarning
     >
       <link rel="apple-touch-icon" sizes="76x76" href="/static/favicons/apple-touch-icon.png" />
@@ -73,19 +74,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <meta name="theme-color" media="(prefers-color-scheme: light)" content="#fff" />
       <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000" />
       <link rel="alternate" type="application/rss+xml" href="/feed.xml" />
-      <body className="bg-white pl-[calc(100vw-100%)] text-black antialiased dark:bg-gray-950 dark:text-white">
-        <ThemeProviders>
-          <Analytics analyticsConfig={siteMetadata.analytics as AnalyticsConfig} />
-          <SectionContainer>
-            <div className="flex h-screen flex-col justify-between font-sans">
-              <SearchProvider searchConfig={siteMetadata.search as SearchConfig}>
-                <Header />
-                <main className="mb-auto">{children}</main>
-              </SearchProvider>
-              <Footer />
-            </div>
-          </SectionContainer>
-        </ThemeProviders>
+      <body className="bg-stone-white text-black antialiased dark:bg-stone-950 dark:text-white">
+        <Analytics analyticsConfig={siteMetadata.analytics as AnalyticsConfig} />
+
+        <Header />
+        <main className="mb-auto overflow-hidden">{children}</main>
+        <Footer />
       </body>
     </html>
   )

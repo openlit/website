@@ -1,6 +1,17 @@
 // @ts-check
 const { fontFamily } = require('tailwindcss/defaultTheme')
 const colors = require('tailwindcss/colors')
+const { default: flattenColorPalette } = require('tailwindcss/lib/util/flattenColorPalette')
+
+// This plugin adds each Tailwind color as a global CSS variable, e.g. var(--gray-200).
+function addVariablesForColors({ addBase, theme }) {
+  let allColors = flattenColorPalette(theme('colors'))
+  let newVars = Object.fromEntries(Object.entries(allColors).map(([key, val]) => [`--${key}`, val]))
+
+  addBase({
+    ':root': newVars,
+  })
+}
 
 /** @type {import("tailwindcss/types").Config } */
 module.exports = {
@@ -12,9 +23,37 @@ module.exports = {
     './layouts/**/*.{js,ts,tsx}',
     './data/**/*.mdx',
   ],
-  darkMode: 'class',
+  darkMode: ['class'],
   theme: {
+    container: {
+      center: true,
+      padding: '2rem',
+      screens: {
+        '2xl': '1400px',
+      },
+    },
     extend: {
+      keyframes: {
+        'accordion-down': {
+          from: { height: '0' },
+          to: { height: 'var(--radix-accordion-content-height)' },
+        },
+        'accordion-up': {
+          from: { height: 'var(--radix-accordion-content-height)' },
+          to: { height: '0' },
+        },
+        scroll: {
+          to: {
+            transform: 'translate(calc(-50% - 0.5rem))',
+          },
+        },
+      },
+      animation: {
+        'accordion-down': 'accordion-down 0.2s ease-out',
+        'accordion-up': 'accordion-up 0.2s ease-out',
+        scroll:
+          'scroll var(--animation-duration, 40s) var(--animation-direction, forwards) linear infinite',
+      },
       lineHeight: {
         11: '2.75rem',
         12: '3rem',
@@ -25,8 +64,21 @@ module.exports = {
         sans: ['var(--font-space-grotesk)', ...fontFamily.sans],
       },
       colors: {
-        primary: colors.pink,
+        primary: {
+          50: '#fff9ed',
+          100: '#fff1d4',
+          200: '#ffdfa8',
+          300: '#ffc770',
+          400: '#ffa337',
+          500: '#ff8710',
+          600: '#f36c06',
+          700: '#c75007',
+          800: '#9e3f0e',
+          900: '#7f360f',
+          950: '#451905',
+        },
         gray: colors.gray,
+        brandPrimary: '#F36C06',
       },
       typography: ({ theme }) => ({
         DEFAULT: {
@@ -67,5 +119,10 @@ module.exports = {
       }),
     },
   },
-  plugins: [require('@tailwindcss/forms'), require('@tailwindcss/typography')],
+  plugins: [
+    require('@tailwindcss/forms'),
+    require('@tailwindcss/typography'),
+    require('tailwindcss-animate'),
+    addVariablesForColors,
+  ],
 }
