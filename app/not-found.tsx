@@ -1,4 +1,4 @@
-import Link from '@/components/link'
+import Link from '@/components/common/link'
 
 export default function NotFound() {
   return (

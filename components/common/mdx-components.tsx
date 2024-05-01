@@ -4,7 +4,7 @@ import BlogNewsletterForm from 'pliny/ui/BlogNewsletterForm'
 import type { MDXComponents } from 'mdx/types'
 import Image from 'next/image'
 import CustomLink from './link'
-import TableWrapper from './table-wrapper'
+import TableWrapper from '../table-wrapper'
 
 export const components: MDXComponents = {
   Image,

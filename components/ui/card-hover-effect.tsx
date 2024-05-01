@@ -1,7 +1,7 @@
 'use client'
 import { cn } from 'lib/utils'
 import { AnimatePresence, motion } from 'framer-motion'
-import Link from '@/components/link'
+import Link from '@/components/common/link'
 import { useState } from 'react'
 
 export const HoverEffect = ({

@@ -1,7 +1,7 @@
 'use client'
 import siteMetadata from '@/data/siteMetadata'
 import headerNavLinks from 'data/headerNavLinks.js'
-import Link from '@/components/link'
+import Link from '@/components/common/link'
 import {
   NavigationMenu,
   NavigationMenuItem,

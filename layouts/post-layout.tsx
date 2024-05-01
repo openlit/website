@@ -1,7 +1,7 @@
 import { ReactNode } from 'react'
 import { CoreContent } from 'pliny/utils/contentlayer'
 import type { Blog, Authors } from 'contentlayer/generated'
-import Link from '@/components/link'
+import Link from '@/components/common/link'
 import siteMetadata from '@/data/siteMetadata'
 import { Badge } from '@/components/ui/badge'
 import PostFooter from './post-footer'

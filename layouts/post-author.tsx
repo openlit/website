@@ -1,6 +1,6 @@
 import { Authors } from 'contentlayer/generated'
 import Image from 'next/image'
-import Link from '@/components/link'
+import Link from '@/components/common/link'
 import { CoreContent } from 'pliny/utils/contentlayer'
 
 export default function PostAuthor({ authorDetails }: { authorDetails: CoreContent<Authors>[] }) {
