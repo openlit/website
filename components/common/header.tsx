@@ -10,9 +10,9 @@ import {
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 
 import { GitHubLogoIcon } from '@radix-ui/react-icons'
-import { buttonVariants } from './ui/button'
+import { buttonVariants } from '../ui/button'
 import { HamburgerMenuIcon } from '@radix-ui/react-icons'
-import ThemeToggle from './theme-toggle'
+import ThemeToggle from '../theme-toggle'
 import Image from 'next/image'
 
 export default function Header() {
