@@ -2,7 +2,7 @@
 import { get, set } from 'tiny-cookie'
 import { useCallback, useEffect, useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { Moon, Sun } from 'lucide-react'
+import { MoonIcon, SunIcon } from '@radix-ui/react-icons'
 
 type THEME = 'dark' | 'light'
 
@@ -34,8 +34,8 @@ export default function ThemeToggleSwitch() {
       className="rounded-full dark:text-white"
       onClick={toggleTheme}
     >
-      <Moon className="block size-5 dark:hidden" />
-      <Sun className="hidden size-5 dark:block" />
+      <MoonIcon className="block size-5 dark:hidden" />
+      <SunIcon className="hidden size-5 dark:block" />
     </Button>
   )
 }

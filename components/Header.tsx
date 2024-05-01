@@ -11,7 +11,7 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/co
 
 import { GitHubLogoIcon } from '@radix-ui/react-icons'
 import { buttonVariants } from './ui/button'
-import { Menu } from 'lucide-react'
+import { HamburgerMenuIcon } from '@radix-ui/react-icons'
 import ThemeToggle from './theme-toggle'
 import Image from 'next/image'
 
@@ -39,7 +39,7 @@ export default function Header() {
             <ThemeToggle />
             <Sheet>
               <SheetTrigger className="px-2">
-                <Menu className="flex h-5 w-5 md:hidden" />
+                <HamburgerMenuIcon className="flex h-5 w-5 md:hidden" />
               </SheetTrigger>
 
               <SheetContent side={'left'}>
