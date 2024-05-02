@@ -4,7 +4,6 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 })
 const DuplicatePackageCheckerPlugin = require('duplicate-package-checker-webpack-plugin')
 
-
 // You might need to insert additional domains in script-src if you are using external services
 const ContentSecurityPolicy = `
   default-src 'self';
@@ -66,6 +65,7 @@ module.exports = () => {
     eslint: {
       dirs: ['app', 'components', 'layouts', 'scripts'],
     },
+    excludeFile: (str) => /\*\.blog/.test(str),
     images: {
       remotePatterns: [
         {

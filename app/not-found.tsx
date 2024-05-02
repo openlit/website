@@ -23,3 +23,4 @@ export default function NotFound() {
     </div>
   )
 }
+export const runtime = 'edge'

@@ -11,5 +11,3 @@ export default function BlogPage() {
 
   return <ListLayout posts={posts} initialDisplayPosts={initialDisplayPosts} title="Blogs" />
 }
-
-export const runtime = 'edge'
