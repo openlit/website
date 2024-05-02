@@ -5,7 +5,7 @@ import { HeroCards } from './hero-cards'
 import { GitHubLogoIcon, StarFilledIcon } from '@radix-ui/react-icons'
 import { BackgroundBeams } from '../ui/background-beams'
 
-export const Hero = () => {
+export default function Hero() {
   return (
     <section className="container relative z-20 grid place-items-center gap-10 py-20 lg:grid-cols-2">
       <BackgroundBeams className="-z-10" />
@@ -34,7 +34,7 @@ export const Hero = () => {
         </main>
 
         <p className="text-muted-foreground relative z-20 mx-auto text-xl md:w-10/12 lg:mx-0">
-          An OTEL native{' '}
+          OpenTelemetry-native{' '}
           <span className="inline bg-gradient-to-r from-[#61DAFB] via-[#1fc0f1] to-[#03a3d7] bg-clip-text text-transparent">
             GenAI
           </span>{' '}

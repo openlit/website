@@ -32,7 +32,7 @@ export const projects = [
       'Streams data to let you visualise your data and make quick decisions and modifications.',
   },
   {
-    title: 'Zero Added Latency',
+    title: 'Low Latency',
     description:
       'Ensures that data is processed quickly without affecting the performance of your application.',
   },

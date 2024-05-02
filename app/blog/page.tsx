@@ -3,8 +3,6 @@ import { allCoreContent, sortPosts } from 'pliny/utils/contentlayer'
 import { allBlogs } from 'contentlayer/generated'
 import { genPageMetadata } from 'app/seo'
 
-const POSTS_PER_PAGE = 5
-
 export const metadata = genPageMetadata({ title: 'Blog' })
 
 export default function BlogPage() {
@@ -13,3 +11,5 @@ export default function BlogPage() {
 
   return <ListLayout posts={posts} initialDisplayPosts={initialDisplayPosts} title="Blogs" />
 }
+
+export const runtime = 'edge'

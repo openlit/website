@@ -1,6 +1,6 @@
 import siteMetadata from '@/data/siteMetadata'
 import Image from 'next/image'
-export const About = () => {
+export default function About() {
   return (
     <section id="about" className="container py-20">
       <div className="bg-muted/50 rounded-lg py-12">

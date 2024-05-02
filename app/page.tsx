@@ -1,7 +1,7 @@
 // import { sortPosts, allCoreContent } from 'pliny/utils/contentlayer'
 // import { allBlogs } from 'contentlayer/generated'
-import { Hero } from '@/components/home/hero'
-import { About } from '@/components/home/about'
+import Hero from '@/components/home/hero'
+import About from '@/components/home/about'
 import Previews from '@/components/home/previews'
 import Features from '@/components/home/features'
 // import LatestBlogs from '@/components/home/latest-blogs'
@@ -23,3 +23,5 @@ export default async function Page() {
     </>
   )
 }
+
+export const runtime = 'edge'

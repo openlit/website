@@ -1,7 +1,7 @@
 import 'css/tailwind.css'
 
 import { Space_Grotesk } from 'next/font/google'
-import { Analytics, AnalyticsConfig } from 'pliny/analytics'
+// import { Analytics, AnalyticsConfig } from 'pliny/analytics'
 import Header from '@/components/common/header'
 import Footer from '@/components/common/footer'
 import siteMetadata from '@/data/siteMetadata'
@@ -74,7 +74,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#000" />
       <link rel="alternate" type="application/rss+xml" href="/feed.xml" />
       <body className="bg-stone-white text-black antialiased dark:bg-stone-950 dark:text-white">
-        <Analytics analyticsConfig={siteMetadata.analytics as AnalyticsConfig} />
+        {/* <Analytics analyticsConfig={siteMetadata.analytics as AnalyticsConfig} /> */}
 
         <Header />
         <main className="mb-auto overflow-hidden">{children}</main>
