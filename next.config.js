@@ -65,7 +65,6 @@ module.exports = () => {
     eslint: {
       dirs: ['app', 'components', 'layouts', 'scripts'],
     },
-    excludeFile: (str) => /\*\.blog/.test(str),
     images: {
       remotePatterns: [
         {
