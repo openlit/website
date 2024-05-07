@@ -2,9 +2,9 @@ import { HoverEffect } from '../ui/card-hover-effect'
 
 export default function Features() {
   return (
-    <section id="features" className="container pb-8">
-      <div className="bg-muted/50 rounded-lg py-12">
-        <h2 className="mb-16 text-center text-3xl font-bold md:text-4xl">
+    <section id="features" className="container pb-0">
+      <div className="bg-muted/50 rounded-lg pt-12">
+        <h2 className="mb-8 text-center text-3xl font-bold md:text-4xl">
           <span className="bg-brandPrimary bg-clip-text text-transparent">Product </span>
           Features
         </h2>

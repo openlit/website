@@ -7,7 +7,7 @@ import { BackgroundBeams } from '../ui/background-beams'
 
 export default function Hero() {
   return (
-    <section className="container relative z-20 grid place-items-center gap-10 py-20 lg:grid-cols-2">
+    <section className="container relative z-20 grid place-items-center gap-10 pb-4 pt-20 lg:grid-cols-2">
       <BackgroundBeams className="-z-10" />
       <div className="space-y-6 text-center lg:text-start">
         <a

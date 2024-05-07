@@ -2,7 +2,7 @@ import siteMetadata from '@/data/siteMetadata'
 import Image from 'next/image'
 export default function About() {
   return (
-    <section id="about" className="container py-20">
+    <section id="about" className="container py-4">
       <div className="bg-muted/50 rounded-lg py-12">
         <div className="flex flex-col-reverse gap-8 px-6 md:flex-row md:gap-12">
           <Image

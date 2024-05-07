@@ -49,13 +49,13 @@ export default function Previews() {
 
   return (
     <section id="previews" className="container pb-20">
-      <div className="bg-muted/50 rounded-lg py-12">
+      <div className="bg-muted/50 rounded-lg">
         <h2 className="mb-16 text-center text-3xl font-bold md:text-4xl">
           <span className="bg-brandPrimary bg-clip-text text-transparent">Product </span>
           Previews
         </h2>
         <div className="b relative mx-auto flex h-[20rem] w-full max-w-5xl flex-col items-start justify-start [perspective:1000px] md:h-[40rem]">
-          <Tabs tabs={tabs} containerClassName="justify-center" />
+          <Tabs tabs={tabs} />
         </div>
       </div>
     </section>
