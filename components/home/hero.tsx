@@ -56,7 +56,7 @@ export default function Hero() {
             Documentation
           </a>
           <a
-            href="https://github.com/leoMirandaa/shadcn-landing-page.git"
+            href={siteMetadata.siteRepo}
             target="_blank"
             className={`relative z-20 w-full md:w-1/3 ${buttonVariants({
               variant: 'outline',

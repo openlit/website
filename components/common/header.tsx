@@ -59,7 +59,7 @@ export default function Header() {
                       </Link>
                     ))}
                   <a
-                    href="https://github.com/leoMirandaa/shadcn-landing-page.git"
+                    href={siteMetadata.siteRepo}
                     target="_blank"
                     className={`w-[110px] border ${buttonVariants({
                       variant: 'secondary',
