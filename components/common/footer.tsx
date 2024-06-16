@@ -3,10 +3,10 @@ import SocialIcon from '@/components/social-icons'
 
 import Image from 'next/image'
 
-const Item = ({ link, text }: { link?: string; text?: string }) =>
+const Item = ({ link, text, target }: { link?: string; text?: string; target?: string }) =>
   link &&
   text && (
-    <a className="opacity-60 hover:text-brandPrimary hover:opacity-100" href={link}>
+    <a className="opacity-60 hover:text-brandPrimary hover:opacity-100" href={link} target={target}>
       {text}
     </a>
   )
@@ -44,6 +44,7 @@ export default function Footer() {
             text="Contributing"
           />
           <Item link={'https://github.com/openlit/openlit/blob/main/README.md'} text="Readme" />
+          <Item link={siteMetadata.feedbackLink} text="Feedback" target="_blank" />
         </div>
 
         <div className="flex flex-col gap-2">

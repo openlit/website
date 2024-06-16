@@ -58,6 +58,12 @@ export default function Header() {
                         {link.title}
                       </Link>
                     ))}
+                  <Link
+                    href={siteMetadata.feedbackLink}
+                    className={buttonVariants({ variant: 'ghost' })}
+                  >
+                    Feedback
+                  </Link>
                   <a
                     href={siteMetadata.siteRepo}
                     target="_blank"
@@ -88,6 +94,9 @@ export default function Header() {
                   {link.title}
                 </Link>
               ))}
+            <Link href={siteMetadata.feedbackLink} className={buttonVariants({ variant: 'ghost' })}>
+              Feedback
+            </Link>
           </nav>
           <div className="hidden gap-2 md:flex">
             <a
