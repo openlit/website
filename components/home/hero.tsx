@@ -4,6 +4,7 @@ import { buttonVariants } from '../ui/button'
 import { HeroCards } from './hero-cards'
 import { GitHubLogoIcon, StarFilledIcon } from '@radix-ui/react-icons'
 import { BackgroundBeams } from '../ui/background-beams'
+import Link from 'next/link'
 
 export default function Hero() {
   return (
@@ -66,6 +67,13 @@ export default function Hero() {
             <GitHubLogoIcon className="ml-2 h-5 w-5" />
           </a>
         </div>
+        <Link
+          href={siteMetadata.feedbackLink}
+          className={`${buttonVariants({ variant: 'secondary' })} md:w-1/3`}
+          target="_blank"
+        >
+          Feedback
+        </Link>
       </div>
 
       {/* Hero cards sections */}
