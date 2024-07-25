@@ -4,7 +4,7 @@ import { Space_Grotesk } from 'next/font/google'
 // import { Analytics, AnalyticsConfig } from 'pliny/analytics'
 import Header from '@/components/common/header'
 import Footer from '@/components/common/footer'
-import siteMetadata from '@/data/siteMetadata'
+import siteMetadata from 'data-2/siteMetadata'
 import { Metadata } from 'next'
 import { cookies } from 'next/headers'
 
@@ -79,6 +79,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <Header />
         <main className="mb-auto overflow-hidden">{children}</main>
         <Footer />
+        {/* <!-- Google tag (gtag.js) --> */}
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-5KRK16SZ87"></script>
+        <script
+          type="text/javascript"
+          dangerouslySetInnerHTML={{
+            __html: `window.dataLayer = window.dataLayer || [];
+          function gtag(){window.dataLayer.push(arguments);}
+          gtag('js', new Date());
+
+          gtag('config', 'G-5KRK16SZ87');`,
+          }}
+        />
       </body>
     </html>
   )

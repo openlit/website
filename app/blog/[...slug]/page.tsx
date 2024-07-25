@@ -3,12 +3,13 @@ import 'katex/dist/katex.css'
 
 import { components } from '@/components/common/mdx-components'
 import { MDXLayoutRenderer } from 'pliny/mdx-components'
+import { SafeMdxRenderer } from 'safe-mdx'
 import { sortPosts, coreContent, allCoreContent } from 'pliny/utils/contentlayer'
 import { allBlogs, allAuthors } from 'contentlayer/generated'
 import type { Authors, Blog } from 'contentlayer/generated'
 import PostLayout from '@/layouts/post-layout'
 import { Metadata } from 'next'
-import siteMetadata from '@/data/siteMetadata'
+import siteMetadata from 'data-2/siteMetadata'
 import { notFound } from 'next/navigation'
 import TracingBeam from '@/components/ui/tracing-beam'
 
@@ -105,9 +106,13 @@ export default async function Page({ params }: { params: { slug: string[] } }) {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
         <PostLayout content={mainContent} authorDetails={authorDetails} next={next} prev={prev}>
-          <MDXLayoutRenderer code={post.body.code} components={components} toc={post.toc} />
+          {null}
+          {/* <MDXLayoutRenderer components={components} toc={post.toc} code={post.body.code} /> */}
+          <SafeMdxRenderer code={post.body.raw} components={components} />
         </PostLayout>
       </section>
     </TracingBeam>
   )
 }
+
+export const runtime = 'edge'

@@ -1,79 +1,37 @@
 'use client'
-
+import React from 'react'
 import Image from 'next/image'
-import { Tabs } from '../ui/tabs'
 
-export default function Previews() {
-  const tabs = [
-    {
-      title: 'Dashboard',
-      value: 'dashboard',
-      content: (
-        <div className="relative h-full w-full overflow-hidden rounded-2xl bg-gradient-to-br from-brandPrimary to-violet-900 p-10 text-xl font-bold text-white md:text-4xl">
-          <p className="text-center">Dashboard Page</p>
-          <PreviewImage type="dashboard" />
-        </div>
-      ),
-    },
-    {
-      title: 'Request',
-      value: 'request',
-      content: (
-        <div className="relative h-full w-full overflow-hidden rounded-2xl bg-gradient-to-br from-brandPrimary to-violet-900 p-10 text-xl font-bold text-white md:text-4xl">
-          <p className="text-center">Request Page</p>
-          <PreviewImage type="request" />
-        </div>
-      ),
-    },
-    {
-      title: 'Database Config',
-      value: 'db-config',
-      content: (
-        <div className="relative h-full w-full overflow-hidden rounded-2xl bg-gradient-to-br from-brandPrimary to-violet-900 p-10 text-xl font-bold text-white md:text-4xl">
-          <p className="text-center">Database Config Page</p>
-          <PreviewImage type="db-config" />
-        </div>
-      ),
-    },
-    {
-      title: 'Getting Started',
-      value: 'getting-started',
-      content: (
-        <div className="relative h-full w-full overflow-hidden rounded-2xl bg-gradient-to-br from-brandPrimary to-violet-900 p-10 text-xl font-bold text-white md:text-4xl">
-          <p className="text-center">Getting Started Page</p>
-          <PreviewImage type="getting-started" />
-        </div>
-      ),
-    },
-  ]
-
+export default function HowItWorks() {
   return (
-    <section id="previews" className="container pb-20">
-      <div className="bg-muted/50 rounded-lg">
-        <h2 className="mb-16 text-center text-3xl font-bold md:text-4xl">
-          <span className="bg-brandPrimary bg-clip-text text-transparent">Product </span>
-          Previews
-        </h2>
-        <div className="b relative mx-auto flex h-[20rem] w-full max-w-5xl flex-col items-start justify-start [perspective:1000px] md:h-[40rem]">
-          <Tabs tabs={tabs} />
+    <>
+      <h2 className="mx-auto max-w-5xl text-center text-3xl font-medium tracking-tight text-black dark:text-white md:text-5xl md:leading-tight">
+        Supports multiple integrations
+      </h2>
+      <div className="relative mt-20 rounded-[32px] border border-neutral-200 bg-neutral-100 p-4 dark:border-neutral-700 dark:bg-neutral-800">
+        <div className="rounded-[24px] border border-neutral-200 bg-white p-2 dark:border-neutral-700 dark:bg-black">
+          <Image
+            alt="header"
+            loading="lazy"
+            width="1920"
+            height="1080"
+            decoding="async"
+            data-nimg="1"
+            className="w-full rounded-[20px] dark:hidden"
+            src="/static/images/integration-white.png"
+          />
+          <Image
+            alt="header"
+            loading="lazy"
+            width="1920"
+            height="1080"
+            decoding="async"
+            data-nimg="1"
+            className="hidden w-full rounded-[20px] dark:block"
+            src="/static/images/integration-black.png"
+          />
         </div>
       </div>
-    </section>
-  )
-}
-
-const PreviewImage = ({
-  type,
-}: {
-  type: 'dashboard' | 'request' | 'db-config' | 'getting-started'
-}) => {
-  return (
-    <Image
-      src={`/static/images/previews/${type}.png`}
-      alt={type}
-      width="1000"
-      height="1000"
-      className="absolute inset-x-0 -bottom-10  mx-auto h-[60%] w-[90%] rounded-xl object-cover object-left-top md:h-[90%]"
-    />
+    </>
   )
 }
