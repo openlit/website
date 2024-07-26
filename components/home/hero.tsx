@@ -4,6 +4,7 @@ import { GitHubLogoIcon, StarFilledIcon } from '@radix-ui/react-icons'
 import Image from 'next/image'
 import { FlipWords } from '../ui/flip-words'
 import { Slack } from '../social-icons/icons'
+import { buttonVariants } from '../ui/button'
 
 export default function Hero() {
   const words = ['Connect', 'Monitor', 'Explore']
@@ -70,12 +71,17 @@ export default function Hero() {
       </div>
       <div className="relative z-10 mt-6 flex flex-wrap items-center justify-center text-2xl">
         <a
-          href={siteMetadata.slack}
+          href="https://www.producthunt.com/posts/openlit?embed=true&utm_source=badge-featured&utm_medium=badge&utm_souce=badge-openlit"
           target="_blank"
-          className={`relative z-10 flex items-center justify-center px-2 px-4 py-2 py-2 font-medium transition duration-200`}
+          className={`mr-2 !p-0 ${buttonVariants({ variant: 'ghost' })}`}
         >
-          <span className="mr-2 text-2xl">Join us on </span>
-          <Slack />
+          <img
+            src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=460690&theme=light"
+            alt="Openlit - One&#0032;click&#0032;observability&#0032;&#0038;&#0032;evals&#0032;for&#0032;LLMs&#0032;&#0038;&#0032;GPUs | Product Hunt"
+            width="250"
+            height="54"
+            className="h-full w-full"
+          />
         </a>
       </div>
       <div className="relative mt-20 rounded-[32px] border border-neutral-200 bg-neutral-100 p-4 dark:border-neutral-700 dark:bg-neutral-800">

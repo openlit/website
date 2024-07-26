@@ -14,6 +14,7 @@ import { buttonVariants } from '../ui/button'
 import { HamburgerMenuIcon } from '@radix-ui/react-icons'
 import ThemeToggle from '../theme-toggle'
 import Image from 'next/image'
+import { Slack } from '../social-icons/icons'
 
 export default function Header() {
   return (
@@ -65,9 +66,19 @@ export default function Header() {
                     Feedback
                   </Link> */}
                   <a
+                    href={siteMetadata.slack}
+                    target="_blank"
+                    className={`w-[150px] border ${buttonVariants({
+                      variant: 'secondary',
+                    })}`}
+                  >
+                    <span className="mr-2">Join us on </span>
+                    <Slack className="h-6 w-6" />
+                  </a>
+                  <a
                     href={siteMetadata.siteRepo}
                     target="_blank"
-                    className={`w-[110px] border ${buttonVariants({
+                    className={`w-[150px] border ${buttonVariants({
                       variant: 'secondary',
                     })}`}
                   >
@@ -100,19 +111,15 @@ export default function Header() {
           </nav>
           <div className="hidden gap-2 md:flex">
             <a
-              href="https://www.producthunt.com/posts/openlit?embed=true&utm_source=badge-featured&utm_medium=badge&utm_souce=badge-openlit"
+              href={siteMetadata.slack}
               target="_blank"
-              className={`mr-2 !p-0 dark:hidden ${buttonVariants({ variant: 'ghost' })}`}
+              className={`${buttonVariants({ variant: 'ghost' })}`}
             >
-              <img
-                src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=460690&theme=light"
-                alt="Openlit - One&#0032;click&#0032;observability&#0032;&#0038;&#0032;evals&#0032;for&#0032;LLMs&#0032;&#0038;&#0032;GPUs | Product Hunt"
-                width="250"
-                height="54"
-                className="h-full w-full"
-              />
+              <span className="mr-2">Join us on </span>
+              <Slack className="h-6 w-6" />
             </a>
-            <a
+
+            {/* <a
               href="https://www.producthunt.com/posts/openlit?embed=true&utm_source=badge-featured&utm_medium=badge&utm_souce=badge-openlit"
               target="_blank"
               className={`mr-2 hidden !p-0 dark:block ${buttonVariants({ variant: 'ghost' })}`}
@@ -124,7 +131,7 @@ export default function Header() {
                 height="54"
                 className="h-full w-full"
               />
-            </a>
+            </a> */}
             <a
               href="https://github.com/openlit/openlit"
               target="_blank"

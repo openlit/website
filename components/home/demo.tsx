@@ -5,7 +5,9 @@ export default function Demo() {
     <div className="flex w-full flex-col overflow-hidden">
       <ContainerScroll
         titleComponent={
-          <h2 className="text-5xl font-semibold text-black dark:text-white">Explore the product</h2>
+          <h2 className="mx-auto max-w-5xl text-center text-3xl font-medium tracking-tight text-black dark:text-white md:text-5xl md:leading-tight">
+            Explore the product
+          </h2>
         }
       >
         <iframe
