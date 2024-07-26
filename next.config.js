@@ -7,13 +7,13 @@ const DuplicatePackageCheckerPlugin = require('duplicate-package-checker-webpack
 // You might need to insert additional domains in script-src if you are using external services
 const ContentSecurityPolicy = `
   default-src 'self';
-  script-src 'self' 'unsafe-eval' 'unsafe-inline' giscus.app analytics.umami.is;
+  script-src 'self' 'unsafe-eval' 'unsafe-inline' *;
   style-src 'self' 'unsafe-inline';
   img-src * blob: data:;
   media-src *.s3.amazonaws.com;
   connect-src *;
   font-src 'self';
-  frame-src giscus.app
+  frame-src openlit.io story.screenspace.io cards.producthunt.com
 `
 
 const securityHeaders = [
@@ -71,6 +71,14 @@ module.exports = () => {
           protocol: 'https',
           hostname: 'picsum.photos',
         },
+        {
+          protocol: 'https',
+          hostname: 'images.unsplash.com',
+        },
+        {
+          protocol: 'https',
+          hostname: 'assets.aceternity.com',
+        },
       ],
     },
     async headers() {
@@ -83,6 +91,7 @@ module.exports = () => {
     },
     webpack: (config, options) => {
       config.plugins.push(new DuplicatePackageCheckerPlugin())
+      config.devtool = false
 
       if (config.cache && !options.dev) {
         config.cache = Object.freeze({

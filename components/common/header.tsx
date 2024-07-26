@@ -1,6 +1,6 @@
 'use client'
-import siteMetadata from '@/data/siteMetadata'
-import headerNavLinks from 'data/headerNavLinks.js'
+import siteMetadata from 'data-2/siteMetadata'
+import headerNavLinks from 'data-2/headerNavLinks.js'
 import Link from '@/components/common/link'
 import {
   NavigationMenu,
@@ -14,6 +14,7 @@ import { buttonVariants } from '../ui/button'
 import { HamburgerMenuIcon } from '@radix-ui/react-icons'
 import ThemeToggle from '../theme-toggle'
 import Image from 'next/image'
+import { Slack } from '../social-icons/icons'
 
 export default function Header() {
   return (
@@ -47,7 +48,7 @@ export default function Header() {
                   <SheetTitle className="text-xl font-bold">{siteMetadata.headerTitle}</SheetTitle>
                 </SheetHeader>
                 <nav className="mt-4 flex flex-col items-center justify-center gap-2">
-                  {headerNavLinks
+                  {/* {headerNavLinks
                     .filter((link) => link.href !== '/')
                     .map((link) => (
                       <Link
@@ -57,17 +58,27 @@ export default function Header() {
                       >
                         {link.title}
                       </Link>
-                    ))}
-                  <Link
+                    ))} */}
+                  {/* <Link
                     href={siteMetadata.feedbackLink}
                     className={buttonVariants({ variant: 'ghost' })}
                   >
                     Feedback
-                  </Link>
+                  </Link> */}
+                  <a
+                    href={siteMetadata.slack}
+                    target="_blank"
+                    className={`w-[150px] border ${buttonVariants({
+                      variant: 'secondary',
+                    })}`}
+                  >
+                    <span className="mr-2">Join us on </span>
+                    <Slack className="h-6 w-6" />
+                  </a>
                   <a
                     href={siteMetadata.siteRepo}
                     target="_blank"
-                    className={`w-[110px] border ${buttonVariants({
+                    className={`w-[150px] border ${buttonVariants({
                       variant: 'secondary',
                     })}`}
                   >
@@ -81,7 +92,7 @@ export default function Header() {
 
           {/* desktop */}
           <nav className="hidden gap-2 md:flex">
-            {headerNavLinks
+            {/* {headerNavLinks
               .filter((link) => link.href !== '/')
               .map((link) => (
                 <Link
@@ -93,12 +104,34 @@ export default function Header() {
                 >
                   {link.title}
                 </Link>
-              ))}
-            <Link href={siteMetadata.feedbackLink} className={buttonVariants({ variant: 'ghost' })}>
+              ))} */}
+            {/* <Link href={siteMetadata.feedbackLink} className={buttonVariants({ variant: 'ghost' })}>
               Feedback
-            </Link>
+            </Link> */}
           </nav>
           <div className="hidden gap-2 md:flex">
+            <a
+              href={siteMetadata.slack}
+              target="_blank"
+              className={`${buttonVariants({ variant: 'ghost' })}`}
+            >
+              <span className="mr-2">Join us on </span>
+              <Slack className="h-6 w-6" />
+            </a>
+
+            {/* <a
+              href="https://www.producthunt.com/posts/openlit?embed=true&utm_source=badge-featured&utm_medium=badge&utm_souce=badge-openlit"
+              target="_blank"
+              className={`mr-2 hidden !p-0 dark:block ${buttonVariants({ variant: 'ghost' })}`}
+            >
+              <img
+                src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=460690&theme=dark"
+                alt="Openlit - One&#0032;click&#0032;observability&#0032;&#0038;&#0032;evals&#0032;for&#0032;LLMs&#0032;&#0038;&#0032;GPUs | Product Hunt"
+                width="250"
+                height="54"
+                className="h-full w-full"
+              />
+            </a> */}
             <a
               href="https://github.com/openlit/openlit"
               target="_blank"

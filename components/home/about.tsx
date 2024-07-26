@@ -1,26 +1,20 @@
-import siteMetadata from '@/data/siteMetadata'
+import siteMetadata from 'data-2/siteMetadata'
 import Image from 'next/image'
 export default function About() {
   return (
     <section id="about" className="container py-4">
       <div className="bg-muted/50 rounded-lg py-12">
-        <div className="flex flex-col-reverse gap-8 px-6 md:flex-row md:gap-12">
-          <Image
-            src="/static/images/about-rocket.png"
-            width={300}
-            height={300}
-            alt="Rocket"
-            className="w-[300px] rounded-lg object-contain"
-          />
-          <div className="bg-green-0 flex flex-col justify-between">
-            <div className="pb-6">
-              <h2 className="text-3xl font-bold md:text-4xl">
-                <span className="bg-brandPrimary bg-clip-text text-transparent">About </span>
-                Company
-              </h2>
-              <p className="text-muted-foreground mt-4 text-xl">{siteMetadata.about}</p>
-            </div>
-          </div>
+        <div className="flex flex-col-reverse gap-8 border border-neutral-200 bg-neutral-100 p-4 dark:border-neutral-300 dark:bg-neutral-950">
+          <iframe
+            src="https://cards.producthunt.com/cards/products/586065"
+            width="500"
+            height="405"
+            allowFullScreen
+            style={{ border: 'none' }}
+            className="w-full border-none"
+            frameBorder={0}
+            title="producthunt"
+          ></iframe>
         </div>
       </div>
     </section>

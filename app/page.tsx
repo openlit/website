@@ -2,10 +2,11 @@
 // import { allBlogs } from 'contentlayer/generated'
 import Hero from '@/components/home/hero'
 import About from '@/components/home/about'
-import Previews from '@/components/home/previews'
-import Features from '@/components/home/features'
+import HowItWorks from '@/components/home/previews'
 // import LatestBlogs from '@/components/home/latest-blogs'
-import Supports from '@/components/home/supports'
+import { BackgroundBeams } from '@/components/ui/background-beams'
+import Features from '@/components/home/features'
+import Demo from '@/components/home/demo'
 
 // const MAX_DISPLAY = 5
 
@@ -13,14 +14,15 @@ export default async function Page() {
   // const sortedPosts = sortPosts(allBlogs)
   // const posts = allCoreContent(sortedPosts)
   return (
-    <>
+    <div className="mx-auto flex min-h-screen max-w-7xl flex-col items-center justify-between px-4">
+      <BackgroundBeams className="-z-10" />
       <Hero />
-      <Supports />
-      <Previews />
+      <HowItWorks />
+      <Demo />
       <Features />
       <About />
       {/* <LatestBlogs posts={posts.slice(0, MAX_DISPLAY)} /> */}
-    </>
+    </div>
   )
 }
 

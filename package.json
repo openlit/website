@@ -9,7 +9,8 @@
     "serve": "next start",
     "analyze": "cross-env ANALYZE=true next build",
     "lint": "next lint --fix --dir pages --dir app --dir components --dir lib --dir layouts --dir scripts",
-    "prepare": "husky"
+    "prepare": "husky",
+    "cloudflare-build": "npx @cloudflare/next-on-pages@1"
   },
   "dependencies": {
     "@emotion/is-prop-valid": "^1.2.2",
@@ -27,7 +28,7 @@
     "contentlayer2": "0.4.4",
     "duplicate-package-checker-webpack-plugin": "^3.0.0",
     "esbuild": "0.20.2",
-    "framer-motion": "^11.1.7",
+    "framer-motion": "^11.3.13",
     "github-slugger": "^2.0.0",
     "gray-matter": "^4.0.2",
     "hast-util-from-html-isomorphic": "^2.0.0",
@@ -50,8 +51,9 @@
     "remark": "^15.0.0",
     "remark-gfm": "^4.0.0",
     "remark-math": "^6.0.0",
+    "safe-mdx": "^0.0.4",
     "sharp": "^0.33.3",
-    "tailwind-merge": "^2.3.0",
+    "tailwind-merge": "^2.4.0",
     "tailwindcss": "^3.4.3",
     "tailwindcss-animate": "^1.0.7",
     "tiny-cookie": "^2.5.1",

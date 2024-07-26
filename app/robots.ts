@@ -1,5 +1,5 @@
 import { MetadataRoute } from 'next'
-import siteMetadata from '@/data/siteMetadata'
+import siteMetadata from 'data-2/siteMetadata'
 
 export default function robots(): MetadataRoute.Robots {
   return {
@@ -11,3 +11,5 @@ export default function robots(): MetadataRoute.Robots {
     host: siteMetadata.siteUrl,
   }
 }
+
+export const runtime = 'edge'
