@@ -6,8 +6,6 @@ import { CoreContent, coreContent } from 'pliny/utils/contentlayer'
 import { Authors, allAuthors, type Blog } from 'contentlayer/generated'
 import Link from '@/components/common/link'
 import siteMetadata from 'data/siteMetadata'
-import { Card, CardHeader, CardTitle } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
 import { cn } from 'lib/utils'
 import Image from 'next/image'
 
