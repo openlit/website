@@ -48,7 +48,7 @@ export default function Header() {
                   <SheetTitle className="text-xl font-bold">{siteMetadata.headerTitle}</SheetTitle>
                 </SheetHeader>
                 <nav className="mt-4 flex flex-col items-center justify-center gap-8">
-                  {/* {headerNavLinks
+                  {headerNavLinks
                     .filter((link) => link.href !== '/')
                     .map((link) => (
                       <Link
@@ -58,25 +58,13 @@ export default function Header() {
                       >
                         {link.title}
                       </Link>
-                    ))} */}
+                    ))}
                   {/* <Link
                     href={siteMetadata.feedbackLink}
                     className={buttonVariants({ variant: 'ghost' })}
                   >
                     Feedback
                   </Link> */}
-                  <a
-                    href="https://fazier.com/launches/openlit-2"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="self-center"
-                  >
-                    <img
-                      src="https://fazier.com/api/v1/public/badges/embed_image.svg?launch_id=779&badge_type=daily"
-                      alt="Fazier"
-                      className="h-[40px] rounded"
-                    />
-                  </a>
                   <a
                     href={siteMetadata.slack}
                     target="_blank"
@@ -103,8 +91,8 @@ export default function Header() {
           </div>
 
           {/* desktop */}
-          <nav className="hidden gap-2 md:flex">
-            {/* {headerNavLinks
+          <nav className="hidden grow justify-end gap-2 md:flex">
+            {headerNavLinks
               .filter((link) => link.href !== '/')
               .map((link) => (
                 <Link
@@ -116,24 +104,12 @@ export default function Header() {
                 >
                   {link.title}
                 </Link>
-              ))} */}
+              ))}
             {/* <Link href={siteMetadata.feedbackLink} className={buttonVariants({ variant: 'ghost' })}>
               Feedback
             </Link> */}
           </nav>
           <div className="hidden gap-2 md:flex">
-            <a
-              href="https://fazier.com/launches/openlit-2"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="self-center"
-            >
-              <img
-                src="https://fazier.com/api/v1/public/badges/embed_image.svg?launch_id=779&badge_type=daily"
-                alt="Fazier"
-                className="h-[40px] rounded"
-              />
-            </a>
             <a
               href={siteMetadata.slack}
               target="_blank"

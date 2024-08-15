@@ -81,7 +81,7 @@ export default function Hero() {
         </a>
         <a href="https://fazier.com/launches/openlit-2" target="_blank" rel="noopener noreferrer">
           <img
-            src="https://fazier.com/api/v1/public/badges/embed_image.svg?launch_id=779&badge_type=featured"
+            src="https://fazier.com/api/v1/public/badges/embed_image.svg?launch_id=779&badge_type=daily"
             alt="Openlit Fazier"
             className="h-full rounded"
           />

@@ -99,7 +99,7 @@ export default async function Page({ params }: { params: { slug: string[] } }) {
   })
 
   return (
-    <TracingBeam className="max-w-[90%] pl-8 pr-4 md:pl-5">
+    <TracingBeam className="max-w-[70%] pl-8 pr-4 md:pl-5">
       <section className="relative py-6">
         <script
           type="application/ld+json"

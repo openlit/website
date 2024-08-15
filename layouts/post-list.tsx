@@ -2,12 +2,14 @@
 'use client'
 
 import { formatDate } from 'pliny/utils/formatDate'
-import { CoreContent } from 'pliny/utils/contentlayer'
-import type { Blog } from 'contentlayer/generated'
+import { CoreContent, coreContent } from 'pliny/utils/contentlayer'
+import { Authors, allAuthors, type Blog } from 'contentlayer/generated'
 import Link from '@/components/common/link'
 import siteMetadata from 'data/siteMetadata'
 import { Card, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
+import { cn } from 'lib/utils'
+import Image from 'next/image'
 
 interface ListLayoutProps {
   posts: CoreContent<Blog>[]
@@ -31,38 +33,63 @@ export default function ListLayoutWithTags({
       </div>
       <div className="flex flex-col sm:space-x-24">
         <div className="w-full items-start pb-12">
-          <div className="mx-auto grid grid-cols-1 items-start  gap-10 px-10 md:grid-cols-2 lg:grid-cols-3">
+          <div className="mx-auto grid grid-cols-1 items-start  gap-2 px-10 md:grid-cols-2 lg:grid-cols-3">
             {displayPosts.map((post) => {
-              const { path, date, title, summary, tags, authors } = post
+              const { path, date, title, summary, tags, authors, images } = post
+              const displayImage =
+                images && images.length > 0
+                  ? images[0]
+                  : 'https://picsum.photos/seed/picsum/800/400'
+              console.log(displayImage)
+              const authorDetails = authors?.length
+                ? coreContent(allAuthors.find((p) => p.slug === authors[0]) as Authors)
+                : undefined
 
               return (
                 <Link key={path} href={`/${path}`} passHref className="max-w-full">
-                  <Card className="relative h-60 cursor-pointer overflow-hidden rounded-2xl shadow-md hover:shadow-lg">
-                    <CardHeader className="gap-2">
-                      <CardTitle className=" text-lg font-[800] text-brandPrimary">
-                        {title}
-                      </CardTitle>
+                  <div className="group/card w-full max-w-xs">
+                    <div
+                      className={cn(
+                        'card backgroundImage relative mx-auto flex h-96 max-w-sm  cursor-pointer flex-col justify-between overflow-hidden rounded-md p-4 shadow-xl',
+                        'bg-cover'
+                      )}
+                      style={{
+                        backgroundImage: `url(${displayImage})`,
+                      }}
+                    >
+                      <div className="absolute left-0 top-0 h-full w-full bg-gray-900 opacity-60 transition duration-300 group-hover/card:bg-black"></div>
+                      <div className="z-10 flex flex-row items-center space-x-4">
+                        {authorDetails?.avatar ? (
+                          <Image
+                            height="100"
+                            width="100"
+                            alt="Avatar"
+                            src={authorDetails?.avatar}
+                            className="h-10 w-10 rounded-full border-2 object-cover"
+                          />
+                        ) : (
+                          <div className="h-10 w-10 rounded-full border-2 bg-gray-50 object-cover" />
+                        )}
 
-                      <div className="flex items-center gap-3 overflow-auto text-sm font-bold">
-                        {tags.map((tag) => (
-                          <Badge key={tag} className="shrink-0">
-                            {tag}
-                          </Badge>
-                        ))}
+                        <div className="flex flex-col">
+                          <p className="relative z-10 text-base font-normal text-gray-50">
+                            {authorDetails?.name ?? 'Openlit'}
+                          </p>
+                          <p className="text-sm text-gray-400">
+                            Published {formatDate(date, siteMetadata.locale)}
+                          </p>
+                        </div>
                       </div>
-
-                      <div className="text-[.7rem] font-[700] text-stone-600 dark:text-stone-300">
-                        Published {formatDate(date, siteMetadata.locale)}
+                      <div className="text content">
+                        <h1 className="relative z-10 text-xl font-bold text-gray-50 md:text-2xl">
+                          {title}
+                        </h1>
+                        <p className="relative z-10 my-4 text-sm font-normal text-gray-50">
+                          {summary}
+                        </p>
                       </div>
-
-                      <div className="line-clamp-4 p-0 text-xs font-[600] text-stone-400 dark:text-stone-200">
-                        {summary}
-                      </div>
-                      <div className="flex items-center gap-3">
-                        <div className="text-sm font-[800]">{authors?.join(' , ')}</div>
-                      </div>
-                    </CardHeader>
-                  </Card>
+                    </div>
+                  </div>
                 </Link>
               )
             })}
