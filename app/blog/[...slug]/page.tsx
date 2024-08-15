@@ -9,7 +9,7 @@ import { allBlogs, allAuthors } from 'contentlayer/generated'
 import type { Authors, Blog } from 'contentlayer/generated'
 import PostLayout from '@/layouts/post-layout'
 import { Metadata } from 'next'
-import siteMetadata from 'data-2/siteMetadata'
+import siteMetadata from 'data/siteMetadata'
 import { notFound } from 'next/navigation'
 import TracingBeam from '@/components/ui/tracing-beam'
 

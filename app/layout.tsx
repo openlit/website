@@ -4,7 +4,7 @@ import { Space_Grotesk } from 'next/font/google'
 // import { Analytics, AnalyticsConfig } from 'pliny/analytics'
 import Header from '@/components/common/header'
 import Footer from '@/components/common/footer'
-import siteMetadata from 'data-2/siteMetadata'
+import siteMetadata from 'data/siteMetadata'
 import { Metadata } from 'next'
 import { cookies } from 'next/headers'
 

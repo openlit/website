@@ -1,6 +1,6 @@
 'use client'
-import siteMetadata from 'data-2/siteMetadata'
-import headerNavLinks from 'data-2/headerNavLinks.js'
+import siteMetadata from 'data/siteMetadata'
+import headerNavLinks from 'data/headerNavLinks.js'
 import Link from '@/components/common/link'
 import {
   NavigationMenu,
@@ -47,7 +47,7 @@ export default function Header() {
                 <SheetHeader>
                   <SheetTitle className="text-xl font-bold">{siteMetadata.headerTitle}</SheetTitle>
                 </SheetHeader>
-                <nav className="mt-4 flex flex-col items-center justify-center gap-2">
+                <nav className="mt-4 flex flex-col items-center justify-center gap-8">
                   {/* {headerNavLinks
                     .filter((link) => link.href !== '/')
                     .map((link) => (
@@ -65,6 +65,18 @@ export default function Header() {
                   >
                     Feedback
                   </Link> */}
+                  <a
+                    href="https://fazier.com/launches/openlit-2"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="self-center"
+                  >
+                    <img
+                      src="https://fazier.com/api/v1/public/badges/embed_image.svg?launch_id=779&badge_type=daily"
+                      alt="Fazier"
+                      className="h-[40px] rounded"
+                    />
+                  </a>
                   <a
                     href={siteMetadata.slack}
                     target="_blank"
@@ -110,6 +122,18 @@ export default function Header() {
             </Link> */}
           </nav>
           <div className="hidden gap-2 md:flex">
+            <a
+              href="https://fazier.com/launches/openlit-2"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="self-center"
+            >
+              <img
+                src="https://fazier.com/api/v1/public/badges/embed_image.svg?launch_id=779&badge_type=daily"
+                alt="Fazier"
+                className="h-[40px] rounded"
+              />
+            </a>
             <a
               href={siteMetadata.slack}
               target="_blank"

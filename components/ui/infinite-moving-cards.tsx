@@ -1,6 +1,6 @@
 'use client'
 
-import siteMetadata from 'data-2/siteMetadata'
+import siteMetadata from 'data/siteMetadata'
 import { IsoDateTimeString } from 'contentlayer2/core'
 import { cn } from 'lib/utils'
 import React, { useEffect, useState } from 'react'
