@@ -1,4 +1,4 @@
-import siteMetadata from 'data-2/siteMetadata'
+import siteMetadata from 'data/siteMetadata'
 import SocialIcon from '@/components/social-icons'
 
 import Image from 'next/image'

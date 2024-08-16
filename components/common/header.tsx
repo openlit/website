@@ -1,6 +1,6 @@
 'use client'
-import siteMetadata from 'data-2/siteMetadata'
-import headerNavLinks from 'data-2/headerNavLinks.js'
+import siteMetadata from 'data/siteMetadata'
+import headerNavLinks from 'data/headerNavLinks.js'
 import Link from '@/components/common/link'
 import {
   NavigationMenu,
@@ -47,8 +47,8 @@ export default function Header() {
                 <SheetHeader>
                   <SheetTitle className="text-xl font-bold">{siteMetadata.headerTitle}</SheetTitle>
                 </SheetHeader>
-                <nav className="mt-4 flex flex-col items-center justify-center gap-2">
-                  {/* {headerNavLinks
+                <nav className="mt-4 flex flex-col items-center justify-center gap-8">
+                  {headerNavLinks
                     .filter((link) => link.href !== '/')
                     .map((link) => (
                       <Link
@@ -58,7 +58,7 @@ export default function Header() {
                       >
                         {link.title}
                       </Link>
-                    ))} */}
+                    ))}
                   {/* <Link
                     href={siteMetadata.feedbackLink}
                     className={buttonVariants({ variant: 'ghost' })}
@@ -91,8 +91,8 @@ export default function Header() {
           </div>
 
           {/* desktop */}
-          <nav className="hidden gap-2 md:flex">
-            {/* {headerNavLinks
+          <nav className="hidden grow justify-end gap-2 md:flex">
+            {headerNavLinks
               .filter((link) => link.href !== '/')
               .map((link) => (
                 <Link
@@ -104,7 +104,7 @@ export default function Header() {
                 >
                   {link.title}
                 </Link>
-              ))} */}
+              ))}
             {/* <Link href={siteMetadata.feedbackLink} className={buttonVariants({ variant: 'ghost' })}>
               Feedback
             </Link> */}

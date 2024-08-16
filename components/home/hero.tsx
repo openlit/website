@@ -1,9 +1,8 @@
-import siteMetadata from 'data-2/siteMetadata'
+import siteMetadata from 'data/siteMetadata'
 import { Button as MovingBorder } from '../ui/moving-borders'
 import { GitHubLogoIcon, StarFilledIcon } from '@radix-ui/react-icons'
 import Image from 'next/image'
 import { FlipWords } from '../ui/flip-words'
-import { Slack } from '../social-icons/icons'
 import { buttonVariants } from '../ui/button'
 
 export default function Hero() {
@@ -69,22 +68,26 @@ export default function Hero() {
           </svg>
         </a>
       </div>
-      <div className="relative z-10 mt-6 flex flex-wrap items-center justify-center text-2xl">
+      <div className="relative z-10 mt-6 flex flex-wrap items-center justify-center gap-8 text-2xl">
         <a
           href="https://www.producthunt.com/posts/openlit?embed=true&utm_source=badge-featured&utm_medium=badge&utm_souce=badge-openlit"
           target="_blank"
-          className={`mr-2 !p-0 ${buttonVariants({ variant: 'ghost' })}`}
         >
           <img
             src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=460690&theme=light"
             alt="Openlit - One&#0032;click&#0032;observability&#0032;&#0038;&#0032;evals&#0032;for&#0032;LLMs&#0032;&#0038;&#0032;GPUs | Product Hunt"
-            width="250"
-            height="54"
-            className="h-full w-full"
+            className="h-[54px]"
+          />
+        </a>
+        <a href="https://fazier.com/launches/openlit-2" target="_blank" rel="noopener noreferrer">
+          <img
+            src="https://fazier.com/api/v1/public/badges/embed_image.svg?launch_id=779&badge_type=daily"
+            alt="Openlit Fazier"
+            className="h-full rounded"
           />
         </a>
       </div>
-      <div className="relative mt-20 rounded-[32px] border border-neutral-200 bg-neutral-100 p-4 dark:border-neutral-700 dark:bg-neutral-800">
+      <div className="relative mt-40 rounded-[32px] border border-neutral-200 bg-neutral-100 p-4 dark:border-neutral-700 dark:bg-neutral-800">
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 w-full scale-[1.1] bg-gradient-to-b from-transparent via-white to-white dark:via-black/50 dark:to-black"></div>
         <div className="rounded-[24px] border border-neutral-200 bg-white p-2 dark:border-neutral-700 dark:bg-black">
           <Image
