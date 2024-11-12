@@ -124,8 +124,13 @@ const Grid = ({ pattern, size }: { pattern?: number[][]; size?: number }) => {
     </div>
   )
 }
-
+{
+  /* eslint-disable @typescript-eslint/no-explicit-any */
+}
 function GridPattern({ width, height, x, y, squares, ...props }: any) {
+  {
+    /* eslint-disable @typescript-eslint/no-explicit-any */
+  }
   const patternId: any = useId()
 
   return (
@@ -145,6 +150,7 @@ function GridPattern({ width, height, x, y, squares, ...props }: any) {
       <rect width="100%" height="100%" strokeWidth={0} fill={`url(#${patternId})`} />
       {squares && (
         <svg x={x} y={y} className="overflow-visible">
+          {/* eslint-disable @typescript-eslint/no-explicit-any */}
           {squares.map(([x, y]: any) => (
             <rect
               strokeWidth="0"

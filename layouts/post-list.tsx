@@ -31,7 +31,7 @@ export default function ListLayoutWithTags({
       </div>
       <div className="flex flex-col sm:space-x-24">
         <div className="w-full items-start pb-12">
-          <div className="mx-auto flex gap-10 px-10 flex-wrap">
+          <div className="mx-auto flex flex-wrap gap-10 px-10">
             {displayPosts.map((post) => {
               const { path, date, title, summary, tags, authors, images } = post
               const displayImage =
