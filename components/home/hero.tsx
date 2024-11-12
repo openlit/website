@@ -31,7 +31,7 @@ export default function Hero() {
         <span className="text-brandPrimary">OpenLIT</span>
       </h1>
       <p className="text-muted dark:text-muted-dark relative z-10 mx-auto mt-6 max-w-3xl text-center text-base md:text-xl">
-        OpenTelemetry-native Application Observability tool
+        Open Source Platform for AI Engineering
       </p>
       <div className="relative z-10 mt-6 flex flex-wrap items-center justify-center gap-4">
         <a
@@ -87,7 +87,7 @@ export default function Hero() {
           />
         </a>
       </div>
-      <div className="relative mt-40 rounded-[32px] border border-neutral-200 bg-neutral-100 p-4 dark:border-neutral-700 dark:bg-neutral-800">
+      <div className="relative mt-40  p-4">
         <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 w-full scale-[1.1] bg-gradient-to-b from-transparent via-white to-white dark:via-black/50 dark:to-black"></div>
         <div className="rounded-[24px] border border-neutral-200 bg-white p-2 dark:border-neutral-700 dark:bg-black">
           <Image
@@ -97,8 +97,8 @@ export default function Hero() {
             height="1080"
             decoding="async"
             data-nimg="1"
-            className="w-full rounded-[20px] dark:hidden"
-            src="/static/images/dashboard-white.png"
+            className="w-full  dark:hidden"
+            src="/static/images/previews/dashboard.png"
           />
           <Image
             alt="header"
@@ -107,8 +107,8 @@ export default function Hero() {
             height="1080"
             decoding="async"
             data-nimg="1"
-            className="hidden w-full rounded-[20px] dark:block"
-            src="/static/images/dashboard-black.png"
+            className="hidden w-full  dark:block"
+            src="/static/images/previews/dashboard-dark.png"
           />
         </div>
       </div>

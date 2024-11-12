@@ -31,7 +31,7 @@ export default function ListLayoutWithTags({
       </div>
       <div className="flex flex-col sm:space-x-24">
         <div className="w-full items-start pb-12">
-          <div className="mx-auto grid grid-cols-1 items-start  gap-2 px-10 md:grid-cols-2 lg:grid-cols-3">
+          <div className="mx-auto flex gap-10 px-10 flex-wrap">
             {displayPosts.map((post) => {
               const { path, date, title, summary, tags, authors, images } = post
               const displayImage =
@@ -44,7 +44,7 @@ export default function ListLayoutWithTags({
                 : undefined
 
               return (
-                <Link key={path} href={`/${path}`} passHref className="max-w-full">
+                <Link key={path} href={`/${path}`} passHref className="max-w-full shrink-0">
                   <div className="group/card w-full max-w-xs">
                     <div
                       className={cn(
