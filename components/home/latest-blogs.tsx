@@ -20,9 +20,8 @@ export default function LatestBlogs({ posts }: { posts: CoreContent<Blog>[] }) {
   return (
     <section id="latest-blogs" className="container px-0 pb-16">
       <div className="bg-muted/50 rounded-lg">
-        <h2 className="mb-24 text-center text-3xl font-bold md:text-4xl">
-          <span className="bg-brandPrimary bg-clip-text text-transparent">Latest </span>
-          Blogs
+        <h2 className="font-cal mt-2 text-center text-3xl text-gray-900 dark:text-gray-100 sm:text-4xl">
+          Latest Blogs
         </h2>
         <div className="dark:bg-grid-white/[0.05] relative flex flex-col items-center justify-center overflow-hidden rounded-md bg-white antialiased dark:bg-black">
           <InfiniteMovingCards items={items} direction="right" speed="slow" />

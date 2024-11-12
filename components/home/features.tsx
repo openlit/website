@@ -1,109 +1,277 @@
-import { cn } from 'lib/utils'
+'use client'
+
+import clsx from 'clsx'
 import {
   BarChart2Icon,
-  Layers2Icon,
-  LockKeyholeOpen,
-  FileClockIcon,
-  SquareTerminalIcon,
-  ActivityIcon,
-  HourglassIcon,
-  RadicalIcon,
+  EyeIcon,
+  LineChart,
+  type LucideIcon,
+  MousePointer2Icon,
+  Orbit,
+  ShieldHalfIcon,
+  Sparkles,
+  SparklesIcon,
+  TagIcon,
+  BlocksIcon,
+  ListStartIcon,
 } from 'lucide-react'
+import Image from 'next/image'
 
-export default function Features() {
-  const features = [
-    {
-      title: 'Easy to integrate',
-      description: 'Just add `openlit.init()` to start collecting data from your llm application.',
-      icon: <SquareTerminalIcon />,
-    },
-    {
-      title: 'Open source project',
-      description:
-        'Open source LLM & GenAI Observability tool, easy to start, just run `docker-compose up -d`',
-      icon: <LockKeyholeOpen />,
-    },
-    {
-      title: 'OpenTelemetry native',
-      description:
-        "Seamless integration: OpenLIT's native support makes adding it to your projects feel effortless and intuitive.",
-      icon: <FileClockIcon />,
-    },
-    {
-      title: 'Granular Usage Insights',
-      description:
-        'Analyze LLM, Vectordb & GPU performance and costs to achieve maximum efficiency and scalability.',
-      icon: <ActivityIcon />,
-    },
-    {
-      title: 'Real-Time Data Streaming',
-      description:
-        'Streams data to let you visualise your data and make quick decisions and modifications.',
-      icon: <HourglassIcon />,
-    },
-    {
-      title: 'Low Latency',
-      description:
-        'Ensures that data is processed quickly without affecting the performance of your application.',
-      icon: <RadicalIcon />,
-    },
-    {
-      title: 'Visualize and analyze',
-      description:
-        'OpenLIT UI helps you to explore LLM costs, token consumption, performance indicators, and user interactions in a straightforward interface.',
-      icon: <BarChart2Icon />,
-    },
-    {
-      title: 'Observability Platforms',
-      description:
-        'Connect to popular observability systems with ease, including Datadog and Grafana Cloud, to export data automatically.',
-      icon: <Layers2Icon />,
-    },
-  ]
+export function FeaturesPrivacy() {
   return (
-    <div className="relative z-10 mx-auto grid  max-w-7xl grid-cols-1 py-10 md:grid-cols-2 lg:grid-cols-4">
-      {features.map((feature, index) => (
-        <Feature key={feature.title} {...feature} index={index} />
-      ))}
+    <div className="py-12" id="features">
+      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+        <div className="mx-auto max-w-2xl lg:text-center">
+          <h2 className="font-cal text-base leading-7 text-brandPrimary">Privacy first</h2>
+          <p className="font-cal mt-2 text-3xl text-gray-900 dark:text-gray-50 sm:text-4xl">
+            See exactly what our code does. Or host it yourself.
+          </p>
+          <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-400">
+            OpenLIT allows you to simplify your AI development workflow, especially for Generative
+            AI and LLMs. It streamlines essential tasks like experimenting with LLMs, organizing and
+            versioning prompts, and securely handling API keys.
+          </p>
+        </div>
+      </div>
     </div>
   )
 }
 
-const Feature = ({
-  title,
-  description,
-  icon,
-  index,
-}: {
+export function FeaturesWithImage(props: {
+  imageSide: 'left' | 'right'
   title: string
+  subtitle: string
   description: string
-  icon?: React.ReactNode
-  index: number
-}) => {
+  image: string
+  imageDark: string
+  features: {
+    name: string
+    description: string
+    icon: LucideIcon
+  }[]
+}) {
   return (
-    <div
-      className={cn(
-        'group/feature relative flex  flex-col py-10 dark:border-neutral-800 lg:border-r',
-        (index === 0 || index === 4) && 'dark:border-neutral-800 lg:border-l',
-        index < 4 && 'dark:border-neutral-800 lg:border-b'
-      )}
-    >
-      {index < 4 && (
-        <div className="pointer-events-none absolute inset-0 h-full w-full bg-gradient-to-t from-neutral-100 to-transparent opacity-0 transition duration-200 group-hover/feature:opacity-100 dark:from-neutral-800" />
-      )}
-      {index >= 4 && (
-        <div className="pointer-events-none absolute inset-0 h-full w-full bg-gradient-to-b from-neutral-100 to-transparent opacity-0 transition duration-200 group-hover/feature:opacity-100 dark:from-neutral-800" />
-      )}
-      <div className="relative z-10 mb-4 px-10 text-neutral-600 dark:text-neutral-400">{icon}</div>
-      <div className="relative z-10 mb-2 px-10 text-lg font-bold">
-        <div className="absolute inset-y-0 left-0 h-6 w-1 origin-center rounded-br-full rounded-tr-full bg-neutral-300 transition-all duration-200 group-hover/feature:h-8 group-hover/feature:bg-brandPrimary dark:bg-neutral-700" />
-        <span className="inline-block text-neutral-800 transition duration-200 group-hover/feature:translate-x-2 dark:text-neutral-100">
-          {title}
-        </span>
+    <div className="overflow-hidden py-12" id="features">
+      <div className="mx-auto max-w-7xl px-6 lg:px-8">
+        <div className="mx-auto grid max-w-2xl grid-cols-1 gap-x-8 gap-y-16 sm:gap-y-20 lg:mx-0 lg:max-w-none lg:grid-cols-2">
+          <div
+            className={clsx(
+              'lg:pt-4',
+              props.imageSide === 'left' ? 'lg:ml-auto lg:pl-4' : 'lg:mr-auto lg:pr-4'
+            )}
+          >
+            <div className="lg:max-w-lg">
+              <h2 className="font-cal text-base leading-7 text-brandPrimary">{props.title}</h2>
+              <p className="font-cal mt-2 text-3xl text-gray-900 dark:text-gray-100 sm:text-4xl">
+                {props.subtitle}
+              </p>
+              <p className="mt-6 text-lg leading-8 text-gray-600 dark:text-gray-400">
+                {props.description}
+              </p>
+              <dl className="mt-10 max-w-xl space-y-8 text-base leading-7 text-gray-600 dark:text-gray-400 lg:max-w-none">
+                {props.features.map((feature) => (
+                  <div key={feature.name} className="relative pl-9">
+                    <dt className="inline font-semibold text-gray-900 dark:text-gray-100">
+                      <feature.icon
+                        className="absolute left-1 top-1 h-5 w-5 text-brandPrimary"
+                        aria-hidden="true"
+                      />
+                      {feature.name}
+                    </dt>{' '}
+                    <dd className="inline">{feature.description}</dd>
+                  </div>
+                ))}
+              </dl>
+            </div>
+          </div>
+          <div
+            className={clsx(
+              'flex items-start',
+              props.imageSide === 'left'
+                ? 'justify-end lg:order-first'
+                : 'justify-start lg:order-last'
+            )}
+          >
+            <div className="rounded-xl bg-gray-900/5 p-2 ring-1 ring-inset ring-gray-900/10 dark:bg-gray-100/10 lg:rounded-2xl lg:p-4">
+              <Image
+                src={props.image}
+                alt={props.title}
+                className="w-[48rem] max-w-none rounded-xl shadow-2xl ring-1 ring-gray-400/10 dark:hidden sm:w-[57rem]"
+                width={2400}
+                height={1800}
+                loading="lazy"
+                decoding="async"
+              />
+              <Image
+                src={props.imageDark}
+                alt={props.title}
+                className="hidden w-[48rem] max-w-none rounded-xl shadow-2xl ring-1 ring-gray-400/10 dark:block sm:w-[57rem]"
+                width={2400}
+                height={1800}
+                loading="lazy"
+                decoding="async"
+              />
+            </div>
+          </div>
+        </div>
       </div>
-      <p className="relative z-10 max-w-xs px-10 text-sm text-neutral-600 dark:text-neutral-300">
-        {description}
-      </p>
+    </div>
+  )
+}
+
+const featuresTraces = [
+  {
+    name: 'Detailed Span Tracking',
+    description: 'Monitor each span for response time and efficiency.',
+    icon: Sparkles,
+  },
+  {
+    name: 'Supporting OpenTelemetry',
+    description:
+      'Automatically track your AI apps with OpenTelemetry to gain insights into performance and behavior​',
+    icon: Orbit,
+  },
+  {
+    name: 'Cost tracking',
+    description: 'Tracks your cost for making it easier for you to take revenue decisions.',
+    icon: LineChart,
+  },
+]
+
+const featuresPlayground = [
+  {
+    name: 'Side-by-Side Comparison',
+    description:
+      'Simultaneously evaluate multiple LLMs to understand how they perform in real-time across various scenarios.',
+    icon: ShieldHalfIcon,
+  },
+  {
+    name: 'Cost Analysis',
+    description:
+      'Evaluate the cost implications of using different LLMs, helping you balance budget constraints with performance needs.',
+    icon: SparklesIcon,
+  },
+  {
+    name: 'Comprehensive Reporting',
+    description:
+      'Generate detailed reports that compile and visualize comparison data, supporting informed decision-making.',
+    icon: TagIcon,
+  },
+]
+
+const featuresPrompt = [
+  {
+    name: 'Prompt Management',
+    description: 'Create, edit, and track different versions of your prompts.',
+    icon: Sparkles,
+  },
+  {
+    name: 'Versioning',
+    description:
+      'Supports major, minor, and patch updates for clear version management. You can even create a draft state.',
+    icon: Orbit,
+  },
+  {
+    name: 'Variable Substitution',
+    description:
+      'Customize prompts using specific variables using {{variableName}} convention to update on runtime.',
+    icon: LineChart,
+  },
+]
+
+const featuresVault = [
+  {
+    name: 'Secrets Management',
+    description:
+      'Seamlessly create, edit, and monitor the secrets associated with your applications.',
+    icon: Sparkles,
+  },
+  {
+    name: 'Secure Access',
+    description:
+      'Retrieve secrets based on keys or tags, and safely integrate them into your Node.js or Python environments.',
+    icon: Orbit,
+  },
+  {
+    name: 'Environment Integration',
+    description:
+      'Set secrets directly as environment variables for ease of use in applications using our SDKs.',
+    icon: LineChart,
+  },
+]
+
+const featuresException = [
+  {
+    name: 'Automatic Exception Monitoring',
+    description:
+      'With our SDKs for Python and TypeScript, monitor exceptions seamlessly without altering your application code base significantly.',
+    icon: MousePointer2Icon,
+  },
+  {
+    name: 'Detailed Stacktraces',
+    description:
+      'Access comprehensive stacktrace information for all caught exceptions, providing insight into where things went wrong.',
+    icon: EyeIcon,
+  },
+  {
+    name: 'Integration with Traces',
+    description:
+      'Leverage OpenTelemetry-powered trace data to capture exceptions within request flows.',
+    icon: BarChart2Icon,
+  },
+]
+
+export default function FeaturesHome() {
+  return (
+    <div className="flex w-full flex-col">
+      <FeaturesPrivacy />
+      <FeaturesWithImage
+        imageSide="left"
+        title={'Visualize your Traces'}
+        subtitle={'Application and Request Tracing'}
+        description="Provides end-to-end tracing of requests across different providers to improve performance visibility."
+        image="/static/images/previews/request.png"
+        imageDark="/static/images/previews/request-dark.png"
+        features={featuresTraces}
+      />
+      <FeaturesWithImage
+        imageSide="right"
+        title="Exceptions Monitoring"
+        subtitle={'Track Application Errors'}
+        description={'Monitors and logs application errors to help detect and troubleshoot issues.'}
+        image="/static/images/previews/exception.png"
+        imageDark="/static/images/previews/exception-dark.png"
+        features={featuresException}
+      />
+      <FeaturesWithImage
+        imageSide="left"
+        title="Explore Openground"
+        subtitle={'Openlit PlayGround'}
+        description={
+          'Test and compare different LLMs side-by-side based on performance, cost, and other key metrics'
+        }
+        image="/static/images/previews/openground.png"
+        imageDark="/static/images/previews/openground-dark.png"
+        features={featuresPlayground}
+      />
+      <FeaturesWithImage
+        imageSide="right"
+        title="Manage your prompts"
+        subtitle="Centralized Prompt Repository"
+        description="Allows for organized storage, versioning, and usage of prompts with dynamic variables across different applications."
+        image="/static/images/previews/prompt.png"
+        imageDark="/static/images/previews/prompt-dark.png"
+        features={featuresPrompt}
+      />
+      <FeaturesWithImage
+        imageSide="left"
+        title="Secure Secrets Management"
+        subtitle="Vault Hub"
+        description="Vault offers a secure way to store and manage sensitive application secrets."
+        image="/static/images/previews/vault.png"
+        imageDark="/static/images/previews/vault-dark.png"
+        features={featuresVault}
+      />
     </div>
   )
 }

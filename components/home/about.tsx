@@ -1,21 +1,12 @@
-import siteMetadata from 'data/siteMetadata'
-import Image from 'next/image'
 export default function About() {
   return (
-    <section id="about" className="container py-4">
-      <div className="bg-muted/50 rounded-lg py-12">
-        <div className="flex flex-col-reverse gap-8 border border-neutral-200 bg-neutral-100 p-4 dark:border-neutral-300 dark:bg-neutral-950">
-          <iframe
-            src="https://cards.producthunt.com/cards/products/586065"
-            width="500"
-            height="405"
-            allowFullScreen
-            style={{ border: 'none' }}
-            className="w-full border-none"
-            frameBorder={0}
-            title="producthunt"
-          ></iframe>
-        </div>
+    <section id="about" className="flex w-full">
+      <div className="flex w-full flex-col-reverse gap-8 bg-neutral-100 p-20 dark:border-neutral-300 dark:bg-neutral-950">
+        {/* eslint-disable jsx-a11y/media-has-caption */}
+        <video controls>
+          <source src="/static/images/demo.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
       </div>
     </section>
   )
