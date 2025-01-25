@@ -5,9 +5,7 @@ import { useEffect, useRef } from 'react'
 export default function GithubStar() {
   const ref = useRef<HTMLAnchorElement>(null)
   useEffect(() => {
-    console.log('kjhkj')
     import(/* webpackMode: "eager" */ 'github-buttons').then(({ render }) => {
-      console.log('eh')
       render(ref.current as HTMLAnchorElement, function (el) {
         try {
           el.className = 'flex'
