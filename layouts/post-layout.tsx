@@ -70,7 +70,9 @@ export default function PostLayout({ content, authorDetails, next, prev, childre
               Discuss on Twitter
             </Link>
             {` • `}
-            <Link href={editUrl(filePath)}>View on GitHub</Link>
+            <Link href={editUrl(filePath)}>
+              <strong>View on GitHub</strong>
+            </Link>
           </div>
           <div className="flex flex-wrap gap-4">
             {tags.map((tag) => (

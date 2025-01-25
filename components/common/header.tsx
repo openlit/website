@@ -9,16 +9,33 @@ import {
 } from '@/components/ui/navigation-menu'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 
-import { GitHubLogoIcon } from '@radix-ui/react-icons'
 import { buttonVariants } from '../ui/button'
 import { HamburgerMenuIcon } from '@radix-ui/react-icons'
 import ThemeToggle from '../theme-toggle'
 import Image from 'next/image'
 import { Slack } from '../social-icons/icons'
+import GithubStar from '../social-icons/github-star'
+import { organisationSchema, applicationSchema, webpageSchema, faqSchema } from '../structuredData'
 
 export default function Header() {
   return (
     <header className="sticky top-0 z-40 w-full bg-white dark:bg-stone-950">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(organisationSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(applicationSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(webpageSchema) }}
+      />
       <NavigationMenu className="mx-auto">
         <NavigationMenuList className="container flex h-14 w-screen justify-between px-4 ">
           <NavigationMenuItem className="flex font-bold">
@@ -56,7 +73,7 @@ export default function Header() {
                         href={link.href}
                         className={buttonVariants({ variant: 'ghost' })}
                       >
-                        {link.title}
+                        <b>{link.title}</b>
                       </Link>
                     ))}
                   {/* <Link
@@ -75,16 +92,7 @@ export default function Header() {
                     <span className="mr-2">Join us on </span>
                     <Slack className="h-6 w-6" />
                   </a>
-                  <a
-                    href={siteMetadata.siteRepo}
-                    target="_blank"
-                    className={`w-[150px] border ${buttonVariants({
-                      variant: 'secondary',
-                    })}`}
-                  >
-                    <GitHubLogoIcon className="mr-2 h-5 w-5" />
-                    Github
-                  </a>
+                  <GithubStar />
                 </nav>
               </SheetContent>
             </Sheet>
@@ -132,14 +140,14 @@ export default function Header() {
                 className="h-full w-full"
               />
             </a> */}
-            <a
+            <GithubStar />
+            {/* <a
               href="https://github.com/openlit/openlit"
               target="_blank"
-              className={`border ${buttonVariants({ variant: 'secondary' })}`}
+              className={``}
             >
-              <GitHubLogoIcon className="mr-2 h-5 w-5" />
-              Github
-            </a>
+
+            </a> */}
             <ThemeToggle />
           </div>
         </NavigationMenuList>

@@ -30,10 +30,11 @@ export default function Footer() {
         </div>
 
         <div className="flex flex-col gap-2">
-          <h3 className="text-lg font-bold">Follow US</h3>
+          <h3 className="text-lg font-bold">Follow Us</h3>
           <Item link={siteMetadata.github} text="Github" />
           <Item link={siteMetadata.twitter} text="Twitter" />
           <Item link={siteMetadata.email} text="Email" />
+          <Item link={siteMetadata.linkedin} text="Linkedin" />
         </div>
 
         <div className="flex flex-col gap-2">
@@ -74,7 +75,7 @@ export default function Footer() {
           <SocialIcon kind="twitter" href={siteMetadata.twitter} size={6} />
         </div>
         <h3>
-          &copy; 2023 Observability tool by{' '}
+          &copy; 2025 Observability tool by{' '}
           <a
             target="_blank"
             href={siteMetadata.github}

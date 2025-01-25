@@ -1,11 +1,11 @@
 /** @type {import("pliny/config").PlinyConfig } */
 module.exports = {
-  title: 'OpenLIT | OpenTelemetry-native GenAI and LLM Application Observability tool',
+  title: 'OpenLIT | OpenTelemetry-native GenAI and LLM Application Observability',
   author: 'OpenLIT',
   headerTitle: 'OpenLIT',
   description:
-    'Elevate your APM with OpenLIT: the open-source GenAI and LLM platform built on OpenTelemetry. Experience seamless observability with traces and metrics consolidated in one powerful interface. Revolutionize your development with our intuitive, open-source tool today!',
-  about: `OpenLIT is a cutting-edge GenAI and LLM Application Observability tool, seamlessly integrated with OpenTelemetry for effortless monitoring. Simplifying the integration process with just one line of code, OpenLIT ensures smooth observability for GenAI projects, including popular libraries like OpenAI and HuggingFace, and vector databases like ChromaDB. 
+    'Elevate APM with OpenLIT, the open-source platform built on OpenTelemetry. Simplify observability with unified traces and metrics in one powerful interface. Transform development effortlessly today!',
+  about: `Cutting-edge GenAI and LLM Application Observability tool, seamlessly integrated with OpenTelemetry for effortless monitoring. Simplifying the integration process with just one line of code, OpenLIT ensures smooth observability for GenAI projects, including popular libraries like OpenAI and HuggingFace, and vector databases like ChromaDB. 
   
   Committed to adhering to the Semantic Conventions of the OpenTelemetry community, OpenLIT continuously updates to meet the latest observability standards, providing invaluable insights to enhance application performance and reliability.`,
   language: 'en-us',
@@ -18,6 +18,7 @@ module.exports = {
   github: 'https://github.com/openlit',
   twitter: 'https://twitter.com/openlit_io',
   discord: 'https://discord.com/invite/RbNPvG54',
+  linkedin: 'https://www.linkedin.com/company/openlit/',
   slack: 'https://join.slack.com/t/dokulabs/shared_invite/zt-2etnfttwg-TjP_7BZXfYg84oAukY8QRQ',
   locale: 'en-US',
   feedbackLink: 'https://app.formbricks.com/IiFk9GnqOF',
