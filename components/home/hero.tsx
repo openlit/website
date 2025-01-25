@@ -1,9 +1,10 @@
 import siteMetadata from 'data/siteMetadata'
 import { Button as MovingBorder } from '../ui/moving-borders'
-import { GitHubLogoIcon, StarFilledIcon } from '@radix-ui/react-icons'
+import { StarFilledIcon } from '@radix-ui/react-icons'
 import Image from 'next/image'
 import { FlipWords } from '../ui/flip-words'
 import { buttonVariants } from '../ui/button'
+import GithubStar from '../social-icons/github-star'
 
 export default function Hero() {
   const words = ['Connect', 'Monitor', 'Explore']
@@ -27,27 +28,29 @@ export default function Hero() {
         </a>
       </div>
       <h1 className="relative z-10 mx-auto mt-6 max-w-6xl text-center text-2xl font-semibold md:text-4xl lg:text-8xl">
-        <FlipWords words={words} /> LLMs & GenAI with{' '}
-        <span className="text-brandPrimary">OpenLIT</span>
+        <FlipWords words={words} />
+        <strong> LLMs & GenAI with </strong>
+        <strong className="text-brandPrimary">OpenLIT</strong>
       </h1>
       <p className="text-muted dark:text-muted-dark relative z-10 mx-auto mt-6 max-w-3xl text-center text-base md:text-xl">
-        Open Source Platform for AI Engineering
+        <strong>Open Source Platform for AI Engineering</strong>
       </p>
       <div className="relative z-10 mt-6 flex flex-wrap items-center justify-center gap-4">
-        <a
+        <GithubStar />
+        {/* <a
           href={siteMetadata.siteRepo}
           target="_blank"
           className={`relative z-10 flex items-center justify-center rounded-full border border-transparent bg-neutral-900 px-6 py-2 text-sm font-medium text-white shadow-[0px_-1px_0px_0px_#FFFFFF40_inset,_0px_1px_0px_0px_#FFFFFF40_inset] transition duration-200 hover:bg-black/90 md:text-sm`}
         >
           Github Repository
           <GitHubLogoIcon className="ml-2 h-5 w-5" />
-        </a>
+        </a> */}
         <a
           href="https://docs.openlit.io/latest/introduction"
           target="_blank"
           className={`group relative z-10 flex items-center justify-center space-x-2 rounded-full border border-transparent bg-transparent px-4 py-2 text-sm font-medium text-black transition duration-200 hover:bg-gray-100 dark:text-white dark:hover:bg-neutral-800 dark:hover:shadow-xl md:text-sm`}
         >
-          <span>Documentation</span>
+          <b>Documentation</b>
 
           <svg
             stroke="currentColor"

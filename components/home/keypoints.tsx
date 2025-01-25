@@ -14,7 +14,7 @@ export default function Keypoints() {
   const features = [
     {
       title: 'Easy to integrate',
-      description: 'Just add `openlit.init()` to start collecting data from your llm application.',
+      description: 'Just add `openlit.init()` to start collecting data from your LLM application.',
       icon: <SquareTerminalIcon />,
     },
     {
@@ -50,7 +50,7 @@ export default function Keypoints() {
     {
       title: 'Prompt & Vault Management',
       description:
-        'OpenLIT helps you manage your prompts and secrets to ease the development of your application.',
+        'Helps manage your prompts and secrets to ease the development of your application.',
       icon: <BarChart2Icon />,
     },
     {
