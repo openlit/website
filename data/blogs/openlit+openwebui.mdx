@@ -1,0 +1,111 @@
+---
+title: Getting Started with OpenLIT in OpenWebUI.
+date: '2025-02-12'
+tags: ['openlit', 'open-webui', 'llm', 'observability']
+draft: false
+summary: This guide walks you through the process how to effectively use OpenLIT within the OpenWebUI framework, covering installation, configuration, and practical use cases.
+authors: ['Voldemort']
+images: ['https://private-user-images.githubusercontent.com/159426252/400781733-0b8b6a37-9ee7-476e-ae11-b7fd3179166c.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3MzkzNTgyMTksIm5iZiI6MTczOTM1NzkxOSwicGF0aCI6Ii8xNTk0MjYyNTIvNDAwNzgxNzMzLTBiOGI2YTM3LTllZTctNDc2ZS1hZTExLWI3ZmQzMTc5MTY2Yy5wbmc_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjUwMjEyJTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI1MDIxMlQxMDU4MzlaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT0yZGNkNjYzYWZlNTdhNDY4MDAxYzVmMjkyZTQ1YzMzZmJlZjNiY2VhMmI3M2U3MDRmNzk5MzQ1YzlkZDRmYjgyJlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCJ9.th0A5z_CS20SqGZJk1VoWIIBMiCzFNXWy8Hr5vVmtBw']
+---
+
+![](https://private-user-images.githubusercontent.com/159426252/400781733-0b8b6a37-9ee7-476e-ae11-b7fd3179166c.png?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3MzkzNTgyMTksIm5iZiI6MTczOTM1NzkxOSwicGF0aCI6Ii8xNTk0MjYyNTIvNDAwNzgxNzMzLTBiOGI2YTM3LTllZTctNDc2ZS1hZTExLWI3ZmQzMTc5MTY2Yy5wbmc_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjUwMjEyJTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI1MDIxMlQxMDU4MzlaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT0yZGNkNjYzYWZlNTdhNDY4MDAxYzVmMjkyZTQ1YzMzZmJlZjNiY2VhMmI3M2U3MDRmNzk5MzQ1YzlkZDRmYjgyJlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCJ9.th0A5z_CS20SqGZJk1VoWIIBMiCzFNXWy8Hr5vVmtBw)
+
+# GOAL
+
+The goal is to instead of running directly inference from open-webui and the model we need to pass through openlit as well.  
+To do that we need to use pipelines as will be described below.
+
+# SETTING PIPELINE
+
+## Configuring pipelines
+
+Follow the steps [here of pipelines docs](https://docs.openwebui.com/pipelines/)
+You can either:
+  * Install it : https://docs.openwebui.com/pipelines/#-installation-and-setup
+  * Using docker : https://docs.openwebui.com/pipelines/#-quick-start-with-docker
+> /!\ I highly recommend using with docker /!\
+
+## Preparing the pipeline python code
+
+You can find a lot of pipelines code [here is a few example](https://github.com/open-webui/pipelines/tree/main/examples/pipelines)
+
+Below is a pipeline code to run openlit with open-webui:
+```python3
+"""
+title: openlit monitoring pipeline
+author: open-webui
+date: 2024-05-30
+version: 1.0
+license: MIT
+description: A pipeline for monitoring open-webui with openlit.
+requirements: openlit==1.33.8, openai==1.61.1
+"""
+from typing import List, Union, Generator, Iterator
+from schemas import OpenAIChatMessage
+from openai import OpenAI
+import openlit
+
+
+class Pipeline:
+    def __init__(self):
+        self.name = "Monitoring"
+        pass
+
+    async def on_startup(self):
+        print(f"on_startup:{__name__}")
+        
+        # Start openlit collecting metrics
+        OTEL_ENDPOINT = "http://<my-ip>:4318"
+        PRICING_JSON = "/path/to/openlit_pricing.json"
+        openlit.init(
+            otlp_endpoint=OTEL_ENDPOINT,
+            pricing_json=PRICING_JSON,
+            collect_gpu_stats=True
+            )
+        pass
+
+    async def on_shutdown(self):
+        print(f"on_shutdown:{__name__}")
+        pass
+
+    def pipe(self, user_message: str, model_id: str, messages: List[dict], body: dict) -> Union[str, Generator, Iterator]:
+        print(f"pipe:{__name__}")
+
+        client = OpenAI(
+            base_url="http://localhost:8000/v1",
+            api_key="token-abc123",
+            )
+        
+        completion = client.chat.completions.create(
+            model="TinyLlama/TinyLlama_v1.1",
+            messages=[
+                {"role": "user", "content": user_message}
+                ])
+        
+        print(completion.choices[0].message.content)
+
+        return (completion.choices[0].message.content)
+```
+You just need to change the `OTEL_ENDPOINT` and `PRICING_JSON` as for the model (currently `TinyLlama/TinyLlama_v1.1`)  
+NOTE: I am using `openai` where I have my model but you can change that to whatever framework you want but must be supported by openlit [see here supported openlit framework](https://github.com/openlit/openlit/tree/main/sdk/python#auto-instrumentation-capabilities)
+
+## Import the code in pipelines
+
+To import the code above into open-webui pipelines, you need to follow theses steps:  
+  * Navigate to the Admin Panel > Settings > Connections section in Open WebUI.
+  * When you're on this page, you can press the `+` button to add another connection.
+  * Set the API URL to `http://localhost:9099` or sometime you need `http://<my-ip>:9099` and the API key to `0p3n-w3bu!`.
+  * Once you've added your pipelines connection and verified it, you will see an icon appear within the API Base URL field for the added connection. When hovered over, the icon itself will be labeled Pipelines. Your pipelines should now be active.
+
+# OPENLIT + OPEN-WEBUI
+
+## Run Openlit
+
+You need to start openlit by following the [steps here in step-1](https://github.com/openlit/openlit?tab=readme-ov-file#step-1-deploy-openlit-stack)
+
+# CONCLUSION
+
+Now you can select in open-webui the pipeline you created in `select a model` see image below for an example.
+
+![](https://davidmac.pro/posts/2024-11-15-ai-start-ollama-openwebui/openwebui-select-model.png)
+
