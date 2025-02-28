@@ -1,9 +1,9 @@
 ---
-title: Getting Started with OpenLIT in OpenWebUI.
-date: '2025-02-12'
-tags: ['openlit', 'open-webui', 'llm', 'observability']
+title: Monitoring LLM usage in OpenWebUI
+date: '2025-02-28'
+tags: ['openlit', 'open-webui', 'llms', 'observability', 'monitoring', 'opentelemetry']
 draft: false
-summary: This guide walks you through the process how to effectively use OpenLIT within the OpenWebUI framework, covering installation, configuration, and practical use cases.
+summary: This guide walks you through the process of effectively using OpenLIT within the OpenWebUI framework, covering installation, configuration, and practical use cases for monitoring and observability of LLMs.
 authors: ['Voldemort']
 images: ['/static/images/openlit-openwebui.jpg']
 ---
@@ -93,11 +93,11 @@ class Pipeline:
 
 ## Configuration Notes
 
-Update OTEL_ENDPOINT and PRICING_JSON paths to match your setup.
+- Update OTEL_ENDPOINT and PRICING_JSON paths to match your setup.
 
-The model used is TinyLlama/TinyLlama_v1.1, but you can switch to any model supported by OpenLIT.
+- The model used is TinyLlama/TinyLlama_v1.1, but you can switch to any model provider supported for monitoring in OpenLIT.
 
-This example uses OpenAI’s API, but you can modify it to use other frameworks supported by OpenLIT. [Check supported frameworks here](https://github.com/openlit/openlit/tree/main/sdk/python#auto-instrumentation-capabilities).
+- This example uses OpenAI’s API, but you can modify it to use other model provider supported by OpenLIT. [Check supported frameworks here](https://github.com/openlit/openlit/tree/main/sdk/python#auto-instrumentation-capabilities).
 
 ## Importing the Pipeline into OpenWebUI
 
