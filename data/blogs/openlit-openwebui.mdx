@@ -10,26 +10,30 @@ images: ['/static/images/openlit-openwebui.jpg']
 
 ![](/static/images/openlit-openwebui.jpg)
 
-# Overview
+## Overview
 
-The goal is to instead of running directly inference from open-webui and the model we need to pass through openlit as well.  
-To do that we need to use pipelines as will be described below.
+When running inference directly from OpenWebUI, monitoring and observability can be limited. 
+By integrating OpenLIT, we can enhance our ability to track, measure, and optimize LLM usage efficiently. 
+This guide explains how to configure OpenLIT with OpenWebUI using pipelines, ensuring better monitoring through OpenTelemetry (OTEL).
 
-# Setting Pipeline
+## Setting Pipeline
 
-## Configuring pipelines
+### Configuring pipelines
 
-Follow the steps [here of pipelines docs](https://docs.openwebui.com/pipelines/)
-You can either:
-  * Install it : https://docs.openwebui.com/pipelines/#-installation-and-setup
-  * Using docker : https://docs.openwebui.com/pipelines/#-quick-start-with-docker
-> /!\ I highly recommend using with docker /!\
+Follow the official [OpenWebUI pipeline documentation](https://docs.openwebui.com/pipelines/) to set up pipelines.
 
-## Preparing the pipeline python code
+You can install pipelines via:
 
-You can find a lot of pipelines code [here is a few example](https://github.com/open-webui/pipelines/tree/main/examples/pipelines)
+- Direct Installation: [Installation and Setup Guide](https://docs.openwebui.com/pipelines/#-installation-and-setup)
+- Using Docker: [Quick Start with Docker](https://docs.openwebui.com/pipelines/#-quick-start-with-docker)
 
-Below is a pipeline code to run openlit with open-webui:
+
+## Creating the Pipeline Code
+
+There are multiple example pipeline scripts available in the [OpenWebUI GitHub repository]((https://github.com/open-webui/pipelines/tree/main/examples/pipelines)).
+
+Below is a sample pipeline script that integrates OpenLIT with OpenWebUI:
+
 ```python3
 """
 title: openlit monitoring pipeline
@@ -86,25 +90,51 @@ class Pipeline:
 
         return (completion.choices[0].message.content)
 ```
-You just need to change the `OTEL_ENDPOINT` and `PRICING_JSON` as for the model (currently `TinyLlama/TinyLlama_v1.1`)  
-NOTE: I am using `openai` where I have my model but you can change that to whatever framework you want but must be supported by openlit [see here supported openlit framework](https://github.com/openlit/openlit/tree/main/sdk/python#auto-instrumentation-capabilities)
 
-## Import the code in pipelines
+## Configuration Notes
 
-To import the code above into open-webui pipelines, you need to follow theses steps:  
-  * Navigate to the Admin Panel > Settings > Connections section in Open WebUI.
-  * When you're on this page, you can press the `+` button to add another connection.
-  * Set the API URL to `http://localhost:9099` or sometime you need `http://<my-ip>:9099` and the API key to `0p3n-w3bu!`.
-  * Once you've added your pipelines connection and verified it, you will see an icon appear within the API Base URL field for the added connection. When hovered over, the icon itself will be labeled Pipelines. Your pipelines should now be active.
+Update OTEL_ENDPOINT and PRICING_JSON paths to match your setup.
 
-# OPENLIT + OPEN-WEBUI
+The model used is TinyLlama/TinyLlama_v1.1, but you can switch to any model supported by OpenLIT.
 
-## Run Openlit
+This example uses OpenAI’s API, but you can modify it to use other frameworks supported by OpenLIT. [Check supported frameworks here](https://github.com/openlit/openlit/tree/main/sdk/python#auto-instrumentation-capabilities).
 
-You need to start openlit by following the [steps here in step-1](https://github.com/openlit/openlit?tab=readme-ov-file#step-1-deploy-openlit-stack)
+## Importing the Pipeline into OpenWebUI
 
-# CONCLUSION
+To import and configure the pipeline within OpenWebUI:
 
-Now you can select in open-webui the pipeline you created in `select a model` see image below for an example.
+1. Navigate to Admin Panel > Settings > Connections.
+2. Click the + button to add a new connection.
+3. Set the API URL to http://localhost:9099 or http://<your-ip>:9099.
+4. Set the API Key to open-webui.
+5. Once the connection is added and verified, a Pipelines icon will appear next to the API Base URL field.
+
+Your pipeline should now be active!
+
+## Running OpenLIT with OpenWebUI
+
+### Deploy OpenLIT
+
+Before using OpenLIT for monitoring, you need to deploy it by following Step 1 of the OpenLIT setup guide.
+
+### Selecting the Pipeline in OpenWebUI
+
+Once OpenLIT is deployed and your pipeline is active, you can select your pipeline in OpenWebUI by choosing it under the Select a Model section. Example screenshot:
 
 ![](https://davidmac.pro/posts/2024-11-15-ai-start-ollama-openwebui/openwebui-select-model.png)
+
+## Conclusion & Next Steps
+
+By integrating OpenLIT with OpenWebUI, you gain powerful observability and monitoring capabilities, enabling you to:
+
+- Track API usage and performance.
+- Monitor GPU resource consumption.
+- Optimize model inference with real-time telemetry.
+
+### Next Steps
+
+- Explore More Pipelines: Try different pipeline configurations to suit your needs.
+- Enhance Observability: Customize OpenLIT to collect additional metrics.
+- Scale Your Deployment: Deploy across multiple instances for better performance tracking.
+
+With this setup, you’re ready to maximize efficiency and monitoring for LLMs in OpenWebUI. 🚀
