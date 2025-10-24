@@ -1,0 +1,417 @@
+---
+title: Monitoring browser agents using openit and browser-use
+date: '2025-10-24'
+tags: ['openlit', 'llm', 'genai', 'observability', 'agents']
+draft: false
+summary: OpenLIT provides complete, granular traces for every task your browser-use agent performs—from high-level agent invocations down to individual browser actions.
+authors: ['Aman']
+images: ['/static/images/browser-use-integration.jpg']
+---
+
+# Complete Observability for Browser-Use with OpenLIT: Track Every Action, Every Decision
+
+Web automation with AI agents has become increasingly powerful, but understanding what your agents are doing—and why—can be challenging. [browser-use](https://github.com/browser-use/browser-use) enables AI agents to control web browsers through natural language instructions, but without proper monitoring, debugging failures or optimizing performance becomes guesswork.
+
+This is where **OpenLIT** transforms the game. With OpenLIT, you get complete, granular traces for every task your browser-use agent performs—from high-level agent invocations down to individual browser actions.
+
+## What is browser-use?
+
+browser-use is a Python library that allows AI agents to interact with web browsers. It combines the power of Large Language Models (LLMs) with browser automation, enabling agents to navigate websites, extract information, fill forms, and perform complex multi-step web tasks—all through natural language instructions.
+
+## The Monitoring Challenge
+
+When your browser-use agent fails or behaves unexpectedly, you need answers:
+- Which step failed and why?
+- What was the agent thinking at each decision point?
+- How much is each automation task costing in LLM tokens?
+- Which actions succeeded and which ones failed?
+- How long did each step take?
+
+Without proper observability, debugging these issues means adding print statements, guessing at failure points, and blindly optimizing costs.
+
+## Enter OpenLIT: Complete Traces for Every Task
+
+OpenLIT provides automatic, comprehensive instrumentation for browser-use with **zero code changes** beyond initialization. You get:
+
+- **Complete execution traces** from agent invocation to final result
+- **Full LLM invoke_model spans** with complete model inputs and outputs (agent thoughts, reasoning, and decisions)
+- **Agent initialization tracking** capturing configuration and setup
+- **HTTP request monitoring** tracking POST requests for each page navigation
+- **Step-by-step tracking** with detailed agent reasoning at each decision point
+- **Individual action spans** for every browser interaction
+- **Token usage and cost tracking** for every LLM call
+- **Browser state tracking** including URLs, page titles, and tabs
+- **Success/failure metrics** for each action and step
+
+## Getting Started: 3 Lines of Code
+
+Setting up OpenLIT monitoring for browser-use is remarkably simple:
+
+```python
+from browser_use import Agent, Browser, ChatOpenAI
+import asyncio
+import openlit
+
+# Initialize OpenLIT - that's it!
+openlit.init()
+
+async def example():
+    browser = Browser()
+
+    # Initialize the model
+    llm = ChatOpenAI(
+        model="gpt-4o",
+    )
+
+    agent = Agent(
+        task="Find the number trending post on Hacker news",
+        llm=llm,
+        browser=browser,
+    )
+
+    history = await agent.run()
+    return history
+
+if __name__ == "__main__":
+    history = asyncio.run(example())
+```
+
+That's it. With just `openlit.init()`, you now have complete observability into your browser-use automation.
+
+## What Gets Traced?
+
+OpenLIT's browser-use instrumentation captures traces at multiple levels, providing unprecedented visibility into your agent's behavior:
+
+### 1. Agent Initialization
+Before your agent starts working, OpenLIT captures the initialization:
+
+```
+invoke_agent browser_use.__init__
+├── Agent Configuration
+│   ├── task: "Find the number trending post on Hacker news"
+│   ├── model: "gpt-4o"
+│   ├── use_vision: true
+│   ├── max_failures: 3
+│   ├── max_actions_per_step: 10
+│   ├── retry_delay: 1.0
+│   └── validate_output: true
+├── Browser Configuration
+│   ├── headless: false
+│   ├── allowed_domains: null
+│   └── browser_profile: default
+└── Duration: 145ms
+```
+
+### 2. Agent Execution Level
+The top-level span captures the entire agent execution:
+
+```
+invoke_agent browser_use
+├── Agent Configuration
+│   ├── use_vision: true
+│   ├── max_failures: 3
+│   ├── max_actions_per_step: 10
+│   └── headless: false
+├── Task: "Find the number trending post on Hacker news"
+├── Execution Summary
+│   ├── total_steps: 5
+│   ├── successful_steps: 4
+│   ├── failed_steps: 1
+│   ├── success_rate: 80%
+│   └── total_actions: 12
+└── Usage & Cost
+    ├── total_input_tokens: 15,432
+    ├── total_output_tokens: 2,156
+    └── total_cost: $0.23
+```
+
+### 3. Step-by-Step Execution
+Each agent step gets its own detailed span:
+
+```
+execute_task step 1
+├── Agent Thinking: "I need to navigate to news.ycombinator.com..."
+├── Agent Memory: "Starting fresh, no previous context"
+├── Next Goal: "Load Hacker News homepage"
+├── Current URL: https://news.ycombinator.com
+├── Page Title: "Hacker News"
+├── Actions Taken: ["goto"]
+├── Actions Count: 1
+└── Success Metrics
+    ├── successful_actions: 1
+    └── failed_actions: 0
+```
+
+### 4. LLM Invoke Model Spans (The Agent's Brain)
+**This is where the magic happens!** OpenLIT captures complete LLM interactions with full inputs and outputs:
+
+```
+gen_ai.invoke_model gpt-4o
+├── Model Configuration
+│   ├── model: "gpt-4o"
+│   ├── provider: "openai"
+│   ├── temperature: 0.7
+│   └── max_tokens: 4096
+│
+├── Input (Prompt to LLM)
+│   ├── System Message: "You are a browser automation agent..."
+│   ├── User Task: "Find the number trending post on Hacker news"
+│   ├── Browser State:
+│   │   - Current URL: https://news.ycombinator.com
+│   │   - Page Title: "Hacker News"
+│   │   - Visible Elements: [list of interactive elements]
+│   └── History: [Previous steps and results]
+│
+├── Output (LLM Response - Agent's Thoughts)
+│   ├── Thinking: "I can see the Hacker News homepage has loaded.
+│   │             The page shows a list of posts with rankings.
+│   │             I need to count the visible posts to determine
+│   │             how many are trending on the front page."
+│   │
+│   ├── Memory: "Successfully navigated to Hacker News.
+│   │           Page structure understood."
+│   │
+│   ├── Next Goal: "Extract and count all post titles from the
+│   │              front page to determine the number of trending posts"
+│   │
+│   ├── Evaluation: "Previous goal of loading homepage: SUCCESS"
+│   │
+│   └── Actions: [
+│         {
+│           "type": "extract_content",
+│           "selector": ".athing .titleline",
+│           "purpose": "Get all post titles"
+│         }
+│       ]
+│
+├── Token Usage
+│   ├── input_tokens: 3,456
+│   ├── output_tokens: 512
+│   └── total_tokens: 3,968
+│
+├── Cost: $0.052
+└── Latency: 2,341ms
+```
+
+**This is incredibly powerful for debugging!** You can see exactly:
+- What information the agent received
+- How it interpreted the browser state
+- What it decided to do and why
+- Its reasoning process at each step
+
+### 5. HTTP Request Tracking
+Every page navigation and POST request is automatically tracked:
+
+```
+POST /api/browser/navigate
+├── URL: https://news.ycombinator.com
+├── Method: POST
+├── Status: 200 OK
+├── Request Headers
+│   ├── User-Agent: Mozilla/5.0...
+│   └── Content-Type: application/json
+├── Response Headers
+│   ├── Content-Type: text/html
+│   └── Content-Length: 45,234
+├── Duration: 856ms
+└── Result: Success
+```
+
+This helps you:
+- Debug network issues
+- Track page load times
+- Monitor API calls made by the browser
+- Identify slow or failing requests
+
+### 6. Individual Browser Actions
+Every browser action is traced individually:
+
+```
+invoke_agent goto
+├── Action Type: goto
+├── Action Index: 1
+├── URL: https://news.ycombinator.com
+├── Browser State
+│   ├── current_url: about:blank → https://news.ycombinator.com
+│   ├── page_title: "Hacker News"
+│   └── tabs_count: 1
+└── Result
+    ├── is_success: true
+    └── duration_ms: 1,234
+```
+
+Other action types tracked include:
+- `click` - Element clicks with selector and index
+- `input_text` - Text input with sensitive data protection
+- `scroll` - Page scrolling (up/down, num_pages)
+- `extract_content` - Content extraction with length metrics
+- `go_back` / `go_forward` - Navigation actions
+- `new_tab` / `switch_tab` - Tab management
+- `upload_file` / `write_file` / `read_file` - File operations
+
+## Complete Trace Hierarchy
+
+Here's how all the spans fit together in a complete trace:
+
+```
+invoke_agent browser_use.__init__ (Agent Initialization)
+│
+invoke_agent browser_use (Main Execution)
+├── execute_task step 1
+│   ├── gen_ai.invoke_model gpt-4o (Full Input/Output with Agent Thoughts)
+│   ├── POST /api/browser/navigate (HTTP Request)
+│   └── invoke_agent goto (Browser Action)
+│
+├── execute_task step 2
+│   ├── gen_ai.invoke_model gpt-4o (Full Input/Output with Agent Thoughts)
+│   ├── POST /api/browser/action (HTTP Request)
+│   └── invoke_agent extract_content (Browser Action)
+│
+└── execute_task step 3
+    ├── gen_ai.invoke_model gpt-4o (Full Input/Output with Agent Thoughts)
+    └── Final Result
+```
+
+## Why Full LLM Traces Matter
+
+The **invoke_model spans with complete inputs and outputs** are the game-changer. Unlike other monitoring tools that only show you token counts, OpenLIT shows you:
+
+### What the Agent Sees (Input)
+- The exact browser state provided to the LLM
+- All available UI elements and their properties
+- Previous action history and results
+- The current task context
+
+### What the Agent Thinks (Output)
+- **Thinking**: The agent's analysis of the current situation
+- **Memory**: What the agent remembers from previous steps
+- **Next Goal**: What the agent plans to do next
+- **Evaluation**: How the agent judges its previous actions
+- **Actions**: The specific browser actions it decided to take
+
+This means when something goes wrong, you don't just see "Step 3 failed" - you see:
+- What information the agent had
+- How it interpreted that information
+- Why it decided to take a specific action
+- Whether its reasoning was correct or flawed
+
+Example from a real debugging scenario:
+```
+Step 5 failed - but why?
+
+Looking at the invoke_model span:
+- Input shows: Element list had 50 items
+- Agent Thinking: "I'll click element 51 to go to next page"
+- Problem identified: Agent tried to access non-existent element
+- Solution: Adjust max_actions_per_step or improve element detection
+```
+
+## Visualizing Your Automations
+
+All this telemetry data flows into the OpenLIT dashboard, where you can:
+
+### 1. Monitor Execution Flows with Complete LLM Visibility
+See the complete execution tree with timing information for every span. **Click on any invoke_model span to see:**
+- The exact prompt sent to the LLM (browser state, available elements, task context)
+- The complete LLM response (thinking, memory, next goal, evaluation, planned actions)
+- Token usage and cost for that specific call
+- Latency and performance metrics
+
+This is like having a time machine into your agent's mind at every decision point.
+
+### 2. Track Costs and Token Usage
+- Cost breakdown by agent, task, and model
+- Token usage per LLM call with full input/output visibility
+- Compare costs across different LLM providers
+- Identify expensive prompts (large browser states, vision processing)
+- Optimize expensive automation workflows
+- Track cost trends over time
+
+### 3. Analyze Success Rates
+- Agent success rates by task type
+- Step failure analysis with agent reasoning context
+- Action success/failure patterns
+- Error tracking and debugging with full LLM context
+
+### 4. Debug Failures with Agent Thoughts
+When an automation fails, you can:
+- See exactly which step failed
+- **Read the agent's thinking at the failure point** - what it saw, what it thought, what it tried to do
+- Check the browser state (URL, page title, available elements)
+- See the complete LLM input that led to the failed decision
+- Analyze whether the failure was due to bad reasoning or bad information
+- Fix the root cause (improve prompts, adjust max_steps, fix selectors)
+
+### 5. Performance Optimization
+- Identify slow steps and actions (LLM calls vs browser actions vs HTTP requests)
+- Compare execution times across runs
+- Optimize max_steps and max_actions_per_step
+- Reduce unnecessary LLM calls
+- See which prompts have high token counts and optimize them
+- Track HTTP request latency for page navigations
+
+## Benefits of OpenLIT Monitoring
+
+### 1. Faster Debugging
+Instead of adding print statements and guessing, you get complete visibility into every decision and action. When something fails, you know exactly where and why.
+
+### 2. Cost Optimization
+Track token usage and costs across all your automations. Identify expensive tasks and optimize them. See the financial impact of each agent execution.
+
+### 3. Performance Tuning
+Identify bottlenecks in your automation workflows. Optimize slow steps. Reduce unnecessary browser interactions.
+
+### 4. Compliance and Audit Trails
+Maintain complete records of what your agents did, when they did it, and why. Essential for compliance and debugging production issues.
+
+### 5. Production Monitoring
+Monitor agent success rates, error rates, and performance in production. Set up alerts for failures or anomalies.
+
+### 6. Multi-Model Comparison
+Running the same task with different LLMs? Compare performance, costs, and success rates across models like GPT-4, Claude, or Gemini.
+
+## Getting Started with OpenLIT
+
+### Installation
+
+```bash
+pip install openlit browser-use
+```
+
+### Basic Setup
+
+```python
+import openlit
+
+# Initialize with default settings (sends to OpenLIT Cloud)
+openlit.init()
+
+# Or configure custom endpoints
+openlit.init(
+    otlp_endpoint="http://localhost:4318",
+    application_name="my-browser-automation",
+    environment="production"
+)
+```
+
+
+## Conclusion
+
+Browser automation with AI agents is powerful but complex. Understanding what your agents are doing—and optimizing their performance and costs—requires comprehensive observability.
+
+OpenLIT provides this observability with minimal setup: just one line of code (`openlit.init()`), and you get:
+
+- **Agent initialization tracking** - See how your agent was configured
+- **Complete execution traces** - From start to finish with full hierarchy
+- **Full LLM invoke_model spans** - Complete inputs and outputs showing agent thoughts, reasoning, and decisions
+- **HTTP request monitoring** - Track POST requests for each page navigation
+- **Step-by-step tracking** - Detailed agent reasoning at each decision point
+- **Individual browser action monitoring** - Every click, scroll, extract tracked
+- **Token usage and cost tracking** - Per LLM call with full context
+- **Browser state visibility** - URLs, page titles, elements, tabs
+- **Success/failure metrics** - Action and step-level outcomes
+- **Performance analytics** - Timing breakdown across LLM, HTTP, and browser operations
+
+**The game-changer**: Unlike other tools that only show token counts, OpenLIT captures the **complete LLM conversation** at each step. You can see exactly what information the agent received, how it reasoned about it, and what it decided to do. This is like having a recording of your agent's thought process.
+
+Whether you're debugging a failed automation, optimizing costs, or monitoring production systems, OpenLIT gives you unprecedented visibility into your browser-use automations.
