@@ -7,6 +7,7 @@ import About from '@/components/home/about'
 import { BackgroundBeams } from '@/components/ui/background-beams'
 import Keypoints from '@/components/home/keypoints'
 import Features from '@/components/home/features'
+import Sponsored from '@/components/home/sponsored'
 
 // const MAX_DISPLAY = 5
 
@@ -17,6 +18,7 @@ export default async function Page() {
     <div className="mx-auto flex min-h-screen w-full flex-col items-center justify-between">
       <BackgroundBeams className="-z-10" />
       <Hero />
+      <Sponsored />
       <Features />
       {/* <HowItWorks /> */}
       <Keypoints />
