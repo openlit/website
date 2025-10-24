@@ -46,7 +46,7 @@ export default function Hero() {
           <GitHubLogoIcon className="ml-2 h-5 w-5" />
         </a> */}
         <a
-          href="https://docs.openlit.io/latest/introduction"
+          href="https://docs.openlit.io/latest/overview"
           target="_blank"
           className={`group relative z-10 flex items-center justify-center space-x-2 rounded-full border border-transparent bg-transparent px-4 py-2 text-sm font-medium text-black transition duration-200 hover:bg-gray-100 dark:text-white dark:hover:bg-neutral-800 dark:hover:shadow-xl md:text-sm`}
         >

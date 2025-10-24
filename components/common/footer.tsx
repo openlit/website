@@ -50,11 +50,14 @@ export default function Footer() {
 
         <div className="flex flex-col gap-2">
           <h3 className="text-lg font-bold">Documentation</h3>
-          <Item link={'https://docs.openlit.io/latest/introduction'} text="Introduction" />
-          <Item link={'https://docs.openlit.io/latest/installation'} text="Installation" />
-          <Item link={'https://docs.openlit.io/latest/configuration'} text="Configuration" />
+          <Item link={'https://docs.openlit.io/latest/overview'} text="Introduction" />
+          <Item link={'https://docs.openlit.io/latest/openlit/installation'} text="Installation" />
           <Item
-            link={'https://docs.openlit.io/latest/integrations/introduction'}
+            link={'https://docs.openlit.io/latest/openlit/configuration'}
+            text="Configuration"
+          />
+          <Item
+            link={'https://docs.openlit.io/latest/sdk/integrations/overview'}
             text="Integrations"
           />
         </div>
