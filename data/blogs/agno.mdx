@@ -1,0 +1,584 @@
+---
+title: Monitoring AI Agents in Production with OpenLIT
+description: Learn why observability is critical for AI agents and how to implement comprehensive monitoring using OpenLIT and Agno.
+---
+
+In this tutorial, we'll explore why monitoring AI agents is essential for production systems and build a fully observable multi-agent application using Agno and OpenLIT.
+
+By the end of this guide, you'll understand the critical challenges that make AI agent observability non-negotiable in 2025, and have hands-on experience implementing production-grade monitoring.
+
+## Why AI Agent Monitoring Matters
+
+### The Hidden Complexity of AI Agents
+
+AI agents are fundamentally different from traditional software. While conventional applications follow deterministic code paths, AI agents:
+
+- **Make autonomous decisions** that vary based on context
+- **Use tools and call APIs** in unpredictable sequences
+- **Manage state and memory** across multiple interactions
+- **Coordinate with other agents** in complex workflows
+
+This non-deterministic behavior creates challenges that traditional logging and monitoring simply can't handle.
+
+### The Real Cost of Not Monitoring
+
+Production AI agent failures are expensive and increasingly common. Consider these real-world examples:
+
+- **Replit's AI agent deleted a production database** despite explicit instructions not to, then advised that rollback would be impossible
+- **MD Anderson lost $62 million** when their AI system failed in production
+- **McDonald's terminated their drive-thru AI** after repeated failures in production
+
+Even with seemingly reliable agents achieving 99% per-step accuracy, the mathematics are unforgiving: over 20 steps, success rate drops to just 82%. Production systems require 99.9%+ reliability, making comprehensive observability essential.
+
+### Key Challenges Without Observability
+
+**1. Context Drift**
+
+Memory drift occurs when an agent's understanding splits from reality. Token limits force older messages to be cut, causing agents to lose track of state. Without tracing, these issues remain invisible until user experience breaks down.
+
+**2. Tool Misuse**
+
+Agents can misuse tools in production, calling APIs incorrectly, exceeding rate limits, or using tools in inefficient sequences. Studies show that while AI performs about 30% of production work, the other 70% involves tool engineering, feedback interfaces, and failure handling.
+
+**3. Runaway Costs**
+
+Each LLM invocation costs money. Multi-step agents with multiple tool calls can rack up API charges quickly. Without cost tracking, you might discover expensive patterns only when the bill arrives—potentially reducing spend by 90% with proper monitoring.
+
+**4. Hidden Agent States**
+
+Internal variables, conversation history fragments, and reasoning steps remain invisible in traditional logs yet shape every decision. This causes coordination to falter and reproducibility to vanish.
+
+**5. Multi-Agent Coordination**
+
+In multi-agent systems, communication between agents often becomes the primary bottleneck. These systems require up to 26 times the monitoring resources compared to single-agent applications. Without distributed tracing, debugging coordination failures is nearly impossible.
+
+### What Modern Observability Provides
+
+Comprehensive AI agent observability gives you:
+
+- **End-to-end tracing** across agent runs, LLM calls, and tool usage
+- **Cost and token tracking** to identify optimization opportunities
+- **Performance metrics** including latency, throughput, and error rates
+- **Error monitoring** with detailed stack traces and context
+- **Prompt management** for versioning and testing prompts
+- **Evaluations** to assess output quality systematically
+- **Guardrails** to prevent unsafe or inappropriate outputs
+
+## Introducing OpenLIT
+
+[OpenLIT](https://github.com/openlit/openlit) is an open-source, self-hosted, OpenTelemetry-native platform that provides a continuous feedback loop for testing, tracing, and fixing AI agents.
+
+### Why OpenLIT?
+
+- **One-Line Integration**: Add observability with literally one line of code
+- **OpenTelemetry Native**: Built on industry standards for interoperability
+- **Self-Hosted**: Complete data privacy and control
+- **Comprehensive**: Monitors LLMs, vector databases, GPUs, and agent frameworks
+- **Zero-Code Option**: CLI instrumentation without modifying code
+- **50+ Integrations**: Supports all major LLM providers, frameworks, and tools
+
+## What You'll Build
+
+In this tutorial, you'll create a multi-agent financial analysis system with complete observability. Your system will:
+
+- Track real-time stock prices and company information
+- Research market news and sentiment
+- Coordinate multiple specialized agents
+- Provide full visibility into all agent interactions, costs, and performance
+
+## Prerequisites and Setup
+
+### 1. Install Dependencies
+
+First, let's set up our development environment:
+
+```bash
+# Create project directory
+mkdir agent-monitoring-demo && cd agent-monitoring-demo
+
+# Create Python virtual environment
+python3 -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+
+# Install required packages
+pip install agno openai openlit yfinance duckduckgo-search
+```
+
+### 2. Deploy OpenLIT (Self-Hosted)
+
+OpenLIT runs on your own infrastructure. The quickest way to get started is with Docker:
+
+```bash
+# Clone OpenLIT repository
+git clone https://github.com/openlit/openlit
+cd openlit
+
+# Start OpenLIT platform
+docker-compose up -d
+
+# Return to your project directory
+cd ../agent-monitoring-demo
+```
+
+OpenLIT dashboard will be available at `http://127.0.0.1:3000`
+- **Username**: `user@openlit.io`
+- **Password**: `openlituser`
+
+**Note**: For production deployments with Kubernetes, Helm charts, or custom configurations, see the [OpenLIT Installation Guide](https://docs.openlit.io/latest/openlit/installation).
+
+### 3. Set Environment Variables
+
+Create a `.env` file with your API keys:
+
+```bash
+# .env file
+OPENAI_API_KEY=your-openai-api-key-here
+```
+
+Get your OpenAI API key from [platform.openai.com](https://platform.openai.com/api-keys).
+
+## Building Your Observable AI Agent System
+
+### Step 1: Enable OpenLIT Instrumentation
+
+Let's start by creating our main application file with OpenLIT instrumentation enabled.
+
+Create `financial_agent.py`:
+
+```python
+import openlit
+from agno.agent import Agent
+from agno.team import Team
+from agno.models.openai import OpenAIChat
+from agno.tools.yfinance import YFinanceTools
+from agno.tools.duckduckgo import DuckDuckGoTools
+
+# Initialize OpenLIT instrumentation - THIS IS ALL IT TAKES!
+openlit.init(
+    otlp_endpoint="http://127.0.0.1:4318",
+    environment="development",
+    application_name="financial-analysis-agents"
+)
+
+print("✅ OpenLIT instrumentation enabled")
+print("📊 Dashboard: http://127.0.0.1:3000")
+```
+
+**That's it!** With just those few lines, every LLM call, tool usage, and agent interaction will be automatically traced.
+
+### Step 2: Create Specialized Agents
+
+Now let's create specialized agents for different tasks. Each agent will be automatically monitored:
+
+```python
+# Financial Data Agent
+finance_agent = Agent(
+    name="Financial Data Analyst",
+    model=OpenAIChat(id="gpt-4o-mini"),
+    tools=[YFinanceTools(
+        stock_price=True,
+        company_info=True,
+        analyst_recommendations=True,
+        company_news=True
+    )],
+    instructions=[
+        "You are a financial data analyst specializing in quantitative analysis.",
+        "Use YFinance tools to gather accurate, real-time financial data.",
+        "Focus on concrete numbers: prices, market cap, PE ratios, analyst ratings.",
+        "Always cite your data sources and timestamps."
+    ],
+    show_tool_calls=True,
+    markdown=True
+)
+
+# Market Research Agent
+research_agent = Agent(
+    name="Market Research Analyst",
+    model=OpenAIChat(id="gpt-4o-mini"),
+    tools=[DuckDuckGoTools()],
+    instructions=[
+        "You are a market research analyst specializing in qualitative analysis.",
+        "Search the web for recent news, market sentiment, and industry trends.",
+        "Focus on context: competitive landscape, market conditions, risks.",
+        "Provide balanced analysis considering multiple perspectives."
+    ],
+    show_tool_calls=True,
+    markdown=True
+)
+
+print("✅ Specialized agents created")
+```
+
+### Step 3: Create a Coordinating Team
+
+Let's create a team that coordinates our specialized agents:
+
+```python
+# Investment Analysis Team
+investment_team = Team(
+    name="Investment Analysis Team",
+    model=OpenAIChat(id="gpt-4o-mini"),
+    members=[finance_agent, research_agent],
+    instructions=[
+        "You coordinate a team of financial experts to provide comprehensive investment analysis.",
+        "Delegate tasks appropriately:",
+        "  - Financial Data Analyst: for quantitative data and metrics",
+        "  - Market Research Analyst: for qualitative insights and context",
+        "Synthesize their findings into a coherent investment thesis.",
+        "Present both bullish and bearish perspectives.",
+        "Conclude with a clear, data-driven recommendation."
+    ],
+    show_tool_calls=True,
+    markdown=True
+)
+
+print("✅ Investment analysis team assembled")
+```
+
+### Step 4: Run Your Observable Agent System
+
+Now let's execute an analysis and watch the magic happen:
+
+```python
+def analyze_stock(symbol: str):
+    """Analyze a stock with full observability."""
+    print(f"\n{'='*60}")
+    print(f"🔍 Analyzing {symbol}")
+    print(f"{'='*60}\n")
+
+    query = f"""
+    Provide a comprehensive investment analysis for {symbol}:
+
+    1. Current financial metrics and stock performance
+    2. Recent news and market sentiment
+    3. Competitive positioning and industry trends
+    4. Key risks and opportunities
+    5. Investment recommendation with rationale
+    """
+
+    # Execute the analysis - all interactions are automatically traced!
+    investment_team.print_response(query)
+
+    print(f"\n{'='*60}")
+    print(f"✅ Analysis complete!")
+    print(f"📊 View trace details: http://127.0.0.1:3000")
+    print(f"{'='*60}\n")
+
+# Run analysis
+if __name__ == "__main__":
+    analyze_stock("AAPL")  # Analyze Apple
+```
+
+### Step 5: Run and Observe
+
+Execute your application:
+
+```bash
+python financial_agent.py
+```
+
+You'll see your agents working together, and **every interaction is being traced in real-time!**
+
+## Exploring the OpenLIT Dashboard
+
+While your agents are running, open the OpenLIT dashboard at `http://127.0.0.1:3000`.
+
+### What You'll See
+
+**1. Request Traces**
+
+View the complete execution flow:
+- Team coordination decisions
+- Individual agent invocations
+- Tool calls (YFinance, DuckDuckGo)
+- LLM requests and responses
+- Timing for each step
+
+**2. Performance Metrics**
+
+Monitor system health:
+- Average latency per agent
+- Request success/error rates
+- Token usage over time
+- Throughput (requests per minute)
+
+**3. Cost Analysis**
+
+Track your spending:
+- Cost per request
+- Cost breakdown by model (gpt-4o-mini)
+- Cost per agent
+- Total spend over time
+
+**4. Token Usage**
+
+Optimize efficiency:
+- Input vs output tokens
+- Token usage per agent
+- Token usage per tool call
+- Identify verbose prompts
+
+**5. Error Monitoring**
+
+Debug issues fast:
+- Exception stack traces
+- Error frequency by type
+- Context at time of error
+- Failed tool calls
+
+## Advanced: Zero-Code CLI Instrumentation
+
+Don't want to modify your code? OpenLIT provides a CLI wrapper for true zero-code instrumentation:
+
+```bash
+openlit-instrument \
+  --service-name financial-agents \
+  --environment production \
+  --otlp-endpoint http://127.0.0.1:4318 \
+  python financial_agent.py
+```
+
+This is particularly useful for:
+- **CI/CD pipelines**: Automatically instrument in deployment
+- **Legacy applications**: Add monitoring without code changes
+- **Testing**: Try observability before committing to changes
+
+## Production Best Practices
+
+### 1. Environment-Specific Configuration
+
+Use different configurations for development vs production:
+
+```python
+import os
+
+openlit.init(
+    otlp_endpoint=os.getenv("OPENLIT_ENDPOINT", "http://127.0.0.1:4318"),
+    environment=os.getenv("ENVIRONMENT", "development"),
+    application_name="financial-agents",
+    disable_batch=False if os.getenv("ENVIRONMENT") == "production" else True
+)
+```
+
+### 2. Set Up Alerts
+
+Monitor critical metrics and set up alerts for:
+- Error rates exceeding thresholds
+- Latency spikes
+- Cost anomalies
+- Token usage patterns
+
+### 3. Regular Evaluation
+
+Use OpenLIT's evaluation features to systematically assess:
+- Output quality
+- Hallucination detection
+- Compliance with guidelines
+- User satisfaction
+
+### 4. Prompt Management
+
+Use OpenLIT's Prompt Hub to:
+- Version control your prompts
+- Test prompt variations
+- Deploy prompts without code changes
+- Track performance by prompt version
+
+### 5. Guardrails
+
+Implement safety guardrails:
+
+```python
+openlit.init(
+    otlp_endpoint="http://127.0.0.1:4318",
+    guardrails={
+        "prompt_injection": True,
+        "sensitive_topics": True,
+        "topic_restrictions": ["financial advice disclaimers"]
+    }
+)
+```
+
+## Real-World Impact: What You Can Catch
+
+With OpenLIT monitoring, you can identify and fix:
+
+### Context Drift
+**Symptom**: Agent provides outdated information
+**Detection**: Trace shows token limit cutting relevant context
+**Fix**: Implement context window management
+
+### Tool Misuse
+**Symptom**: Agent calls wrong tools or in wrong order
+**Detection**: Trace shows inefficient tool call patterns
+**Fix**: Refine agent instructions and tool descriptions
+
+### Cost Optimization
+**Symptom**: Unexpectedly high API costs
+**Detection**: Cost dashboard shows expensive patterns
+**Fix**: Optimize prompts, use caching, switch to smaller models where appropriate
+
+### Coordination Failures
+**Symptom**: Team agents not working together effectively
+**Detection**: Trace shows redundant work or missed handoffs
+**Fix**: Improve team instructions and agent responsibilities
+
+### Performance Bottlenecks
+**Symptom**: Slow response times
+**Detection**: Latency metrics show specific slow agents/tools
+**Fix**: Parallelize independent operations, optimize slow tools
+
+## Monitoring Multi-Agent Systems at Scale
+
+For complex multi-agent systems, OpenLIT provides:
+
+**Distributed Tracing**
+- End-to-end visibility across all agents
+- Parent-child span relationships
+- Cross-agent communication tracking
+
+**Communication Analysis**
+- Message flows between agents
+- Pattern detection
+- Bottleneck identification
+
+**Resource Monitoring**
+- Per-agent resource usage
+- GPU monitoring (for local models)
+- Vector database performance
+
+## Key Takeaways
+
+1. **AI agent monitoring is not optional** - The complexity and non-deterministic nature of agents makes observability essential for production systems
+
+2. **Real-world failures are expensive** - From database deletions to multi-million dollar losses, unmonitored agents pose significant risks
+
+3. **OpenLIT makes monitoring effortless** - One line of code enables comprehensive observability
+
+4. **Observability provides actionable insights** - Catch context drift, optimize costs, debug failures, and improve performance
+
+5. **Standards matter** - OpenTelemetry-native solutions ensure interoperability and future-proofing
+
+## Next Steps
+
+Now that you understand the importance of monitoring and have hands-on experience with OpenLIT, consider:
+
+1. **Add monitoring to your existing agents** - It's just one line of code!
+
+2. **Explore the OpenLIT dashboard** - Familiarize yourself with all available metrics and traces
+
+3. **Set up evaluations** - Systematically assess your agent's output quality
+
+4. **Implement guardrails** - Protect against unsafe or inappropriate outputs
+
+5. **Deploy to production** - Use Kubernetes with Helm for scalable, production-grade monitoring
+
+6. **Join the community** - Share your experiences and learn from others using OpenLIT
+
+## Resources
+
+- **OpenLIT Documentation**: [docs.openlit.io](https://docs.openlit.io)
+- **OpenLIT GitHub**: [github.com/openlit/openlit](https://github.com/openlit/openlit)
+- **Agno Documentation**: [docs.agno.com](https://docs.agno.com)
+- **OpenTelemetry Standards**: [opentelemetry.io](https://opentelemetry.io)
+
+## Complete Example Code
+
+Here's the full working example:
+
+```python
+import openlit
+from agno.agent import Agent
+from agno.team import Team
+from agno.models.openai import OpenAIChat
+from agno.tools.yfinance import YFinanceTools
+from agno.tools.duckduckgo import DuckDuckGoTools
+
+# Initialize OpenLIT instrumentation
+openlit.init(
+    otlp_endpoint="http://127.0.0.1:4318",
+    environment="development",
+    application_name="financial-analysis-agents"
+)
+
+# Financial Data Agent
+finance_agent = Agent(
+    name="Financial Data Analyst",
+    model=OpenAIChat(id="gpt-4o-mini"),
+    tools=[YFinanceTools(
+        stock_price=True,
+        company_info=True,
+        analyst_recommendations=True,
+        company_news=True
+    )],
+    instructions=[
+        "You are a financial data analyst specializing in quantitative analysis.",
+        "Use YFinance tools to gather accurate, real-time financial data.",
+        "Focus on concrete numbers: prices, market cap, PE ratios, analyst ratings.",
+        "Always cite your data sources and timestamps."
+    ],
+    show_tool_calls=True,
+    markdown=True
+)
+
+# Market Research Agent
+research_agent = Agent(
+    name="Market Research Analyst",
+    model=OpenAIChat(id="gpt-4o-mini"),
+    tools=[DuckDuckGoTools()],
+    instructions=[
+        "You are a market research analyst specializing in qualitative analysis.",
+        "Search the web for recent news, market sentiment, and industry trends.",
+        "Focus on context: competitive landscape, market conditions, risks.",
+        "Provide balanced analysis considering multiple perspectives."
+    ],
+    show_tool_calls=True,
+    markdown=True
+)
+
+# Investment Analysis Team
+investment_team = Team(
+    name="Investment Analysis Team",
+    model=OpenAIChat(id="gpt-4o-mini"),
+    members=[finance_agent, research_agent],
+    instructions=[
+        "You coordinate a team of financial experts to provide comprehensive investment analysis.",
+        "Delegate tasks appropriately:",
+        "  - Financial Data Analyst: for quantitative data and metrics",
+        "  - Market Research Analyst: for qualitative insights and context",
+        "Synthesize their findings into a coherent investment thesis.",
+        "Present both bullish and bearish perspectives.",
+        "Conclude with a clear, data-driven recommendation."
+    ],
+    show_tool_calls=True,
+    markdown=True
+)
+
+def analyze_stock(symbol: str):
+    """Analyze a stock with full observability."""
+    print(f"\n{'='*60}")
+    print(f"🔍 Analyzing {symbol}")
+    print(f"{'='*60}\n")
+
+    query = f"""
+    Provide a comprehensive investment analysis for {symbol}:
+
+    1. Current financial metrics and stock performance
+    2. Recent news and market sentiment
+    3. Competitive positioning and industry trends
+    4. Key risks and opportunities
+    5. Investment recommendation with rationale
+    """
+
+    investment_team.print_response(query)
+
+    print(f"\n{'='*60}")
+    print(f"✅ Analysis complete!")
+    print(f"📊 View trace details: http://127.0.0.1:3000")
+    print(f"{'='*60}\n")
+
+if __name__ == "__main__":
+    analyze_stock("AAPL")  # Analyze Apple
+```
+
+
