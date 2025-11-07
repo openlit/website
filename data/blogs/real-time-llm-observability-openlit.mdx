@@ -30,11 +30,10 @@ Follow these four stages in order. Each stage references the official configurat
 
 ### Step 1. Instrument services with the documented SDK settings
 
-Start by inventorying every surface that touches an LLM model, from cron jobs to API handlers. The Python SDK example in the configuration guide shows the minimal init block:
+Start by inventorying every surface that touches an LLM model, from cron jobs to API handlers. The Python SDK example in the configuration guide shows the minimal init block--once this runs, OpenLIT auto-instruments supported providers without any extra wrappers:
 
 ```python
 import openlit
-from openlit.contrib.openai import instrument_openai
 from openai import OpenAI
 
 openlit.init(
@@ -43,7 +42,6 @@ openlit.init(
     otlp_endpoint="https://otel-gateway.internal:4318",
 )
 
-instrument_openai()
 client = OpenAI()
 
 def generate_reply(messages: list[dict[str, str]]) -> str:
@@ -55,10 +53,10 @@ def generate_reply(messages: list[dict[str, str]]) -> str:
     return completion.choices[0].message.content
 ```
 
-The TypeScript SDK mirrors the same parameters, so your edge routes remain consistent:
+The TypeScript SDK mirrors the same parameters. You keep your existing request handlers--OpenLIT captures spans the moment the SDK is initialised:
 
 ```ts
-import { init, withLLM } from '@openlit/node';
+import { init } from '@openlit/node';
 import OpenAI from 'openai';
 import type { NextRequest } from 'next/server';
 
@@ -73,26 +71,20 @@ const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
 export const runtime = 'edge';
 
 export async function POST(req: NextRequest) {
-  return withLLM('chat-completion', async (span) => {
-    const body = await req.json();
-    const response = await client.chat.completions.create({
-      model: 'gpt-4o-mini',
-      messages: body.messages,
-      stream: true,
-    });
+  const body = await req.json();
+  const response = await client.chat.completions.create({
+    model: 'gpt-4o-mini',
+    messages: body.messages,
+    stream: true,
+  });
 
-    span.setAttribute('llm.request.token.count', body.messages.length);
-    return new Response(response.toReadableStream(), {
-      headers: { 'Content-Type': 'text/event-stream' },
-    });
+  return new Response(response.toReadableStream(), {
+    headers: { 'Content-Type': 'text/event-stream' },
   });
 }
 ```
 
-Instrument these entry points first so every downstream step has trustworthy source data.
-Once traces are flowing locally, run your usual load tests and confirm that prompts,
-responses, token counts, and latency histograms appear in your OTLP destination. Any
-gaps you detect here will ripple through the rest of the observability stack.
+Instrument these entry points first so every downstream step has trustworthy source data. Because instrumentation is automatic, you can run your usual load tests without modifying business logic--just confirm that prompts, responses, token counts, and latency histograms appear in your OTLP destination. Any gaps you detect here will ripple through the rest of the observability stack.
 
 ### Step 2. Deploy the OpenLIT Operator for Kubernetes workloads
 
@@ -189,7 +181,7 @@ Many teams wire a lightweight worker that listens for OpenLIT scorecard events a
 ## Why OpenLIT Leads the Pack
 
 - **Pure OpenTelemetry output** keeps you in control of your observability backend instead of locking into a proprietary schema.
-- **Unified SDK surface** means Python, Node.js, and operator-managed workloads emit identical attributes, so cross-team investigations move faster.
+- **Unified SDK surface** means Python, Node.js, and operator-managed workloads emit identical attributes, so cross-team investigations move faster--with automatic instrumentation handling OpenAI, Anthropic, Azure OpenAI, and more as soon as their clients are imported.
 - **Built-in evaluation hooks** turn feedback loops into first-class telemetry, something competing suites often bolt on later.
 - **Community velocity** delivers weekly improvements and active support without paying for heavyweight enterprise contracts.
 
