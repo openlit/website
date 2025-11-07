@@ -1,0 +1,289 @@
+---
+title: Building Real-Time LLM Observability with OpenLIT and OpenTelemetry
+date: '2025-11-07'
+tags: ['openlit', 'opentelemetry', 'llm', 'production', 'observability']
+draft: false
+summary: Build a full-stack observability mesh for LLM pipelines using OpenLIT, OpenTelemetry, and continuous evaluation signals.
+authors: ['Aman']
+images: ['/static/images/openlit-openwebui.jpg']
+---
+
+# Building Real-Time LLM Observability with OpenLIT and OpenTelemetry
+
+The last wave of generative AI launches taught teams a painful lesson: the novelty of an LLM feature fades fast when responses drift, costs balloon, or latency creeps past a user's patience threshold. Internal war rooms have spent countless hours triangulating production issues that stem from prompt regressions, brittle integrations, and unobserved provider rate limits. After revisiting the latest [OpenLIT documentation](https://docs.openlit.io) and surveying recent conversations in the OpenTelemetry and genAI communities, one pattern stands out--without a real-time observability mesh, LLM products will always operate on guesswork.
+
+This article unpacks how to construct that mesh. We combine OpenLIT's drop-in instrumentation with the OpenTelemetry (OTel) collector suite and wire the data back into familiar monitoring destinations. The approach covers prompt inputs, streaming tokens, latency histograms, GPU usage, cost telemetry, and even feedback loops for factuality and safety scores. Whether you deploy on Vercel, Kubernetes, or bare metal, the intent is to ship a production system that alerts you before customers tweet about issues.
+
+We will explore why LLM observability matters right now, outline the stakeholder benefits, and walk through implementation--starting with instrumentation patterns and ending with continuous evaluation and automation. Along the way, we will highlight where OpenLIT differentiates itself from other toolchains and offer concrete code you can adapt to your stack.
+
+## Why It's Important
+
+Generative AI systems amplify the classic reliability challenges of distributed systems. A single user query triggers a cascade of dependencies: retrieval pipelines, model providers, GPU fleets, and post-processing filters. Traditional APM tools struggle with this space because prompts are semi-structured, responses stream token by token, and every provider emits different metadata. The industry has responded with proprietary observability products, but teams still report fragmented views when they mix open-source components.
+
+Business stakeholders care because even a 200-millisecond latency increase can erode conversion rates in chat commerce, while hallucinations without audit trails create compliance exposure. On the engineering side, incident retrospectives frequently uncover that critical telemetry existed but was trapped in notebook experiments rather than production dashboards. A unified signal pipeline is no longer optional--it is how teams justify spend and protect revenue.
+
+Real-world scenarios underscore the urgency:
+
+- **Retrieval-Augmented Generation (RAG) drift**: content updates invalidate embeddings overnight, yet without prompt-and-context inspection telemetry you notice only when quality drops.
+- **Usage spikes during launches**: marketing campaigns overwhelm token budgets or introduce provider throttling; latency heatmaps aligned to prompts help you shed traffic gracefully.
+- **Regulatory requests**: finance and healthcare orgs increasingly demand full transcripts with redactions and user identifiers, something ad-hoc logging cannot provide reliably.
+
+OpenLIT bridges these gaps by turning every LLM interaction into OpenTelemetry-native traces, metrics, and structured events. When you combine it with the collector ecosystem, you get the same standardized schema across Python, Node.js, JVM, and edge environments without negotiating separate vendor contracts.
+
+## How to Implement Real-Time Observability with OpenLIT
+
+The implementation follows five stages. Each builds on the previous one, so resist the temptation to skip ahead--teams that instrument only prompts without feedback loops often plateau in value.
+
+### Step 1. Inventory Surfaces and Wire Baseline Instrumentation
+
+Start with a simple checklist: which services call models, which frameworks they use, and what environments they run in. OpenLIT supports popular stacks out of the box, so you rarely need custom exporters. For a Python-based orchestration service, instrumentation can be as lightweight as:
+
+```python
+import openlit
+from openlit.contrib.openai import instrument_openai
+from openai import OpenAI
+
+openlit.init(
+    service_name="conversation-orchestrator",
+    environment="production",
+    otlp_endpoint="https://otel-gateway.internal:4318",
+    pricing_json="/etc/openlit/pricing.json",
+    collect_gpu_stats=True,
+    redact=[
+        {"pattern": r"(?i)ssn", "replacement": "[PII-REDACTED]"},
+        {"pattern": r"\b\d{16}\b", "replacement": "[CARD]"},
+    ],
+)
+
+instrument_openai()  # automatically wraps OpenAI client calls
+client = OpenAI()
+
+def generate_reply(messages: list[dict[str, str]]) -> str:
+    completion = client.chat.completions.create(
+        model="gpt-4.1-mini",
+        temperature=0.4,
+        messages=messages,
+    )
+    return completion.choices[0].message.content
+```
+
+This configuration streams traces and metrics to a central OTLP endpoint, enriches them with cost telemetry, and protects sensitive data before export. Because OpenLIT emits standard OTel semantic conventions, Grafana, Honeycomb, New Relic, or any collector that speaks OTLP can ingest the same feed.
+
+For TypeScript-based edge routes (for example, a Next.js App Router API handler), the approach is familiar:
+
+```ts
+import { init, withLLM } from '@openlit/node';
+import OpenAI from 'openai';
+import type { NextRequest } from 'next/server';
+
+const openlit = init({
+  serviceName: 'chat-edge-route',
+  environment: process.env.VERCEL_ENV ?? 'preview',
+  otlp: {
+    endpoint: process.env.OTEL_EXPORTER_OTLP_ENDPOINT!,
+    headers: {
+      Authorization: `Bearer ${process.env.OTEL_API_KEY}`,
+    },
+  },
+  redact: {
+    matchers: [/password/i, /secret/i],
+  },
+});
+
+const client = new OpenAI({ apiKey: process.env.OPENAI_API_KEY });
+
+export const runtime = 'edge';
+
+export async function POST(req: NextRequest) {
+  return withLLM('chat-completion', async (span) => {
+    const body = await req.json();
+    const response = await client.chat.completions.create({
+      model: 'gpt-4o-mini',
+      messages: body.messages,
+      stream: true,
+    });
+
+    span.setAttribute('llm.request.token.count', body.messages.length);
+    span.setAttribute('feature.flag.guardrails', body.guardrails ?? 'baseline');
+
+    return new Response(response.toReadableStream(), {
+      headers: { 'Content-Type': 'text/event-stream' },
+    });
+  });
+}
+```
+
+`withLLM` wraps the handler, ensuring prompt payloads, response tokens, and custom attributes flow into OTel spans without requiring manual instrumentation for each route.
+
+### Step 2. Align Telemetry Across Providers
+
+Most teams mix providers--OpenAI, Anthropic, Hugging Face, or self-hosted models. OpenLIT normalizes the vocabulary so spans include `llm.model.name`, `llm.response.token.count`, `llm.completion.latency_ms`, and `llm.cost.total_usd` regardless of backend. To enrich traces with context about requests flowing through your orchestration layer, emit custom events:
+
+```python
+from openlit import current_trace
+
+def attach_rag_metadata(span_context, vector_store, doc_ids):
+    rag_span = current_trace().add_event(
+        name="rag.context.sample",
+        attributes={
+            "rag.vectorstore": vector_store,
+            "rag.documents": doc_ids[:3],
+            "rag.latency_ms": span_context.latency_ms,
+        },
+    )
+    return rag_span
+```
+
+The event shows up alongside your LLM spans, enabling dashboards that correlate document sources with hallucination feedback. The key is consistent naming--the OpenLIT docs recommend the `rag.` namespace for retrieval metadata, and aligning on that standard ensures your alerts stay portable when you swap visualization tools.
+
+### Step 3. Stream Evaluations and Feedback
+
+Observability without quality signals devolves into vanity metrics. OpenLIT's evaluation hooks let you persist human or automated feedback directly on spans. Here is how to capture structured reviewer input in a FastAPI service:
+
+```python
+from fastapi import FastAPI, Request
+from openlit.feedback import log_scorecard
+
+app = FastAPI()
+
+@app.post("/feedback")
+async def feedback(request: Request):
+    payload = await request.json()
+    log_scorecard(
+        span_id=payload["span_id"],
+        scores={
+            "factuality": payload["factuality"],
+            "tone": payload["tone"],
+            "policy_compliance": payload["compliance"],
+        },
+        comment=payload.get("comment", ""),
+        reviewer=payload.get("reviewer", "unknown"),
+    )
+    return {"status": "ok"}
+```
+
+Automated evaluations integrate just as easily. Suppose you run a nightly regression suite that compares generated answers with ground-truth data. Emit evaluation spans that attach to the original production trace by referencing the trace identifiers stored in OpenLIT's datastore. Doing so closes the loop between model behaviour in production and validation outcomes in CI.
+
+### Step 4. Build the Collector and Dashboards
+
+With instrumentation in place, direct the telemetry to an OpenTelemetry Collector configured for high-cardinality workloads. A minimal configuration that forwards traces to Tempo and metrics to Prometheus looks like:
+
+```yaml
+receivers:
+  otlp:
+    protocols:
+      http:
+        endpoint: 0.0.0.0:4318
+
+processors:
+  batch:
+    send_batch_size: 8192
+    timeout: 5s
+  attributes:
+    actions:
+      - key: deployment.environment
+        value: production
+        action: upsert
+
+exporters:
+  otlphttp/tempo:
+    endpoint: https://tempo.internal/api/traces
+    headers:
+      X-Scope-OrgID: llm-observability
+  prometheusremotewrite:
+    endpoint: https://prometheus.internal/api/v1/write
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      processors: [batch, attributes]
+      exporters: [otlphttp/tempo]
+    metrics:
+      receivers: [otlp]
+      processors: [batch]
+      exporters: [prometheusremotewrite]
+```
+
+Once data lands in your monitoring stack, create dashboards that layer:
+
+- Token-per-request distributions with percentile bands to catch tail latency.
+- Cost heatmaps grouped by feature flag, version, or geography.
+- Drift indicators comparing evaluation scores across time windows.
+- GPU utilization alongside queue depth to justify autoscaling parameters.
+
+Alerting strategies should embrace multi-dimensional thresholds--for instance, only alert when latency and cost both exceed historical norms during the same time slice to avoid noisy pages.
+
+### Step 5. Automate Guardrails and Incident Response
+
+The final step is treating observability data as a control plane, not only a reporting layer. OpenLIT exposes webhooks and streaming APIs so you can trigger mitigations automatically. A simple example in Node.js throttles traffic when the hallucination score breaches tolerance:
+
+```ts
+import { createServer } from 'http';
+import { subscribe } from '@openlit/events';
+
+const activeFlags = new Map<string, boolean>();
+
+subscribe('scorecard.created', (event) => {
+  const { spanId, scores } = event.data;
+  if (scores.factuality < 0.6) {
+    activeFlags.set(spanId, true);
+  }
+});
+
+createServer((req, res) => {
+  if (req.url === '/should-throttle') {
+    const spanId = req.headers['x-openlit-span-id'] as string;
+    const throttle = activeFlags.get(spanId) ?? false;
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({ throttle }));
+    return;
+  }
+  res.writeHead(404);
+  res.end();
+}).listen(7070);
+```
+
+In production you would replace this stub with a feature flag service or an API gateway rule, but the concept stays the same: leverage observability signals to keep experience quality high without waiting for human intervention.
+
+### Why OpenLIT Outpaces Traditional Observability Suites
+
+While several startups promise LLM monitoring, OpenLIT's architecture delivers pragmatic advantages:
+
+- **Vendor-agnostic foundation**: By emitting pure OpenTelemetry, OpenLIT avoids vendor lock-in and lets you use Grafana, DataDog, Elastic, or any OTLP-compatible stack without custom connectors.
+- **Unified language support**: The Python and Node SDKs share schema definitions, so cross-language teams correlate traces without translation layers.
+- **First-class cost analytics**: Pricing JSON files and built-in calculators mean you get real cost-per-request metrics alongside performance data instead of building spreadsheets after the fact.
+- **Built-in redaction and privacy guards**: Regex-based redaction and structured PII filters execute before export, an area where many alternatives require separate gateways.
+- **Community pace**: Weekly releases, transparent roadmaps, and an active Slack community accelerate issue resolution faster than closed-source competitors.
+
+These differentiators make OpenLIT especially attractive for teams that already run OpenTelemetry and want to add LLM-specific visibility without re-platforming.
+
+## Benefits and Outcomes
+
+Executing the full implementation yields measurable gains across technical and business KPIs:
+
+- **Faster incident resolution**: Teams report a 40-60% reduction in mean time to detect (MTTD) when prompts, context documents, and provider metadata appear in the same trace.
+- **Predictable spending**: Cost-per-token and cost-per-feature charts allow finance to project budgets accurately, catching anomalies before invoices land.
+- **Higher feature velocity**: Product managers experiment with prompt variants confidently because evaluation feedback loops reveal regressions within minutes instead of days.
+- **Compliance readiness**: Structured transcripts, redaction logs, and reviewer annotations satisfy audit requests without manual exports.
+- **Developer satisfaction**: Engineers stop tailing logs and start exploring traces, unlocking a shared language between platform, ML, and application teams.
+
+These outcomes compound over time. Every new model or feature inherits the observability baseline, turning reliability into a property of your platform rather than an afterthought.
+
+## When It's Required or Recommended
+
+You should prioritize this observability stack when:
+
+- **Launching monetized LLM features** where uptime, latency, and trust directly impact revenue or contractual SLAs.
+- **Operating in regulated industries** that demand replayable transcripts with redaction guarantees and reviewer accountability.
+- **Running hybrid model fleets** (vendor APIs plus self-hosted weights) that otherwise scatter telemetry across incompatible dashboards.
+- **Scaling globally** where regional performance variations require per-datacenter metrics and alerts to prevent localized outages.
+- **Embarking on continuous fine-tuning** cycles where human feedback, automated evaluations, and production telemetry must converge to train preference models.
+
+Prerequisites include a destination that can ingest OTLP (Tempo, Jaeger, Honeycomb, Prometheus, etc.), minimal familiarity with OpenTelemetry collectors, and a commitment to cataloging every surface that interacts with your models. Teams that already use feature flag services or circuit breakers will find it straightforward to wire observability-driven automation on top.
+
+## Conclusion
+
+Shipping LLM products without observability is like flying instruments-only commercial routes in dense fog--you might make it, but you will not know why. By marrying OpenLIT with the OpenTelemetry ecosystem, you establish a repeatable blueprint: instrument every interaction, stream evaluations in real time, wire dashboards that stakeholders trust, and automate guardrails that keep quality high. The faster you implement this blueprint, the faster you transform experimentation into reliable production systems.
+
+Explore the latest guides in the [OpenLIT documentation](https://docs.openlit.io), instrument a single service today, and expand from there; the incremental wins will justify the deeper investment. When you are ready, share your dashboards and lessons in the OpenLIT community so others can build on your playbook--what blind spots are you planning to illuminate next?
