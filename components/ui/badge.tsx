@@ -31,4 +31,19 @@ function Badge({ className, variant, ...props }: BadgeProps) {
   return <div className={cn(badgeVariants({ variant }), className)} {...props} />
 }
 
-export { Badge, badgeVariants }
+function BadgeWithGradient({ className, variant, ...props }: BadgeProps) {
+  return (
+    <div
+      className={cn(
+        badgeVariants({ variant: 'outline' }),
+        `${className} relative border border-primary-300 bg-white text-sm text-primary-800 transition duration-200 hover:shadow-2xl hover:shadow-white/[0.1] dark:bg-black`
+      )}
+      {...props}
+    >
+      <div className="absolute inset-x-0 -top-px mx-auto h-px w-1/2 bg-gradient-to-r  from-transparent via-primary-800 to-transparent shadow-2xl" />
+      <span>{props.children}</span>
+    </div>
+  )
+}
+
+export { Badge, badgeVariants, BadgeWithGradient }

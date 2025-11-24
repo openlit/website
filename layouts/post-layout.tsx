@@ -46,17 +46,17 @@ export default function PostLayout({ content, authorDetails, next, prev, childre
               </Bleed>
             </div>
           )}
-          <dl className="space-y-10">
+          <dl className="text-muted-foreground space-y-10">
             <div>
               <dt className="sr-only">Published on</dt>
-              <dd className="text-base font-medium leading-6 text-stone-500 dark:text-stone-400">
+              <dd className="text-base font-medium leading-6">
                 <time dateTime={date}>
                   {new Date(date).toLocaleDateString(siteMetadata.locale, postDateTemplate)}
                 </time>
               </dd>
             </div>
           </dl>
-          <h1 className="text-3xl font-extrabold leading-9 tracking-tight text-gray-900 dark:text-gray-100 sm:text-4xl sm:leading-10 md:text-5xl md:leading-14">
+          <h1 className="bg-gradient-to-r from-primary-400 via-orange-500 to-red-500 bg-clip-text text-3xl font-extrabold leading-9 text-transparent sm:text-4xl sm:leading-10 md:text-5xl md:leading-14">
             {title}
           </h1>
         </div>

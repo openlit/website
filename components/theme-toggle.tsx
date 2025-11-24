@@ -25,17 +25,19 @@ export function useTheme() {
   return { toggleTheme, theme }
 }
 
-export default function ThemeToggleSwitch() {
+export default function ThemeToggleSwitch({ showLabel }: { showLabel?: boolean }) {
   const { toggleTheme } = useTheme()
   return (
     <Button
       variant="ghost"
       size={'icon'}
-      className="rounded-full dark:text-white"
+      className="gap-4 rounded-full dark:text-white"
       onClick={toggleTheme}
     >
-      <MoonIcon className="block size-5 dark:hidden" />
-      <SunIcon className="hidden size-5 dark:block" />
+      <MoonIcon className="block size-5 shrink-0 dark:hidden" />
+      {showLabel && <span className="block text-sm dark:hidden">Dark Mode</span>}
+      <SunIcon className="hidden size-5 shrink-0 dark:block" />
+      {showLabel && <span className="hidden text-sm dark:block">Light Mode</span>}
     </Button>
   )
 }

@@ -1,6 +1,6 @@
 export default function Sponsored() {
   return (
-    <div className="mb-3 flex flex-col items-center gap-3">
+    <div className="mb-20 flex flex-col items-center gap-3">
       <h2>Sponsored by</h2>
       <div className="flex gap-4">
         <a href="https://www.lambdatest.com/?utm_source=openlit&utm_medium=sponsor" target="_blank">

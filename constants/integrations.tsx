@@ -1,0 +1,348 @@
+const SUPPORTED_INTEGRATIONS = [
+  {
+    name: 'Openai',
+    link: 'latest/sdk/integrations/openai',
+    icon: '/static/images/integrations/openai.svg',
+    type: 'LLM',
+  },
+  {
+    name: 'Ollama',
+    link: 'latest/sdk/integrations/ollama',
+    icon: '/static/images/integrations/ollama.svg',
+    type: 'LLM',
+  },
+  {
+    name: 'Anthropic',
+    link: 'latest/sdk/integrations/anthropic',
+    icon: '/static/images/integrations/anthropic.svg',
+    type: 'LLM',
+  },
+  {
+    name: 'Deepseek',
+    link: 'latest/sdk/integrations/deepseek',
+    icon: '/static/images/integrations/deepseek.svg',
+    type: 'LLM',
+  },
+  {
+    name: 'Gpt4all',
+    link: 'latest/sdk/integrations/gpt4all',
+    icon: '/static/images/integrations/gpt4all.svg',
+    type: 'LLM',
+  },
+  {
+    name: 'Cohere',
+    link: 'latest/sdk/integrations/cohere',
+    icon: '/static/images/integrations/cohere.svg',
+    type: 'LLM',
+  },
+
+  {
+    name: 'Mistral',
+    link: 'latest/sdk/integrations/mistral',
+    icon: '/static/images/integrations/mistral.svg',
+    type: 'LLM',
+  },
+
+  {
+    name: 'Github Models',
+    link: 'latest/sdk/integrations/github-models',
+    icon: '/static/images/integrations/githubmodels.svg',
+    type: 'LLM',
+  },
+  {
+    name: 'Vllm',
+    link: 'latest/sdk/integrations/vllm',
+    icon: '/static/images/integrations/vllm.svg',
+    type: 'LLM',
+  },
+  {
+    name: 'Azure Openai',
+    link: 'latest/sdk/integrations/azure-openai',
+    icon: '/static/images/integrations/azureopenai.svg',
+    type: 'LLM',
+  },
+  {
+    name: 'Azure Ai Inference',
+    link: 'latest/sdk/integrations/azure-ai-inference',
+    icon: '/static/images/integrations/azureaiinference.svg',
+    type: 'LLM',
+  },
+  {
+    name: 'Huggingface',
+    link: 'latest/sdk/integrations/huggingface',
+    icon: '/static/images/integrations/huggingface.svg',
+    type: 'LLM',
+  },
+  {
+    name: 'Amazon Bedrock',
+    link: 'latest/sdk/integrations/bedrock',
+    icon: '/static/images/integrations/amazonbedrock.svg',
+    type: 'LLM',
+  },
+  {
+    name: 'Vertex AI',
+    link: 'latest/sdk/integrations/vertexai',
+    icon: '/static/images/integrations/vertexai.svg',
+    type: 'LLM',
+  },
+  {
+    name: 'Google Ai Studio',
+    link: 'latest/sdk/integrations/google-ai-studio',
+    icon: '/static/images/integrations/googleaistudio.svg',
+    type: 'LLM',
+  },
+  {
+    name: 'Groq',
+    link: 'latest/sdk/integrations/groq',
+    icon: '/static/images/integrations/groq.svg',
+    type: 'LLM',
+  },
+  {
+    name: 'Nvidia Nim',
+    link: 'latest/sdk/integrations/nvidia-nim',
+    icon: '/static/images/integrations/nvidianim.svg',
+    type: 'LLM',
+  },
+  {
+    name: 'Xai',
+    link: 'latest/sdk/integrations/xai',
+    icon: '/static/images/integrations/xai.svg',
+    type: 'LLM',
+  },
+  {
+    name: 'Elevenlabs',
+    link: 'latest/sdk/integrations/elevenlabs',
+    icon: '/static/images/integrations/elevenlabs.svg',
+    type: 'LLM',
+  },
+  {
+    name: 'Ai21',
+    link: 'latest/sdk/integrations/ai21',
+    icon: '/static/images/integrations/ai21.svg',
+    type: 'LLM',
+  },
+  {
+    name: 'Together.ai',
+    link: 'latest/sdk/integrations/together',
+    icon: '/static/images/integrations/together.ai.svg',
+    type: 'LLM',
+  },
+  {
+    name: 'Assembly AI',
+    link: 'latest/sdk/integrations/assemblyai',
+    icon: '/static/images/integrations/assemblyai.svg',
+    type: 'LLM',
+  },
+  {
+    name: 'Featherless',
+    link: 'latest/sdk/integrations/featherless',
+    icon: '/static/images/integrations/featherless.svg',
+    type: 'LLM',
+  },
+
+  {
+    name: 'Reka AI',
+    link: 'latest/sdk/integrations/reka',
+    icon: '/static/images/integrations/rekaai.svg',
+    type: 'LLM',
+  },
+
+  {
+    name: 'OLA Krutrim',
+    link: 'latest/sdk/integrations/krutrim',
+    icon: '/static/images/integrations/olakrutrim.svg',
+    type: 'LLM',
+  },
+
+  {
+    name: 'Titan ML',
+    link: 'latest/sdk/integrations/titan-ml',
+    icon: '/static/images/integrations/titanml.svg',
+    type: 'LLM',
+  },
+
+  {
+    name: 'Sarvam AI',
+    link: 'latest/sdk/integrations/sarvam',
+    icon: '/static/images/integrations/sarvamai.svg',
+    type: 'LLM',
+  },
+
+  {
+    name: 'Prem AI',
+    link: 'latest/sdk/integrations/premai',
+    icon: '/static/images/integrations/premai.svg',
+    type: 'LLM',
+  },
+  {
+    name: 'Chromadb',
+    link: 'latest/sdk/integrations/chromadb',
+    icon: '/static/images/integrations/chromadb.svg',
+    type: 'Vector DB',
+  },
+  {
+    name: 'Pinecone',
+    link: 'latest/sdk/integrations/pinecone',
+    icon: '/static/images/integrations/pinecone.svg',
+    type: 'Vector DB',
+  },
+  {
+    name: 'Qdrant',
+    link: 'latest/sdk/integrations/qdrant',
+    icon: '/static/images/integrations/qdrant.svg',
+    type: 'Vector DB',
+  },
+  {
+    name: 'Milvus',
+    link: 'latest/sdk/integrations/milvus',
+    icon: '/static/images/integrations/milvus.svg',
+    type: 'Vector DB',
+  },
+  {
+    name: 'Astradb',
+    link: 'latest/sdk/integrations/astradb',
+    icon: '/static/images/integrations/astradb.svg',
+    type: 'Vector DB',
+  },
+  {
+    name: 'Langchain',
+    link: 'latest/sdk/integrations/langchain',
+    icon: '/static/images/integrations/langchain.svg',
+    type: 'framework',
+  },
+  {
+    name: 'Openai Agents',
+    link: 'latest/sdk/integrations/openai-agents',
+    icon: '/static/images/integrations/openaiagents.svg',
+    type: 'framework',
+  },
+  {
+    name: 'Litellm',
+    link: 'latest/sdk/integrations/litellm',
+    icon: '/static/images/integrations/litellm.svg',
+    type: 'framework',
+  },
+  {
+    name: 'Crewai',
+    link: 'latest/sdk/integrations/crewai',
+    icon: '/static/images/integrations/crewai.svg',
+    type: 'framework',
+  },
+  {
+    name: 'Llama Index',
+    link: 'latest/sdk/integrations/llama-index',
+    icon: '/static/images/integrations/llamaindex.svg',
+    type: 'framework',
+  },
+  {
+    name: 'Browser Use',
+    link: 'latest/sdk/integrations/browser-use',
+    icon: '/static/images/integrations/browseruse.svg',
+    type: 'framework',
+  },
+  {
+    name: 'Pydantic',
+    link: 'latest/sdk/integrations/pydantic',
+    icon: '/static/images/integrations/pydanticai.svg',
+    type: 'framework',
+  },
+
+  {
+    name: 'Dspy',
+    link: 'latest/sdk/integrations/dspy',
+    icon: '/static/images/integrations/dspy.svg',
+    type: 'framework',
+  },
+  {
+    name: 'Ag2',
+    link: 'latest/sdk/integrations/ag2',
+    icon: '/static/images/integrations/ag2.svg',
+    type: 'framework',
+  },
+  {
+    name: 'Haystack',
+    link: 'latest/sdk/integrations/haystack',
+    icon: '/static/images/integrations/haystack.svg',
+    type: 'framework',
+  },
+  {
+    name: 'Mem0',
+    link: 'latest/sdk/integrations/mem0',
+    icon: '/static/images/integrations/mem0.svg',
+    type: 'framework',
+  },
+  {
+    name: 'Guardrails AI',
+    link: 'latest/sdk/integrations/guardrails',
+    icon: '/static/images/integrations/guardrailsai.svg',
+    type: 'framework',
+  },
+  {
+    name: 'Phidata',
+    link: 'latest/sdk/integrations/phidata',
+    icon: '/static/images/integrations/phidata.svg',
+    type: 'framework',
+  },
+  {
+    name: 'Multion',
+    link: 'latest/sdk/integrations/multion',
+    icon: '/static/images/integrations/multion.svg',
+    type: 'framework',
+  },
+  {
+    name: 'Julep AI',
+    link: 'latest/sdk/integrations/julep-ai',
+    icon: '/static/images/integrations/julepai.svg',
+    type: 'framework',
+  },
+  {
+    name: 'Letta',
+    link: 'latest/sdk/integrations/letta',
+    icon: '/static/images/integrations/letta.svg',
+    type: 'framework',
+  },
+  {
+    name: 'Crawl4ai',
+    link: 'latest/sdk/integrations/crawl4ai',
+    icon: '/static/images/integrations/crawl4ai.svg',
+    type: 'framework',
+  },
+  {
+    name: 'Firecrawl',
+    link: 'latest/sdk/integrations/firecrawl',
+    icon: '/static/images/integrations/firecrawl.svg',
+    type: 'framework',
+  },
+  {
+    name: 'dynamiq',
+    link: 'latest/sdk/integrations/dynamiq',
+    icon: '/static/images/integrations/dynamiq.svg',
+    type: 'framework',
+  },
+  {
+    name: 'Controlflow',
+    link: 'latest/sdk/integrations/controlflow',
+    icon: '/static/images/integrations/controlflow.svg',
+    type: 'framework',
+  },
+  {
+    name: 'Swarmzero',
+    link: 'latest/sdk/integrations/swarmzero',
+    icon: '/static/images/integrations/swarmzero.svg',
+    type: 'framework',
+  },
+  {
+    name: 'NVIDIA',
+    link: 'latest/sdk/integrations/nvidia-gpu',
+    icon: '/static/images/integrations/nvidia.svg',
+    type: 'gpus',
+  },
+  {
+    name: 'AMD Radeon',
+    link: 'latest/sdk/integrations/amd-gpu',
+    icon: '/static/images/integrations/amdradeon.svg',
+    type: 'gpus',
+  },
+]
+
+export default SUPPORTED_INTEGRATIONS

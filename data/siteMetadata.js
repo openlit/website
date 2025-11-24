@@ -19,9 +19,10 @@ module.exports = {
   twitter: 'https://twitter.com/openlit_io',
   discord: 'https://discord.com/invite/RbNPvG54',
   linkedin: 'https://www.linkedin.com/company/openlit/',
+  youtube: 'https://www.youtube.com/@openlit',
   slack: 'https://join.slack.com/t/dokulabs/shared_invite/zt-2etnfttwg-TjP_7BZXfYg84oAukY8QRQ',
   locale: 'en-US',
-  feedbackLink: 'https://app.formbricks.com/IiFk9GnqOF',
+  // feedbackLink: 'https://app.formbricks.com/IiFk9GnqOF',
   analytics: {
     // If you want to use an analytics provider you have to add it to the
     // content security policy in the `next.config.js` file.
