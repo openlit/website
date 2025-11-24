@@ -10,7 +10,7 @@ const ContentSecurityPolicy = `
   script-src 'self' 'unsafe-eval' 'unsafe-inline' *;
   style-src 'self' 'unsafe-inline';
   img-src * blob: data:;
-  media-src 'self' *.s3.amazonaws.com;
+  media-src 'self' *.s3.amazonaws.com openlit.io mintcdn.com;
   connect-src *;
   font-src 'self';
   frame-src openlit.io story.screenspace.io cards.producthunt.com
@@ -78,6 +78,14 @@ module.exports = () => {
         {
           protocol: 'https',
           hostname: 'assets.aceternity.com',
+        },
+        {
+          protocol: 'https',
+          hostname: 'github.com',
+        },
+        {
+          protocol: 'https',
+          hostname: 'miro.medium.com',
         },
       ],
     },

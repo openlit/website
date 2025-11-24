@@ -2,8 +2,6 @@ import 'css/tailwind.css'
 
 import { Space_Grotesk } from 'next/font/google'
 // import { Analytics, AnalyticsConfig } from 'pliny/analytics'
-import Header from '@/components/common/header'
-import Footer from '@/components/common/footer'
 import siteMetadata from 'data/siteMetadata'
 import { Metadata } from 'next'
 import { cookies } from 'next/headers'
@@ -76,9 +74,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className="bg-stone-white text-black antialiased dark:bg-stone-950 dark:text-white">
         {/* <Analytics analyticsConfig={siteMetadata.analytics as AnalyticsConfig} /> */}
 
-        <Header />
-        <main className="mb-auto overflow-hidden">{children}</main>
-        <Footer />
+        {children}
         {/* <!-- Google tag (gtag.js) --> */}
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-5KRK16SZ87"></script>
         <script
