@@ -62,7 +62,7 @@ const ITEMS = [
     label: 'Fleet Hub',
     title: 'Multi-Deployment Management',
     video:
-      'https://mintcdn.com/openlit/oP6rqLGiwYvXWG_M/images/trace-details.mp4?fit=max&auto=format&n=oP6rqLGiwYvXWG_M&q=85&s=80a9b4bf54862dd386284f175c71f714',
+      'https://mintcdn.com/openlit/MR2TPKwNmIaOL-d_/images/fleet-hub.mp4?fit=max&auto=format&n=MR2TPKwNmIaOL-d_&q=85&s=222e11936668754c23180636490fcfd3',
     description:
       'Get a unified view of all your LLM applications across different environments. Monitor multiple deployments, compare performance metrics, and manage your entire AI fleet from a single dashboard.',
     docs: 'https://docs.openlit.io/latest/openlit/observability/fleet-hub',
