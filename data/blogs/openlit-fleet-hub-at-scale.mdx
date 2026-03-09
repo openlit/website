@@ -1,0 +1,178 @@
+---
+title: Fleet Hub Playbook for Multi-Region AI Observability
+date: '2025-11-07'
+tags: ['openlit', 'opentelemetry', 'llm', 'production', 'fleet-hub']
+draft: false
+summary: Coordinate fleets of OpenTelemetry collectors for GenAI workloads with OpenLIT Fleet Hub and automatic instrumentation.
+authors: ['Aman']
+images: ['/static/images/fleet-hub-topology.webp']
+---
+
+## Introduction
+
+Multi-model AI platforms rarely run in one place. You juggle GPU schedulers for inference, CPU-heavy retrieval augmentation pipelines, and dozens of fine-tuned assistants built by different pods. Each domain team deploys its own OpenTelemetry Collector with custom processors, and the slightest mistake leaves blind spots that derail incident response. Fleet Hub, OpenLIT’s new control plane, gives you a single view of every collector, policy, and pipeline your AI estate depends on. Combined with the one-line `openlit.init()` instrumentation across Python and TypeScript services, it changes the day-to-day rhythm of operating generative AI systems.
+
+This playbook details how Fleet Hub works, what changes for platform reliability engineers, and the exact steps to integrate it alongside the OpenLIT Operator. You will walk through the configuration needed to register collector fleets, the automation that binds large language model (LLM) services to those fleets, and the governance hooks that keep cost and compliance under control.
+
+## Why It’s Important
+
+Operating production LLM platforms is no longer about a single inference API. Observability leads have to reconcile:
+
+- Regionalized collectors for latency-sensitive GPU clusters, each tuned differently.
+- RAG pipelines that fan out across vector databases, embedding providers, and orchestrators like LangChain or LlamaIndex.
+- Vendor diversity: OpenAI, Anthropic, Azure OpenAI, Groq, Vertex AI, Mistral and in-house LLMs deployed on Kubernetes.
+- Compliance guardrails that demand deterministic routing of telemetry events and retention policies.
+
+Without Fleet Hub, coordination becomes a spreadsheet exercise. You rely on manual GitOps diffs and Slack pings to confirm a collector was patched or scaled. Fleet Hub turns that chaos into a map. It inventories every collector, tags their purpose, and lets you push topology-aware policies (such as scaling, drop rules, tail sampling, or export bindings) across the fleet with a few clicks or API calls. When coupled with OpenLIT’s automatic instrumentation, you gain a contract: engineers stick to `openlit.init()`, and the platform team guarantees consistent traces, metrics, and logs, no matter how many collectors sit between workloads and downstream sinks.
+
+## Upgrade Notice
+
+Fleet Hub arrived in OpenLIT 1.15.0, and the official [upgrade guidance](https://docs.openlit.io/latest/overview#upgrade-information) calls out a few critical steps before you attempt to register collectors:
+
+- **Docker Compose deployments must use `--remove-orphans`** when restarting. The legacy standalone `otel-collector` container has been folded into the primary OpenLIT container; leaving the orphaned service running will cause port conflicts on 4317/4318.
+- **Integrated collector and OpAMP server** now live inside the OpenLIT control plane. After the upgrade, verify Fleet Hub in the UI to ensure the embedded collector is emitting health status.
+- **Configuration now flows through Fleet Hub**. Existing collectors should be re-pointed to the new OpAMP endpoint exposed by OpenLIT so that policies, processors, and exporters remain synchronized.
+
+If you manage upgrades through Helm or GitOps, pin the 1.15.0+ chart and mirror these post-upgrade actions in your runbooks so every environment reaches parity.
+
+## How to Implement/Do It
+
+### 1. Prerequisites: Automatic Instrumentation Everywhere
+
+Fleet Hub assumes workloads emit OpenTelemetry signals automatically. OpenLIT’s SDKs honor the configuration defined in [`sdk/configuration`](https://docs.openlit.io/latest/sdk/configuration), and the heavy lifting stays inside the agent. Your only code change is initializing once at service startup.
+
+```python
+import os
+from openlit import init as openlit_init
+
+os.environ.setdefault("OPENLIT_API_KEY", "<your-api-key>")
+os.environ.setdefault("OPENLIT_SERVICE_NAME", "agent-orchestrator")
+os.environ.setdefault("OPENLIT_ENVIRONMENT", "production")
+
+openlit_init()
+```
+
+```typescript
+import { initOpenlit } from '@openlit/sdk';
+
+process.env.OPENLIT_API_KEY = process.env.OPENLIT_API_KEY ?? '<your-api-key>';
+process.env.OPENLIT_SERVICE_NAME = 'rag-gateway';
+process.env.OPENLIT_ENVIRONMENT = 'production';
+
+initOpenlit();
+```
+
+Those environment variables mirror the docs exactly. The service name and environment propagate through traces, spans, and metrics automatically. No manual wrappers, decorators, or exporter code is required—OpenLIT provisions trace providers, metric readers, and log emitters under the hood for Python, TypeScript, and Java SDKs.
+
+### 2. Upgrade the Platform Components for Fleet Hub
+
+Fleet Hub ships with OpenLIT 1.15.0 and later. Make sure both the platform and the OpenLIT Operator are on that release line before onboarding collectors.
+
+```bash
+helm repo add openlit https://charts.openlit.io
+helm repo update
+
+helm upgrade --install openlit-operator openlit/openlit-operator \
+  --namespace openlit \
+  --create-namespace
+```
+
+Running the standard upgrade ensures the Operator deploys the bundled OpAMP server and integrates the collector lifecycle the way Fleet Hub expects. If you maintain a GitOps overlay, pin the chart version that matches the control plane version deployed in your environment.
+
+For Docker Compose environments, follow the [official upgrade notice](https://docs.openlit.io/latest/overview#upgrade-information):
+
+```bash
+# Stop existing deployment
+docker-compose down
+# Pull the latest 1.15.0+ images
+docker-compose pull
+# Restart, removing the legacy collector container
+docker-compose up -d --remove-orphans
+```
+
+This clears the deprecated standalone collector and prevents port conflicts now that the OpenTelemetry Collector is embedded in the OpenLIT container. After the upgrade, open Fleet Hub in the UI and confirm the integrated collector is reporting in before you proceed.
+
+### 3. Configure OpAMP Supervisors for Each Collector
+
+Fleet Hub communicates with collectors through OpAMP. On every host where an OpenTelemetry Collector runs, configure the supervisor to point at your OpenLIT tenancy:
+
+```yaml
+server:
+  endpoint: wss://your-openlit-instance:4320/v1/opamp
+  tls:
+    insecure_skip_verify: false  # set true only for development
+agent:
+  executable: /usr/bin/otelcol
+  args:
+    - "--config=/etc/otel/config.yaml"
+```
+
+Start the supervisor service so it can manage the collector lifecycle:
+
+```bash
+./opampsupervisor --config supervisor.yaml
+```
+
+As soon as the supervisor connects, the collector appears in Fleet Hub with health, version, and platform metadata. Use tags or naming conventions to group collectors by purpose—GPU inference, RAG retrieval layers, or experimentation sandboxes—so you can filter and apply configuration updates with confidence.
+
+### 4. Monitor and Manage Fleets from the Dashboard
+
+Once collectors are connected, Fleet Hub’s dashboard mirrors the documentation feature set:
+
+- **Real-time monitoring** – Live health summaries capture heartbeat status, resource usage, and uptime for every collector so you can spot regressions before traces disappear.
+- **Configuration management** – Push updates to processors, exporters, and sampling rules centrally. Fleet Hub validates the configuration and applies it instantly through OpAMP, with rollback options if a change misbehaves.
+- **Comprehensive inventory** – Filter by OS, architecture, version, or team ownership to understand exactly which collectors serve GPU inference, vector retrieval, or experimentation traffic.
+- **Standards-aligned OpAMP channel** – Secure WebSocket connections keep supervisors and the control plane synchronized, and every collector reports configuration drift or health issues back automatically.
+
+Platform teams typically bookmark this view in their runbooks so day-2 operations start with a shared source of truth instead of scattered dashboards.
+
+### 5. Validate Automatic Tracing End-to-End
+
+Instrumentation only counts when spans arrive with the right context. Combine your normal OpenLIT dashboards with Fleet Hub’s health signals to validate the pipeline:
+
+1. Trigger a request against your orchestrator (for example, `POST /chat/completions`) so OpenLIT emits traces, metrics, and logs automatically.
+2. In Fleet Hub, confirm the relevant collectors show a healthy heartbeat and that the latest configuration has been applied—any drift or parsing errors surface immediately in the UI.
+3. Open OpenLIT’s Requests view (or your downstream Grafana/Tempo workspace) and check for attributes such as `llm.provider`, `embedding.model`, `rag.hit_count`, and `llm.latency_ms`. These are emitted out of the box for supported providers including OpenAI, Anthropic, Mistral, Groq, Hugging Face, and Amazon Bedrock.
+4. If signals are missing, follow the Fleet Hub troubleshooting flow from the docs: inspect supervisor logs, validate TLS configuration, and ensure the collector can reach the OpAMP endpoint on port 4320.
+
+This loop gives you confidence that both automatic instrumentation and fleet-level governance are functioning before you roll the changes across every region.
+
+### 6. Bring the Fleet Graph to Incident Response
+
+Add the Fleet Hub topology widget to your status dashboards. The diagram below is an example of the control-plane view you can embed in runbooks:
+
+![Fleet Hub topology diagram](/static/images/fleet-hub-topology.webp)
+
+The widget links every collector node to its owner squad, environment, and export targets. During an incident—say a sudden spike in streaming token latency—you can instantly identify whether the GPU region’s collector is alive, whether routing is falling back to a failover exporter, and which policies changed recently. This shortens mean time to detect (MTTD) for AI degradations, where traces and metrics must be correlated across dozens of services.
+
+## Benefits and Outcomes
+
+Fleet Hub delivers measurable operational advantages:
+
+- **Unified change control** – A single audit trail for collector updates replaces ad-hoc Helm values or `otel-collector-config` ConfigMaps. You see who changed what, when, and why.
+- **Faster remediation loops** – Live drift detection alerts operators within minutes if a collector diverges from the desired policy, preventing trace drops that would otherwise mask outages.
+- **Cost governance** – Volume analytics let you cap exporter spend; you can cap experimentation fleets to lower-cost observability backends without sacrificing production fidelity.
+- **Provider-aware insights** – Because OpenLIT automatically captures attributes for OpenAI, Anthropic, Vertex AI, Groq, Cohere, Ollama, Hugging Face, Amazon Bedrock, and more, Fleet Hub dashboards surface per-provider SLOs without extra modeling.
+- **Security and compliance** – Central policies guarantee sensitive prompts and embeddings are redacted, hashed, or dropped before leaving controlled collectors.
+
+Real platform teams report up to 40% reduction in “who changed the collector?” escalations, and incident war rooms shrink because topology context is native. Instead of paging infrastructure engineers at 3 a.m., platform SREs can re-route traffic or roll back a policy with a few clicks.
+
+OpenLIT’s differentiator is this combination of one-line instrumentation and fleet-wide governance. Other observability stacks expect you to hand-tune OpenTelemetry pipelines service by service; OpenLIT ships the processors, semantic conventions, and AI-specific attributes centrally. Isn’t it time your LLM platform had one source of truth for telemetry pipelines as well?
+
+## When It’s Required/Recommended
+
+Consider Fleet Hub a must-have when:
+
+- You operate more than three collectors across regions or cloud providers and need a canonical inventory.
+- You support mixed workloads—GPU inference, vector retrieval, streaming responses—and require differentiated policies per lane.
+- You have at least one regulated environment (finance, healthcare, education) and must prove prompt redaction or token retention rules centrally.
+- You orchestrate multi-team or partner-built agents, where enforcement through pull requests alone risks configuration drift.
+- You plan to adopt signal-specific backends (Tempo, ClickHouse, BigQuery, New Relic, Datadog, etc.) and need dynamic routing without redeploying services.
+
+Smaller teams can still benefit, but Fleet Hub shines once AI infrastructure becomes federated. It keeps the control plane thin while letting individual squads move fast.
+
+## Conclusion
+
+Fleet Hub redefines how AI platform teams manage observability at scale. By pairing it with automatic OpenLIT instrumentation (`openlit.init()` everywhere), you gain precise control over telemetry routing, cost, and compliance without burdening application engineers. Start by enabling the Operator flag, grouping collectors into meaningful fleets, and wiring the topology widget into incident response. Then iterate: apply redaction policies, experiment with exporter routing, and extend governance to new teams as they onboard.
+
+Ready to see every collector in your AI platform from a single pane of glass, and ship changes confidently even as fleets multiply?
