@@ -12,14 +12,24 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: post.lastmod || post.date,
     }))
 
-  const routes = ['', 'blog'].map((route) => ({
-    // const routes = [''].map((route) => ({
-    url: `${siteUrl}/${route}`,
+  const compareRoutes = [
+    'openlit-vs-langfuse',
+    'openlit-vs-helicone',
+    'openlit-vs-langsmith',
+    'openlit-vs-datadog',
+  ].map((slug) => ({
+    url: `${siteUrl}/compare/${slug}`,
     lastModified: new Date().toISOString().split('T')[0],
   }))
 
-  return [...routes, ...blogRoutes]
-  // return [...routes]
+  const routes = ['', 'blogs', 'about-us', 'pricing', 'compare', 'privacy-policy', 'terms'].map(
+    (route) => ({
+      url: `${siteUrl}/${route}`,
+      lastModified: new Date().toISOString().split('T')[0],
+    })
+  )
+
+  return [...routes, ...compareRoutes, ...blogRoutes]
 }
 
 export const runtime = 'edge'

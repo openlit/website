@@ -7,7 +7,12 @@ import { MoonIcon, SunIcon } from '@radix-ui/react-icons'
 type THEME = 'dark' | 'light'
 
 export function useTheme() {
-  const [theme, setTheme] = useState<THEME>('light')
+  const [theme, setTheme] = useState<THEME>(() => {
+    if (typeof document !== 'undefined') {
+      return document.documentElement.classList.contains('dark') ? 'dark' : 'light'
+    }
+    return 'dark'
+  })
   const toggleTheme = useCallback(() => {
     const value: THEME = theme === 'dark' ? 'light' : 'dark'
     document.documentElement.classList.remove(theme)

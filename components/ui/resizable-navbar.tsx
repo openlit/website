@@ -215,8 +215,8 @@ export const NavbarLogo = () => {
         src="/static/images/logo.png"
         alt="openlit's Logo"
         priority
-        width={24}
-        height={24}
+        width={40}
+        height={40}
       />
       {siteMetadata.headerTitle}
     </Link>

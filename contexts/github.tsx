@@ -1,3 +1,4 @@
+'use client'
 import siteMetadata from '@/data/siteMetadata'
 import { createContext, useEffect, useState } from 'react'
 

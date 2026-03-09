@@ -90,7 +90,7 @@ const Feature = (feature: {
       key={feature.title}
       className="relative overflow-hidden rounded-3xl bg-gradient-to-b from-neutral-100 to-white p-6 dark:from-neutral-900 dark:to-neutral-950"
     >
-      <Grid size={20} />
+      <Grid size={20} index={feature.index} />
       <p className="relative z-20 text-base font-bold text-neutral-800 dark:text-white">
         {feature.title}
       </p>
@@ -101,14 +101,77 @@ const Feature = (feature: {
   )
 }
 
-const Grid = ({ pattern, size }: { pattern?: number[][]; size?: number }) => {
-  const p = pattern ?? [
-    [Math.floor(Math.random() * 4) + 7, Math.floor(Math.random() * 6) + 1],
-    [Math.floor(Math.random() * 4) + 7, Math.floor(Math.random() * 6) + 1],
-    [Math.floor(Math.random() * 4) + 7, Math.floor(Math.random() * 6) + 1],
-    [Math.floor(Math.random() * 4) + 7, Math.floor(Math.random() * 6) + 1],
-    [Math.floor(Math.random() * 4) + 7, Math.floor(Math.random() * 6) + 1],
-  ]
+// Deterministic patterns indexed by card position — avoids Math.random() which
+// causes SSR/client hydration mismatch and CLS on every page load.
+const GRID_PATTERNS = [
+  [
+    [7, 1],
+    [8, 3],
+    [10, 2],
+    [9, 5],
+    [11, 1],
+  ],
+  [
+    [8, 2],
+    [9, 4],
+    [7, 6],
+    [10, 1],
+    [8, 5],
+  ],
+  [
+    [9, 1],
+    [7, 3],
+    [11, 2],
+    [8, 4],
+    [10, 6],
+  ],
+  [
+    [10, 2],
+    [8, 1],
+    [9, 3],
+    [7, 5],
+    [11, 4],
+  ],
+  [
+    [7, 4],
+    [9, 2],
+    [10, 5],
+    [8, 6],
+    [11, 3],
+  ],
+  [
+    [11, 1],
+    [9, 5],
+    [7, 2],
+    [10, 4],
+    [8, 3],
+  ],
+  [
+    [8, 6],
+    [10, 3],
+    [7, 4],
+    [9, 1],
+    [11, 5],
+  ],
+  [
+    [9, 3],
+    [11, 2],
+    [8, 5],
+    [7, 1],
+    [10, 4],
+  ],
+]
+
+const Grid = ({
+  pattern,
+  size,
+  index = 0,
+}: {
+  pattern?: number[][]
+  size?: number
+  index?: number
+}) => {
+  const p = pattern ?? GRID_PATTERNS[index % GRID_PATTERNS.length]
   return (
     <div className="pointer-events-none absolute left-1/2 top-0  -ml-20 -mt-2 h-full w-full [mask-image:linear-gradient(white,transparent)]">
       <div className="absolute inset-0 bg-gradient-to-r  from-zinc-100/30 to-zinc-300/30 opacity-100 [mask-image:radial-gradient(farthest-side_at_top,white,transparent)] dark:from-zinc-900/30 dark:to-zinc-900/30">

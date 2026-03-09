@@ -6,7 +6,7 @@ import {
   useMotionTemplate,
   useMotionValue,
   useTransform,
-} from 'framer-motion'
+} from 'motion/react'
 import { useRef } from 'react'
 import { cn } from 'lib/utils'
 
@@ -84,10 +84,14 @@ export const MovingBorder = ({
 }) => {
   // eslint-disable-next-line
   const pathRef = useRef<any>()
+  const lengthRef = useRef<number>(0)
   const progress = useMotionValue<number>(0)
 
   useAnimationFrame((time) => {
-    const length = pathRef.current?.getTotalLength()
+    if (!lengthRef.current && pathRef.current) {
+      lengthRef.current = pathRef.current.getTotalLength()
+    }
+    const length = lengthRef.current
     if (length) {
       const pxPerMillisecond = length / duration
       progress.set((time * pxPerMillisecond) % length)

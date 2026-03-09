@@ -1,4 +1,3 @@
-'use client'
 import Hero from '@/components/home/hero'
 import Sponsored from '@/components/home/sponsored'
 import ProductDetails from '@/components/home/product-details'

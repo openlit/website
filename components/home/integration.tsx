@@ -1,3 +1,4 @@
+'use client'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '../ui/card'
 import { Badge, BadgeWithGradient } from '../ui/badge'
 import { Button } from '../ui/button'
@@ -28,7 +29,7 @@ const IntegrationsGrid = () => {
     return () => clearInterval(interval)
   }, [isPlaying, totalPages])
 
-  const handleDotClick = (pageIndex) => {
+  const handleDotClick = (pageIndex: number) => {
     setCurrentPage(pageIndex)
     setIsPlaying(false) // Pause auto-play when user interacts
     // Resume auto-play after 5 seconds
@@ -80,11 +81,15 @@ const IntegrationsGrid = () => {
           <button
             key={index}
             onClick={() => handleDotClick(index)}
-            className={`h-3 w-3 rounded-full transition-all duration-200 ${
-              currentPage === index ? 'scale-125 bg-blue-600' : 'bg-gray-300 hover:bg-gray-400'
-            }`}
+            className="flex h-11 w-11 items-center justify-center"
             aria-label={`Go to page ${index + 1}`}
-          />
+          >
+            <span
+              className={`h-3 w-3 rounded-full transition-all duration-200 ${
+                currentPage === index ? 'scale-125 bg-blue-600' : 'bg-gray-300 hover:bg-gray-400'
+              }`}
+            />
+          </button>
         ))}
       </div>
     </div>
@@ -118,17 +123,6 @@ openlit.init();`,
     docs: 'https://docs.openlit.io/latest/openlit/quickstart-ai-observability#typescript-2',
   },
 }
-
-const integrations = [
-  { name: 'OpenAI', logo: '🤖', status: 'Supported' },
-  { name: 'Anthropic', logo: '🧠', status: 'Supported' },
-  { name: 'Cohere', logo: '🔮', status: 'Supported' },
-  { name: 'Hugging Face', logo: '🤗', status: 'Supported' },
-  { name: 'LangChain', logo: '🦜', status: 'Supported' },
-  { name: 'LlamaIndex', logo: '🦙', status: 'Supported' },
-  { name: 'Mistral AI', logo: '🌪️', status: 'Supported' },
-  { name: 'Ollama', logo: '🌋', status: 'Supported' },
-]
 
 export function Integration() {
   return (

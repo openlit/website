@@ -3,21 +3,33 @@ export const organisationSchema = {
   '@type': 'Organization',
   name: 'OpenLIT',
   url: 'https://openlit.io',
-  logo: 'https://openlit.io/static/images/logo.png',
+  logo: {
+    '@type': 'ImageObject',
+    url: 'https://openlit.io/static/images/logo.png',
+    width: 512,
+    height: 512,
+  },
   description:
     'OpenLIT is an open-source platform built on OpenTelemetry, providing observability for GenAI and LLM applications.',
-  sameAs: [
-    'https://x.com/openlit_io',
-    'https://github.com/openlit/openlit',
-    'https://linkedin.com/company/openlit',
-  ],
-  foundingDate: '2023',
+  email: 'contact@openlit.io',
+  foundingDate: '2023-01-01',
   founders: [
     {
       '@type': 'Person',
       name: 'Aman Agarwal',
     },
   ],
+  sameAs: [
+    'https://twitter.com/openlit_io',
+    'https://github.com/openlit/openlit',
+    'https://linkedin.com/company/openlit',
+    'https://www.youtube.com/@openlit',
+  ],
+  contactPoint: {
+    '@type': 'ContactPoint',
+    email: 'contact@openlit.io',
+    contactType: 'customer support',
+  },
 }
 
 export const applicationSchema = {
@@ -25,14 +37,14 @@ export const applicationSchema = {
   '@type': 'SoftwareApplication',
   name: 'OpenLIT',
   operatingSystem: 'Linux, Windows, macOS',
-  applicationCategory: 'Observability Platform',
+  applicationCategory: 'DeveloperApplication',
   description:
     'Open-source platform for observability and application performance monitoring (APM) built on OpenTelemetry, optimized for GenAI and LLM applications.',
   offers: {
     '@type': 'Offer',
     price: '0',
     priceCurrency: 'USD',
-    category: 'Free Software',
+    availability: 'https://schema.org/OnlineOnly',
   },
   url: 'https://openlit.io',
   downloadUrl: 'https://github.com/openlit/openlit/pkgs/container/openlit',
@@ -40,30 +52,11 @@ export const applicationSchema = {
     'Unified Traces and Metrics',
     'OpenTelemetry Support',
     'LLM Observability',
-    'Developer-Friendly Interface',
-  ],
-}
-
-export const faqSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'FAQPage',
-  mainEntity: [
-    {
-      '@type': 'Question',
-      name: 'What is OpenLIT?',
-      acceptedAnswer: {
-        '@type': 'Answer',
-        text: 'OpenLIT is an open-source platform that provides observability and application performance monitoring for GenAI and LLM applications using OpenTelemetry.',
-      },
-    },
-    {
-      '@type': 'Question',
-      name: 'Is OpenLIT free to use?',
-      acceptedAnswer: {
-        '@type': 'Answer',
-        text: 'Yes, OpenLIT is open-source and free to use for developers and organizations.',
-      },
-    },
+    'Fleet Hub',
+    'Prompt Hub',
+    'Vault',
+    'OpenGround',
+    'Kubernetes Operator',
   ],
 }
 

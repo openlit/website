@@ -1,60 +1,187 @@
 ---
-title: Designing an Observability pipeline for LLM Applications
+title: Designing an Observability Pipeline for LLM Applications
 date: '2024-08-15'
+lastmod: '2025-03-01'
 tags: ['openlit', 'llm', 'observability']
 draft: false
-summary: Observability for LLMs ensures performance, user insights, and GPU monitoring.
+summary: Observability for LLMs ensures performance, user insights, and GPU monitoring. Learn how to design and implement a complete observability pipeline for your LLM applications.
 authors: ['Aman']
 images: ['https://miro.medium.com/v2/resize:fit:720/format:webp/1*4hJYEnPo5VaxRUBjmvsqgg.jpeg']
 ---
 
 ![](https://miro.medium.com/v2/resize:fit:720/format:webp/1*4hJYEnPo5VaxRUBjmvsqgg.jpeg)
 
-With the rapid adoption of Large Language Models (LLMs) like OpenAI’s GPT-4, Cohere’s Command, Mistral Mixtral models, and Anthropic’s Claude, the complexity and dynamism of modern applications are skyrocketing. As developers and tech companies integrate LLM capabilities into their products, having a robust observability pipeline is no longer a luxury — it’s an absolute necessity.
+With the rapid adoption of Large Language Models (LLMs) like OpenAI's GPT-4, Cohere's Command, Mistral Mixtral models, and Anthropic's Claude, the complexity and dynamism of modern applications are skyrocketing. As developers and tech companies integrate LLM capabilities into their products, having a robust observability pipeline is no longer a luxury — it's an absolute necessity.
 
-Observability ensures that your LLM-driven applications not only perform reliably but also continuously improve over time. In this article, we’ll delve into the core aspects of observability for LLM applications, highlight essential metrics, and show how OpenLIT — an OpenTelemetry-native observability and evaluation tool for LLMs and GPUs — can address most of your challenges.
+Observability ensures that your LLM-driven applications not only perform reliably but also continuously improve over time. In this article, we'll delve into the core aspects of observability for LLM applications, highlight essential metrics, and show how OpenLIT — an OpenTelemetry-native observability and evaluation tool for LLMs and GPUs — can address most of your challenges.
 
 ## Why Is Observability Essential in LLM Applications?
 
 The answer lies in the inherently unpredictable and opaque nature of LLMs. With their complex architectures, understanding why an LLM behaves a certain way or debugging performance issues can be a daunting task. More so, the rich and nuanced outputs of LLMs necessitate a deep dive into their workings to ensure they meet user expectations, adhere to security guidelines, and align with business goals.
 
+Unlike traditional microservices where you control the logic entirely, LLMs are probabilistic systems. The same input can produce different outputs at different temperatures. Their behavior drifts as the underlying model is updated by providers. And their costs scale directly with usage in ways that can be surprising without instrumentation.
+
+## The Architecture of an LLM Observability Pipeline
+
+A well-designed observability pipeline for LLM applications has three layers:
+
+1. **Instrumentation layer** — SDK code running in your application that captures spans, metrics, and logs
+2. **Collection layer** — an OpenTelemetry Collector that receives, processes, and routes telemetry data
+3. **Storage and visualization layer** — a backend (ClickHouse, Prometheus, Grafana, etc.) where data is stored and queried
+
+OpenLIT covers all three layers out of the box. The Python SDK instruments your LLM calls automatically, the bundled OpenTelemetry Collector receives the data, and the OpenLIT UI (backed by ClickHouse) provides storage and visualization. You can also route the data to external backends like Datadog or Grafana if you prefer.
+
+Here is a minimal setup:
+
+```python
+import openlit
+
+openlit.init(
+    otlp_endpoint="http://localhost:4318",
+    environment="production",
+    application_name="my-llm-app"
+)
+```
+
+From this point, every LLM call in your application automatically produces a trace with token counts, cost, prompt, response, and timing data — no additional instrumentation required.
+
 ## Key Elements to Monitor in LLM Applications
 
-### Performance Metrics:
+### Performance Metrics: The RED Method
 
 A popular and effective framework for monitoring these metrics is the RED Method, introduced by Tom Wilkie at GrafanaCon EU in 2015. This method focuses on three key areas:
 
-- **Rate**: Monitor the number of requests per second your application handles. In the context of LLM applications, this gives you a clear picture of your LLMs throughput and can help identify if your LLM is capable of managing load efficiently without bottlenecks. For instance, a sudden drop in request rate might indicate issues with scalability or availability of the LLM service. Monitoring rate can also help improve queue size management, ensuring that requests are processed in a timely manner.
-- **Errors**: Track the number of requests that fail. An uptick in error rates can signal underlying issues with LLM API calls, such as authentication failures, rate limiting errors, or model callback issues. Early detection through error rate monitoring can prevent larger systemic breakdowns and find frequent causes of errors, which can then be addressed to refine your LLM’s performance and reliability.
-- **Duration**: Measure the amount of time each request takes to be processed, also known as response time or latency. While fast responses are crucial for a smooth user experience in general, in the LLM landscape, minimizing latency becomes even more critical. LLM tasks, such as generating text or processing complex queries, can be resource-intensive, leading to longer response times. Monitoring and optimizing these durations ensure that users receive timely and accurate responses, which is essential for maintaining user engagement and satisfaction. High latency might also indicate inefficiencies in the model’s parametrs or the need for lighter LLMs.
+- **Rate**: Monitor the number of requests per second your application handles. In the context of LLM applications, this gives you a clear picture of your LLM's throughput and can help identify if your LLM is capable of managing load efficiently without bottlenecks. A sudden drop in request rate might indicate issues with scalability or availability of the LLM service.
 
-### User Interactions:
+- **Errors**: Track the number of requests that fail. An uptick in error rates can signal underlying issues with LLM API calls, such as authentication failures, rate limiting errors, or model callback issues. Early detection through error rate monitoring can prevent larger systemic breakdowns.
+
+- **Duration**: Measure the amount of time each request takes to be processed, also known as response time or latency. LLM tasks, such as generating text or processing complex queries, can be resource-intensive, leading to longer response times. High latency might also indicate inefficiencies in the model's parameters or the need for lighter-weight models.
+
+### LLM-Specific Metrics
+
+Beyond the RED Method, LLM applications require additional signals:
+
+- **Token usage per request** (prompt tokens, completion tokens, total tokens)
+- **Cost per request** (calculated from token counts × provider pricing)
+- **Model name and version** (to compare performance across model upgrades)
+- **Temperature and max_tokens** (request parameters that influence output)
+- **First token latency** (time to receive the first streaming token)
+- **Prompt length trends** (growing prompts inflate costs significantly)
+
+OpenLIT captures all of these automatically as OpenTelemetry span attributes, aligned to the [OpenTelemetry Semantic Conventions for Generative AI](https://github.com/open-telemetry/semantic-conventions/tree/main/docs/gen-ai).
+
+### User Interactions
 
 - **Usage Patterns**: Monitor how users interact with your application, including the frequency and context of queries. This helps identify common use cases and operational challenges, allowing for better optimization.
-- **Feedback**: Collect and analyze user feedback to identify pain points and improvement opportunities. Direct user feedback is crucial for refining the LLM’s performance and meeting user expectations.
-- **Behavioral Insights**: Understanding user behavior helps refine the model and enhance the user experience. Analyzing user interactions can uncover trends and preferences that inform improvements and increase satisfaction.
+- **Feedback**: Collect and analyze user feedback to identify pain points and improvement opportunities. Direct user feedback is crucial for refining the LLM's performance and meeting user expectations.
+- **Behavioral Insights**: Understanding user behavior helps refine the model and enhance the user experience. Analyzing user interactions can uncover trends and preferences that inform improvements.
 
-## GPU Performance Metrics:
+## GPU Performance Metrics
 
-When self-hosting LLMs using tools like GPT4All or Ollama, it’s crucial to monitor and manage GPU performance due to the heavy dependency LLMs have on GPUs.
+When self-hosting LLMs using tools like GPT4All or Ollama, it's crucial to monitor and manage GPU performance due to the heavy dependency LLMs have on GPUs. Enable GPU metrics collection in OpenLIT with one flag:
 
-- **Utilization Percentage**: Track the percentage of GPU resources being used. High utilization indicates efficient use of GPU capabilities, while consistently low utilization might suggest inefficiencies or bottlenecks in the system.
-- **Power Usage**: Monitor the power consumption of your GPU. Keeping an eye on power usage helps in identifying potential issues like overheating or inefficiencies in processing that lead to lower performance efficieny.
-- **Memory Usage**: Keep tabs on the amount of GPU memory being used. LLMs can be memory-intensive, so monitoring memory usage ensures that the GPU has sufficient resources to handle tasks without running into out-of-memory errors.
-- **Temperature**: Track the temperature of your GPU. High temperatures can lead to thermal throttling, reducing performance, and potentially damaging your hardware performance.
+```python
+openlit.init(collect_gpu_stats=True)
+```
 
-## Do we really need a new tool for LLM Observability?
+Key GPU metrics OpenLIT collects:
 
-Nope, existing observability tools like Grafana, DataDog, and SigNoz already do a great job. So, what’s different? Most AI developers aren’t SREs; they need a quick and easy solution for comprehensive monitoring. That’s where OpenLIT comes into play.
+- **Utilization Percentage**: The fraction of GPU compute being used. High, sustained utilization (>90%) can signal that you need additional GPU capacity.
+- **Power Usage**: Power consumption in watts. Spikes can indicate inefficient batch sizes or concurrent inference jobs competing for resources.
+- **Memory Usage**: GPU VRAM consumed. LLMs — especially 7B+ parameter models — are memory-intensive. Running out of VRAM causes the model to fall back to CPU, dramatically increasing latency.
+- **Temperature**: GPU core temperature. Sustained temperatures above 85°C can trigger thermal throttling, reducing throughput by 20-50%.
+
+## Building the Collection Layer with OpenTelemetry Collector
+
+For production deployments, running a standalone OpenTelemetry Collector between your application and your backends gives you flexibility to route data to multiple destinations simultaneously. Here is a minimal Collector configuration:
+
+```yaml
+receivers:
+  otlp:
+    protocols:
+      http:
+        endpoint: '0.0.0.0:4318'
+
+exporters:
+  otlphttp/openlit:
+    endpoint: 'http://openlit:4318'
+  prometheus:
+    endpoint: '0.0.0.0:8889'
+  logging:
+    loglevel: debug
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      exporters: [otlphttp/openlit, logging]
+    metrics:
+      receivers: [otlp]
+      exporters: [otlphttp/openlit, prometheus]
+```
+
+This routes traces and metrics to OpenLIT while simultaneously exposing metrics via Prometheus for Grafana dashboards.
+
+## Instrumenting a Multi-Step LangChain Pipeline
+
+For framework-based applications, OpenLIT instruments the entire chain automatically. Here is an example with LangChain:
+
+```python
+import openlit
+from langchain_openai import ChatOpenAI
+from langchain.prompts import ChatPromptTemplate
+from langchain.schema.output_parser import StrOutputParser
+
+openlit.init()
+
+llm = ChatOpenAI(model="gpt-4o")
+prompt = ChatPromptTemplate.from_template("Summarize the following text: {text}")
+chain = prompt | llm | StrOutputParser()
+
+result = chain.invoke({"text": "Large language models are trained on..."})
+print(result)
+```
+
+OpenLIT creates a parent trace for the chain invocation with child spans for each step — prompt formatting, the OpenAI API call, and output parsing — giving you a complete picture of where time is spent.
+
+## Do We Really Need a New Tool for LLM Observability?
+
+Existing observability tools like Grafana, DataDog, and SigNoz already do a great job for general infrastructure. So, what's different? Most AI developers aren't SREs; they need a quick and easy solution for comprehensive monitoring without configuring dashboards from scratch. That's where OpenLIT comes into play.
+
+OpenLIT provides:
+
+- Pre-built dashboards tuned for LLM metrics (cost, tokens, model comparison)
+- Automatic cost calculation for every major LLM provider
+- Prompt and response storage alongside traces for debugging
+- GPU monitoring without separate configuration
+- Semantic Convention compliance so data is portable to any backend
 
 ## Introducing OpenLIT: Open-source LLM Observability
 
 [OpenLIT](https://github.com/openlit/openlit) is an OpenTelemetry-native tool designed to help developers gain insights into the performance of their LLM applications in production. It automatically collects LLM input and output metadata and monitors GPU performance for self-hosted LLMs.
 
-- Advanced Monitoring of LLM, VectorDB & GPU Performance: OpenLIT offers automatic instrumentation that generates traces and metrics, providing insights into the performance and costs of your LLM, VectorDB and GPU usage. This helps analyze how your applications perform in environments like production, enabling efficient resource usage and scalability.
-- Cost Tracking for Custom and Fine-Tuned Models: OpenLIT allows tailored cost tracking for specific models using a custom JSON file. This feature ensures precise budgeting and alignment with your project needs.
-- OpenTelemetry-native & Vendor-neutral SDKs: Built with native OpenTelemetry support, OpenLIT integrates seamlessly with your projects. This vendor-neutral approach reduces barriers to integration, making OpenLIT an intuitive part of your software stack rather than an additional complexity.
-  So, [OpenLIT](https://docs.openlit.io) acts as a simple solution to collect observability data from LLM applications, which can then be viewed in any of the OpenTelemetry-compatible observability tools mentioned above.
+Key capabilities:
 
-To get started with OpenLIT, I recommend checking out this
-https://github.com/openlit/openlit
+- **Advanced Monitoring of LLM, VectorDB & GPU Performance**: Automatic instrumentation generates traces and metrics, providing insights into performance and costs for your LLM, VectorDB, and GPU usage.
+- **Cost Tracking for Custom and Fine-Tuned Models**: Tailored cost tracking for specific models using a custom JSON pricing file. Ensures precise budgeting aligned with your project needs.
+- **OpenTelemetry-Native & Vendor-Neutral SDKs**: Built with native OpenTelemetry support, integrates seamlessly with your projects. This vendor-neutral approach reduces barriers to integration.
+
+## Alerting on LLM Metrics
+
+An observability pipeline is only complete when it alerts you to problems before users notice. Key alert thresholds to configure:
+
+| Metric               | Warning         | Critical        |
+| -------------------- | --------------- | --------------- |
+| p95 response latency | > 5s            | > 10s           |
+| Error rate           | > 1%            | > 5%            |
+| Hourly API cost      | > $10           | > $50           |
+| Token usage (24h)    | > 80% of budget | > 95% of budget |
+| GPU memory usage     | > 85%           | > 95%           |
+
+Connect your OpenTelemetry metrics to Grafana Alerting, PagerDuty, or Datadog Monitors to receive notifications when these thresholds are crossed.
+
+## Conclusion
+
+A complete LLM observability pipeline consists of automatic instrumentation at the SDK level, a flexible collection layer using OpenTelemetry Collector, and a storage and visualization backend. OpenLIT provides all three with minimal configuration. By combining the RED Method with LLM-specific metrics (token usage, cost, model version) and GPU monitoring, you gain the visibility needed to run LLM applications confidently in production.
+
+To get started, visit the [OpenLIT GitHub repository](https://github.com/openlit/openlit) and follow the quickstart guide to have your first traces flowing in under five minutes.

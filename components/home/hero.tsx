@@ -2,8 +2,8 @@
 import siteMetadata from 'data/siteMetadata'
 import { Button as MovingBorder } from '../ui/moving-borders'
 import { StarFilledIcon } from '@radix-ui/react-icons'
-import { motion } from 'motion/react'
 import { Dialog, DialogContent, DialogTrigger } from '../ui/dialog'
+import Image from 'next/image'
 
 export default function Hero() {
   return (
@@ -28,14 +28,8 @@ export default function Hero() {
             </span>
           </a>
         </div>
-        <h1 className="relative z-10 mx-auto mt-6 max-w-6xl text-center text-2xl font-semibold md:text-4xl lg:text-8xl">
-          {/* <FlipWords words={words} /> */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="space-y-6"
-          >
+        <div className="relative z-10 mx-auto mt-6 max-w-6xl text-center text-2xl font-semibold md:text-4xl lg:text-8xl">
+          <div className="space-y-6">
             <h1 className="text-5xl font-bold leading-tight md:text-6xl lg:text-7xl">
               <span className="bg-gradient-to-br from-gray-900 to-gray-600 bg-clip-text text-transparent dark:from-white dark:to-gray-300">
                 Open Source Platform for
@@ -49,8 +43,8 @@ export default function Hero() {
               Monitor, debug, and improve your LLM applications with comprehensive observability,
               tracing, and evaluation tools. Built for production workloads.
             </p>
-          </motion.div>
-        </h1>
+          </div>
+        </div>
         <div className="relative z-10 mt-6 flex flex-wrap items-center justify-center gap-4">
           <a
             href="https://docs.openlit.io/latest/introduction"
@@ -105,18 +99,24 @@ export default function Hero() {
           <a
             href="https://www.producthunt.com/posts/openlit?embed=true&utm_source=badge-featured&utm_medium=badge&utm_souce=badge-openlit"
             target="_blank"
+            rel="noopener noreferrer"
           >
-            <img
+            <Image
               src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=460690&theme=light"
-              alt="Openlit - One&#0032;click&#0032;observability&#0032;&#0038;&#0032;evals&#0032;for&#0032;LLMs&#0032;&#0038;&#0032;GPUs | Product Hunt"
-              className="h-[54px]"
+              alt="Openlit - One click observability and evals for LLMs and GPUs | Product Hunt"
+              width={250}
+              height={54}
+              unoptimized
             />
           </a>
           <a href="https://fazier.com/launches/openlit-2" target="_blank" rel="noopener noreferrer">
-            <img
+            <Image
               src="https://fazier.com/api/v1/public/badges/embed_image.svg?launch_id=779&badge_type=daily"
-              alt="Openlit Fazier"
-              className="h-full rounded"
+              alt="OpenLIT featured on Fazier"
+              width={210}
+              height={54}
+              className="rounded"
+              unoptimized
             />
           </a>
         </div>

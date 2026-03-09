@@ -39,9 +39,10 @@ export const AnimatedTestimonials = ({
     }
   }, [autoplay])
 
-  const randomRotateY = () => {
-    return Math.floor(Math.random() * 21) - 10
-  }
+  // Deterministic rotations per index — avoids re-computing random values on every render
+  const ROTATIONS = [-8, 5, -3, 7, -6, 4, -9, 6]
+  const rotateForIndex = (index: number) => ROTATIONS[index % ROTATIONS.length]
+
   return (
     <div className="mx-auto max-w-sm px-4 py-20 font-sans antialiased md:max-w-4xl md:px-8 lg:px-12">
       <div className="relative grid grid-cols-1 gap-20 md:grid-cols-2">
@@ -55,13 +56,13 @@ export const AnimatedTestimonials = ({
                     opacity: 0,
                     scale: 0.9,
                     z: -100,
-                    rotate: randomRotateY(),
+                    rotate: rotateForIndex(index),
                   }}
                   animate={{
                     opacity: isActive(index) ? 1 : 0.7,
                     scale: isActive(index) ? 1 : 0.95,
                     z: isActive(index) ? 0 : -100,
-                    rotate: isActive(index) ? 0 : randomRotateY(),
+                    rotate: isActive(index) ? 0 : rotateForIndex(index),
                     zIndex: isActive(index) ? 40 : testimonials.length + 2 - index,
                     y: isActive(index) ? [0, -80, 0] : 0,
                   }}
@@ -69,7 +70,7 @@ export const AnimatedTestimonials = ({
                     opacity: 0,
                     scale: 0.9,
                     z: 100,
-                    rotate: randomRotateY(),
+                    rotate: rotateForIndex(index),
                   }}
                   transition={{
                     duration: 0.4,
@@ -117,23 +118,15 @@ export const AnimatedTestimonials = ({
               {testimonials[active].designation}
             </p>
             <motion.p className="mt-8 text-lg text-gray-500 dark:text-neutral-300">
-              {testimonials[active].quote.split('').map((word, index) => (
+              {testimonials[active].quote.split(' ').map((word, index) => (
                 <motion.span
                   key={index}
-                  initial={{
-                    filter: 'blur(10px)',
-                    opacity: 0,
-                    y: 5,
-                  }}
-                  animate={{
-                    filter: 'blur(0px)',
-                    opacity: 1,
-                    y: 0,
-                  }}
+                  initial={{ opacity: 0, y: 5 }}
+                  animate={{ opacity: 1, y: 0 }}
                   transition={{
                     duration: 0.2,
                     ease: 'easeInOut',
-                    delay: 0.02 * index,
+                    delay: 0.04 * index,
                   }}
                   className="inline-block"
                 >

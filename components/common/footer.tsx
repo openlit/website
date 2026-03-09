@@ -22,8 +22,8 @@ export default function Footer() {
               src="/static/images/logo.png"
               alt="openlit's Logo"
               priority
-              width={24}
-              height={24}
+              width={40}
+              height={40}
             />
             {siteMetadata.headerTitle}
           </a>
@@ -122,17 +122,20 @@ export default function Footer() {
           <h3 className="text-lg font-bold">About</h3>
           <Item link={'/about-us'} text="About us" />
           <Item link={'/blogs'} text="Blogs" />
+          <Item link={'/pricing'} text="Pricing" />
+          <Item link={'/compare'} text="Compare" />
           <Item link={'https://opencollective.com/openlit'} text="Support Us" />
         </div>
 
         <div className="flex flex-col gap-2">
           <h3 className="text-lg font-bold">Legal</h3>
+          <Item link={'/privacy-policy'} text="Privacy Policy" />
+          <Item link={'/terms'} text="Terms of Service" />
           <Item link={'https://github.com/openlit/openlit/blob/main/SECURITY.md'} text="Security" />
           <Item
             link={'https://github.com/openlit/openlit/blob/main/CONTRIBUTING.md'}
             text="Contributing"
           />
-          <Item link={'https://github.com/openlit/openlit/blob/main/README.md'} text="Readme" />
           <Item link={'https://github.com/openlit/openlit/blob/main/LICENSE'} text="License" />
           <Item
             link={'https://github.com/openlit/openlit/blob/main/CODE_OF_CONDUCT.md'}
