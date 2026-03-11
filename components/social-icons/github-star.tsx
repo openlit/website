@@ -18,8 +18,8 @@ export default function GithubStar() {
         </svg>
         Star
       </span>
-      <span className="flex items-center border-l border-[#3d444d] bg-[#0d1117] px-4 py-1.5 text-xs font-bold text-[#f0f6fc]">
-        {info?.stargazers_count}
+      <span className="flex min-w-[3rem] items-center border-l border-[#3d444d] bg-[#0d1117] px-4 py-1.5 text-xs font-bold text-[#f0f6fc]">
+        {info?.stargazers_count ?? '…'}
       </span>
     </a>
   )

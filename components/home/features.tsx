@@ -97,8 +97,9 @@ export function FeaturesWithImage(props: {
                 src={props.image}
                 alt={props.title}
                 className="w-[48rem] max-w-none rounded-xl shadow-2xl ring-1 ring-gray-400/10 dark:hidden sm:w-[57rem]"
-                width={2400}
-                height={1800}
+                width={912}
+                height={684}
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 57rem"
                 loading="lazy"
                 decoding="async"
               />
@@ -106,8 +107,9 @@ export function FeaturesWithImage(props: {
                 src={props.imageDark}
                 alt={props.title}
                 className="hidden w-[48rem] max-w-none rounded-xl shadow-2xl ring-1 ring-gray-400/10 dark:block sm:w-[57rem]"
-                width={2400}
-                height={1800}
+                width={912}
+                height={684}
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 57rem"
                 loading="lazy"
                 decoding="async"
               />

@@ -1,6 +1,6 @@
 'use client'
 import React, { useEffect, useRef, useState } from 'react'
-import { motion, useTransform, useScroll, useVelocity, useSpring } from 'framer-motion'
+import { motion, useTransform, useScroll, useVelocity, useSpring } from 'motion/react'
 import { cn } from 'lib/utils'
 
 export default function TracingBeam({

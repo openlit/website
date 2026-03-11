@@ -15,8 +15,6 @@ import ThemeToggle from '../theme-toggle'
 import Image from 'next/image'
 import { Slack } from '../social-icons/icons'
 import GithubStar from '../social-icons/github-star'
-import { organisationSchema, applicationSchema, webpageSchema, faqSchema } from '../structuredData'
-
 import {
   Navbar,
   NavBody,
@@ -32,8 +30,12 @@ import { useState } from 'react'
 export default function Header() {
   const navItems = [
     {
-      name: 'About us',
-      link: '/about-us',
+      name: 'Pricing',
+      link: '/pricing',
+    },
+    {
+      name: 'Compare',
+      link: '/compare',
     },
     {
       name: 'Blogs',
@@ -49,22 +51,6 @@ export default function Header() {
 
   return (
     <header className="sticky top-0 z-40">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(organisationSchema) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(applicationSchema) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(webpageSchema) }}
-      />
       <Navbar>
         {/* Desktop Navigation */}
         <NavBody>

@@ -1,4 +1,3 @@
-'use client'
 import { GithubProvider } from 'contexts/github'
 
 import Header from '@/components/common/header'

@@ -4,7 +4,12 @@ import { allBlogs } from 'contentlayer/generated'
 import { genPageMetadata } from 'app/seo'
 import { BadgeWithGradient } from '@/components/ui/badge'
 
-export const metadata = genPageMetadata({ title: 'Blog' })
+export const metadata = genPageMetadata({
+  title: 'Blog',
+  description:
+    'In-depth articles, tutorials, and best practices for AI observability, LLM monitoring, OpenTelemetry instrumentation, and building production-grade AI applications.',
+  canonicalUrl: 'https://openlit.io/blogs',
+})
 
 export default function BlogPage() {
   const posts = allCoreContent(sortPosts(allBlogs))

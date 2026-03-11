@@ -119,7 +119,14 @@ export default function ProductDetails() {
                 aria-labelledby={item.id}
                 aria-hidden={!isActive}
               >
-                <video src={item.video} autoPlay muted loop className="mb-6 w-full rounded-lg" />
+                <video
+                  src={isActive ? item.video : undefined}
+                  autoPlay={isActive}
+                  muted
+                  loop
+                  preload="none"
+                  className="mb-6 w-full rounded-lg"
+                />
 
                 <div className="border-border grid grid-cols-1 gap-6 border-t border-solid px-6 pb-6 pt-6 lg:grid-cols-12 lg:gap-8">
                   <div className="lg:col-span-8">

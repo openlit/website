@@ -110,16 +110,35 @@ export const Blog = defineDocumentType(() => ({
     ...computedFields,
     structuredData: {
       type: 'json',
-      resolve: (doc) => ({
-        '@context': 'https://schema.org',
-        '@type': 'BlogPosting',
-        headline: doc.title,
-        datePublished: doc.date,
-        dateModified: doc.lastmod || doc.date,
-        description: doc.summary,
-        image: doc.images ? doc.images[0] : siteMetadata.socialBanner,
-        url: `${siteMetadata.siteUrl}/${doc._raw.flattenedPath}`,
-      }),
+      resolve: (doc) => {
+        const rawImage = doc.images ? doc.images[0] : siteMetadata.socialBanner
+        const absoluteImage =
+          typeof rawImage === 'string' && rawImage.startsWith('http')
+            ? rawImage
+            : `${siteMetadata.siteUrl}${rawImage}`
+        return {
+          '@context': 'https://schema.org',
+          '@type': 'BlogPosting',
+          headline: doc.title,
+          datePublished: new Date(doc.date).toISOString(),
+          dateModified: new Date(doc.lastmod || doc.date).toISOString(),
+          description: doc.summary,
+          image: absoluteImage,
+          url: `${siteMetadata.siteUrl}/${doc._raw.flattenedPath}`,
+          mainEntityOfPage: {
+            '@type': 'WebPage',
+            '@id': `${siteMetadata.siteUrl}/${doc._raw.flattenedPath}`,
+          },
+          publisher: {
+            '@type': 'Organization',
+            name: 'OpenLIT',
+            logo: {
+              '@type': 'ImageObject',
+              url: `${siteMetadata.siteUrl}/static/images/logo.png`,
+            },
+          },
+        }
+      },
     },
   },
 }))

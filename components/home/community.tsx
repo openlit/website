@@ -1,3 +1,4 @@
+'use client'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from 'components/ui/card'
 import { BadgeWithGradient } from 'components/ui/badge'
 import { Button } from 'components/ui/button'
