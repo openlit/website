@@ -1,5 +1,6 @@
 import Hero from '@/components/home/hero'
 import Sponsored from '@/components/home/sponsored'
+import { TrustedBy } from '@/components/home/trusted-by'
 import ProductDetails from '@/components/home/product-details'
 import { Integration } from '@/components/home/integration'
 import { Community } from '@/components/home/community'
@@ -11,6 +12,7 @@ export default function Page() {
       <div className="mx-auto flex min-h-screen w-full flex-col items-center justify-between">
         <Hero />
         <Sponsored />
+        <TrustedBy />
         <ProductDetails />
         <Integration />
         <Community />
