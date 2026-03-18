@@ -4,7 +4,7 @@ module.exports = {
   author: 'OpenLIT',
   headerTitle: 'OpenLIT',
   description:
-    'Elevate APM with OpenLIT, the open-source platform built on OpenTelemetry. Simplify observability with unified traces and metrics in one powerful interface. Transform development effortlessly today!',
+    'OpenLIT is an open-source LLM observability platform built on OpenTelemetry. Monitor token usage, cost, and latency. Self-host for free under Apache 2.0.',
   about: `Cutting-edge GenAI and LLM Application Observability tool, seamlessly integrated with OpenTelemetry for effortless monitoring. Simplifying the integration process with just one line of code, OpenLIT ensures smooth observability for GenAI projects, including popular libraries like OpenAI and HuggingFace, and vector databases like ChromaDB. 
   
   Committed to adhering to the Semantic Conventions of the OpenTelemetry community, OpenLIT continuously updates to meet the latest observability standards, providing invaluable insights to enhance application performance and reliability.`,
@@ -16,7 +16,7 @@ module.exports = {
   socialBanner: '/static/images/twitter-card.png',
   email: 'contact@openlit.io',
   github: 'https://github.com/openlit',
-  twitter: 'https://twitter.com/openlit_io',
+  twitter: 'https://x.com/openlit_io',
   discord: 'https://discord.com/invite/RbNPvG54',
   linkedin: 'https://www.linkedin.com/company/openlit/',
   youtube: 'https://www.youtube.com/@openlit',

@@ -183,3 +183,11 @@ input:-webkit-autofill:focus {
 .marquee-track:hover .animate-marquee {
   animation-play-state: paused;
 }
+
+/* ─── High Contrast Mode fallback for gradient text ────────────────────── */
+@media (forced-colors: active) {
+  .bg-clip-text {
+    -webkit-text-fill-color: ButtonText;
+    color: ButtonText;
+  }
+}

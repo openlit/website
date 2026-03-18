@@ -25,8 +25,7 @@ export default function ListLayoutWithTags({
 
   const FirstPost = () => {
     const { path, date, title, summary, tags, authors, images } = displayPosts[0]
-    const displayImage =
-      images && images.length > 0 ? images[0] : 'https://picsum.photos/seed/picsum/800/400'
+    const displayImage = images && images.length > 0 ? images[0] : '/static/images/twitter-card.png'
     const authorDetails = authors?.length
       ? coreContent(allAuthors.find((p) => p.slug === authors[0]) as Authors)
       : undefined
@@ -88,11 +87,11 @@ export default function ListLayoutWithTags({
       <div className="grid gap-y-10">
         <FirstPost />
       </div>
-      <div className="grid grid-cols-2 gap-10">
+      <div className="grid grid-cols-1 gap-10 sm:grid-cols-2">
         {displayPosts.slice(1).map((post) => {
           const { path, date, title, summary, tags, authors, images } = post
           const displayImage =
-            images && images.length > 0 ? images[0] : 'https://picsum.photos/seed/picsum/800/400'
+            images && images.length > 0 ? images[0] : '/static/images/twitter-card.png'
 
           const authorDetails = authors?.length
             ? coreContent(allAuthors.find((p) => p.slug === authors[0]) as Authors)

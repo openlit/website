@@ -77,7 +77,7 @@ function LogoItem({ entry }: { entry: LogoEntry }) {
   }
 
   return (
-    <span className="shrink-0 text-base font-semibold opacity-40 transition-opacity duration-300 hover:opacity-80">
+    <span className="shrink-0 text-base font-semibold opacity-60 transition-opacity duration-300 hover:opacity-80">
       {entry.name}
     </span>
   )
@@ -90,7 +90,7 @@ export function TrustedBy() {
   return (
     <section className="w-full py-12">
       <div className="container mb-8 text-center">
-        <p className="text-sm font-medium uppercase tracking-widest opacity-40">
+        <p className="text-sm font-medium uppercase tracking-widest opacity-60">
           Trusted &amp; used by engineering teams at
         </p>
       </div>

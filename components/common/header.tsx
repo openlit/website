@@ -92,7 +92,7 @@ export default function Header() {
                 key={`mobile-link-${idx}`}
                 href={item.link}
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="relative"
+                className="relative block px-4 py-3"
               >
                 <span className="block">{item.name}</span>
               </a>

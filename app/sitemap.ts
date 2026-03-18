@@ -1,6 +1,7 @@
 import { MetadataRoute } from 'next'
 import { allBlogs } from 'contentlayer/generated'
 import siteMetadata from 'data/siteMetadata'
+import competitors from 'data/comparisons'
 
 export default function sitemap(): MetadataRoute.Sitemap {
   const siteUrl = siteMetadata.siteUrl
@@ -12,22 +13,23 @@ export default function sitemap(): MetadataRoute.Sitemap {
       lastModified: post.lastmod || post.date,
     }))
 
-  const compareRoutes = [
-    'openlit-vs-langfuse',
-    'openlit-vs-helicone',
-    'openlit-vs-langsmith',
-    'openlit-vs-datadog',
-  ].map((slug) => ({
-    url: `${siteUrl}/compare/${slug}`,
-    lastModified: new Date().toISOString().split('T')[0],
+  const compareRoutes = competitors.map((c) => ({
+    url: `${siteUrl}/compare/${c.slug}`,
+    lastModified: '2025-03-14',
   }))
 
-  const routes = ['', 'blogs', 'about-us', 'pricing', 'compare', 'privacy-policy', 'terms'].map(
-    (route) => ({
-      url: `${siteUrl}/${route}`,
-      lastModified: new Date().toISOString().split('T')[0],
-    })
-  )
+  const routes = [
+    { route: '', lastModified: '2025-03-14' },
+    { route: 'blogs', lastModified: '2025-03-14' },
+    { route: 'about-us', lastModified: '2025-03-14' },
+    { route: 'pricing', lastModified: '2025-03-14' },
+    { route: 'compare', lastModified: '2025-03-14' },
+    { route: 'privacy-policy', lastModified: '2025-03-09' },
+    { route: 'terms', lastModified: '2025-03-09' },
+  ].map(({ route, lastModified }) => ({
+    url: route ? `${siteUrl}/${route}` : siteUrl,
+    lastModified,
+  }))
 
   return [...routes, ...compareRoutes, ...blogRoutes]
 }

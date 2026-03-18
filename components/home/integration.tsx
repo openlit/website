@@ -8,7 +8,7 @@ import { CodeBlock } from 'components/ui/code-block'
 import SUPPORTED_INTEGRATIONS from 'constants/integrations'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
+import { startTransition, useEffect, useState } from 'react'
 
 const IntegrationsGrid = () => {
   // Sample integration data - replace with your actual data
@@ -23,7 +23,9 @@ const IntegrationsGrid = () => {
     if (!isPlaying) return
 
     const interval = setInterval(() => {
-      setCurrentPage((prev) => (prev + 1) % totalPages)
+      startTransition(() => {
+        setCurrentPage((prev) => (prev + 1) % totalPages)
+      })
     }, 3000) // Change page every 3 seconds
 
     return () => clearInterval(interval)
@@ -174,7 +176,12 @@ export function Integration() {
                         {/* <pre className="bg-muted p-4 rounded-lg overflow-x-auto text-sm">
 												<code>{code}</code>
 											</pre> */}
-                        <Button variant="ghost" size="sm" className="absolute right-2 top-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          aria-label="Copy code to clipboard"
+                          className="absolute right-2 top-2"
+                        >
                           <Copy className="h-4 w-4" />
                         </Button>
                       </div>

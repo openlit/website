@@ -3,9 +3,8 @@ import 'css/tailwind.css'
 import { Space_Grotesk } from 'next/font/google'
 import siteMetadata from 'data/siteMetadata'
 import { Metadata, Viewport } from 'next'
-import { cookies } from 'next/headers'
 import Script from 'next/script'
-import { organisationSchema, applicationSchema, webpageSchema } from '@/components/structuredData'
+import { organisationSchema, applicationSchema, websiteSchema } from '@/components/structuredData'
 
 const space_grotesk = Space_Grotesk({
   subsets: ['latin'],
@@ -59,21 +58,24 @@ export const metadata: Metadata = {
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
-  const cookieStore = cookies()
-  const theme = cookieStore.get('theme')
-
   return (
     <html
       lang={siteMetadata.language}
-      className={`${space_grotesk.variable} ${theme?.value || 'dark'} scroll-smooth`}
+      className={`${space_grotesk.variable} dark scroll-smooth`}
       suppressHydrationWarning
     >
       <head>
-        {/* Preconnect to critical third-party origins to eliminate TLS handshake latency */}
-        <link rel="preconnect" href="https://www.googletagmanager.com" />
-        <link rel="preconnect" href="https://mintcdn.com" />
-        <link rel="dns-prefetch" href="https://api.producthunt.com" />
-        <link rel="dns-prefetch" href="https://fazier.com" />
+        {/* Inline theme detection to prevent FOUC — runs before first paint */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `(function(){try{var t=document.cookie.match(/theme=([^;]+)/);if(t&&t[1]==='light'){document.documentElement.classList.remove('dark')}}catch(e){}})()`,
+          }}
+        />
+        {/* Preconnect to critical third-party origins */}
+        <link rel="preconnect" href="https://www.googletagmanager.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://mintcdn.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://api.producthunt.com" crossOrigin="anonymous" />
+        <link rel="preconnect" href="https://fazier.com" crossOrigin="anonymous" />
         <link rel="dns-prefetch" href="https://opensource.nyc3.cdn.digitaloceanspaces.com" />
         <link rel="apple-touch-icon" sizes="76x76" href="/static/favicons/apple-touch-icon.png" />
         <link rel="icon" type="image/png" sizes="32x32" href="/static/favicons/favicon-32x32.png" />
@@ -94,7 +96,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(webpageSchema) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
         />
       </head>
       <body className="bg-stone-white text-black antialiased dark:bg-stone-950 dark:text-white">
