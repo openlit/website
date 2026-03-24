@@ -114,7 +114,7 @@ export default function Footer() {
                   key={label}
                   href={href}
                   aria-label={label}
-                  className="flex h-11 w-11 shrink-0 items-center justify-center fill-current opacity-60 hover:text-brandPrimary hover:opacity-100"
+                  className="flex h-6 w-6 shrink-0 items-center justify-center fill-current opacity-60 hover:text-brandPrimary hover:opacity-100"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
