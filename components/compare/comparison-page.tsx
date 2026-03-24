@@ -112,7 +112,7 @@ export default function ComparisonPage({ competitor }: { competitor: Competitor 
             href={competitor.openSourceUrl}
             target="_blank"
             rel="noopener noreferrer"
-            className="text-sm opacity-40 hover:opacity-70"
+            className="text-sm opacity-60 hover:opacity-80"
           >
             {competitor.name} on GitHub ↗
           </a>

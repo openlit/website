@@ -12,7 +12,8 @@ const ContentSecurityPolicy = `
   media-src 'self' *.s3.amazonaws.com openlit.io mintcdn.com;
   connect-src *;
   font-src 'self';
-  frame-src openlit.io story.screenspace.io cards.producthunt.com
+  frame-src openlit.io story.screenspace.io cards.producthunt.com;
+  frame-ancestors 'none';
 `
 
 const securityHeaders = [
@@ -44,12 +45,12 @@ const securityHeaders = [
   // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Strict-Transport-Security
   {
     key: 'Strict-Transport-Security',
-    value: 'max-age=31536000; includeSubDomains',
+    value: 'max-age=31536000; includeSubDomains; preload',
   },
   // https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/Feature-Policy
   {
     key: 'Permissions-Policy',
-    value: 'camera=(), microphone=(), geolocation=()',
+    value: 'camera=(), microphone=(), geolocation=(), payment=(), usb=()',
   },
 ]
 

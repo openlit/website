@@ -5,7 +5,7 @@ interface PageSEOProps {
   title: string
   description?: string
   image?: string
-  canonicalUrl?: string
+  canonicalUrl: string
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   [key: string]: any
 }

@@ -114,7 +114,7 @@ export default function Footer() {
                   key={label}
                   href={href}
                   aria-label={label}
-                  className="flex w-5 shrink-0 items-center justify-center fill-current opacity-60 hover:text-brandPrimary hover:opacity-100"
+                  className="flex h-11 w-11 shrink-0 items-center justify-center fill-current opacity-60 hover:text-brandPrimary hover:opacity-100"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -128,7 +128,7 @@ export default function Footer() {
           <div className="grid flex-1 grid-cols-2 gap-x-8 gap-y-10 sm:grid-cols-3 lg:grid-cols-5">
             {linkGroups.map((group) => (
               <div key={group.heading} className="flex flex-col gap-3">
-                <h3 className="text-sm font-semibold uppercase tracking-wider opacity-40">
+                <h3 className="text-sm font-semibold uppercase tracking-wider opacity-70">
                   {group.heading}
                 </h3>
                 {group.links.map((item) => (
@@ -141,12 +141,12 @@ export default function Footer() {
       </section>
 
       <section className="container border-t border-white/10 py-6 text-center">
-        <p className="text-sm opacity-50">
+        <p className="text-sm opacity-70">
           &copy; {new Date().getFullYear()} AI Engineering Platform by{' '}
           <a
             target="_blank"
             href={siteMetadata.github}
-            className="text-brandPrimary opacity-100 transition-all hover:underline"
+            className="text-brandPrimary underline opacity-100 transition-all hover:no-underline"
           >
             OpenLIT
           </a>

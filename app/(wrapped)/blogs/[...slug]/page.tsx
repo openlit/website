@@ -11,6 +11,7 @@ import { Metadata } from 'next'
 import siteMetadata from 'data/siteMetadata'
 import { notFound } from 'next/navigation'
 import TracingBeam from '@/components/ui/tracing-beam'
+import { createWebPageSchema } from '@/components/structuredData'
 
 export async function generateMetadata({
   params,
@@ -102,12 +103,27 @@ export default async function Page({ params }: { params: { slug: string[] } }) {
     }
   })
 
+  const breadcrumbSchema = createWebPageSchema(
+    post.title,
+    `${siteMetadata.siteUrl}/${post._raw.flattenedPath}`,
+    post.summary || '',
+    [
+      { name: 'Home', url: 'https://openlit.io' },
+      { name: 'Blog', url: 'https://openlit.io/blogs' },
+      { name: post.title, url: `${siteMetadata.siteUrl}/${post._raw.flattenedPath}` },
+    ]
+  )
+
   return (
-    <TracingBeam className="max-w-[70%] pl-8 pr-4 md:pl-5">
+    <TracingBeam className="w-full px-4 md:max-w-[70%] md:pl-8 md:pr-4">
       <section className="relative py-6">
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
         />
         <PostLayout content={mainContent} authorDetails={authorDetails} next={next} prev={prev}>
           {null}

@@ -116,7 +116,8 @@ export const Blog = defineDocumentType(() => ({
           typeof rawImage === 'string' && rawImage.startsWith('http')
             ? rawImage
             : `${siteMetadata.siteUrl}${rawImage}`
-        return {
+        const rt = readingTime(doc.body.raw)
+        const schema: Record<string, unknown> = {
           '@context': 'https://schema.org',
           '@type': 'BlogPosting',
           headline: doc.title,
@@ -125,6 +126,8 @@ export const Blog = defineDocumentType(() => ({
           description: doc.summary,
           image: absoluteImage,
           url: `${siteMetadata.siteUrl}/${doc._raw.flattenedPath}`,
+          inLanguage: 'en-US',
+          wordCount: rt.words,
           mainEntityOfPage: {
             '@type': 'WebPage',
             '@id': `${siteMetadata.siteUrl}/${doc._raw.flattenedPath}`,
@@ -138,6 +141,10 @@ export const Blog = defineDocumentType(() => ({
             },
           },
         }
+        if (doc.tags && Array.isArray(doc.tags) && doc.tags.length > 0) {
+          schema.keywords = (doc.tags as string[]).join(', ')
+        }
+        return schema
       },
     },
   },

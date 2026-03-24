@@ -16,6 +16,7 @@ const ITEMS = [
     description:
       'Monitor and trace your LLM applications in real-time. Visualize request flows, identify bottlenecks, and understand the complete lifecycle of every AI interaction with OpenTelemetry-powered distributed tracing.',
     docs: 'https://docs.openlit.io/latest/openlit/observability/traces',
+    poster: '/static/images/previews/request.png',
   },
   {
     id: 'evaluation',
@@ -26,6 +27,7 @@ const ITEMS = [
     description:
       'Run online/offline evals via UI (experiment with prompts/models) and via SDKs (experiment with end-to-end application).',
     docs: 'https://docs.openlit.io/latest/sdk/features/evaluations',
+    poster: '/static/images/previews/exception.png',
   },
   {
     id: 'prompt-hub',
@@ -36,6 +38,7 @@ const ITEMS = [
     description:
       'Centrally manage, version, and deploy prompts across your applications. Experiment with different prompt variations, track performance, and iterate faster with version control for your prompts.',
     docs: 'https://docs.openlit.io/latest/openlit/prompts-experiments/prompt-hub',
+    poster: '/static/images/previews/prompt.png',
   },
   {
     id: 'experiments',
@@ -46,6 +49,7 @@ const ITEMS = [
     description:
       'Experiment with your prompts and models to find the best performing ones. OpenGround is a playground for you to experiment with your prompts and models.',
     docs: 'https://docs.openlit.io/latest/openlit/prompts-experiments/openground',
+    poster: '/static/images/previews/openground.png',
   },
   {
     id: 'dashboard',
@@ -56,6 +60,7 @@ const ITEMS = [
     description:
       'Get a unified view of all your LLM applications across different environments. Write custom SQL queries to analyze your AI telemetry data, create and resize custom widgets with flexible configurations and layouts and visualize telemetry from any OpenTelemetry-instrumented tool.',
     docs: 'https://docs.openlit.io/latest/openlit/dashboards/overview',
+    poster: '/static/images/previews/dashboard.png',
   },
   {
     id: 'fleet-hub',
@@ -66,6 +71,7 @@ const ITEMS = [
     description:
       'Get a unified view of all your LLM applications across different environments. Monitor multiple deployments, compare performance metrics, and manage your entire AI fleet from a single dashboard.',
     docs: 'https://docs.openlit.io/latest/openlit/observability/fleet-hub',
+    poster: '/static/images/previews/dashboard-dark.png',
   },
 ]
 
@@ -75,16 +81,19 @@ export default function ProductDetails() {
     <section className="mx-auto max-w-6xl p-8 py-20">
       <div className="mb-12 text-center">
         <BadgeWithGradient variant="outline">Features</BadgeWithGradient>
-        <h1 className="mb-4 bg-gradient-to-r from-primary-400 via-orange-500 to-red-500 bg-clip-text text-4xl font-bold text-transparent">
+        <h2 className="mb-4 bg-gradient-to-r from-primary-400 via-orange-500 to-red-500 bg-clip-text text-4xl font-bold text-transparent">
           Powerful Features for Modern Teams
-        </h1>
+        </h2>
         <p className="text-muted-foreground text-xl">
           Everything you need to build, ship, and scale your AI applications
         </p>
       </div>
 
       {/* Tab Navigation */}
-      <div className="mb-8 flex flex-wrap justify-center gap-2 border-b border-stone-200 shadow-sm dark:border-stone-800">
+      <div
+        role="tablist"
+        className="mb-8 flex flex-wrap justify-center gap-2 border-b border-stone-200 shadow-sm dark:border-stone-800"
+      >
         {ITEMS.map((item) => {
           return (
             <button
@@ -125,8 +134,11 @@ export default function ProductDetails() {
                   muted
                   loop
                   preload="none"
+                  poster={item.poster}
                   className="mb-6 w-full rounded-lg"
-                />
+                >
+                  <track kind="captions" label="English" default />
+                </video>
 
                 <div className="border-border grid grid-cols-1 gap-6 border-t border-solid px-6 pb-6 pt-6 lg:grid-cols-12 lg:gap-8">
                   <div className="lg:col-span-8">

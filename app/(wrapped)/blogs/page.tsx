@@ -3,6 +3,7 @@ import { allCoreContent, sortPosts } from 'pliny/utils/contentlayer'
 import { allBlogs } from 'contentlayer/generated'
 import { genPageMetadata } from 'app/seo'
 import { BadgeWithGradient } from '@/components/ui/badge'
+import { createWebPageSchema } from '@/components/structuredData'
 
 export const metadata = genPageMetadata({
   title: 'Blog',
@@ -11,12 +12,26 @@ export const metadata = genPageMetadata({
   canonicalUrl: 'https://openlit.io/blogs',
 })
 
+const pageSchema = createWebPageSchema(
+  'Blog — OpenLIT',
+  'https://openlit.io/blogs',
+  'In-depth articles, tutorials, and best practices for AI observability and LLM monitoring.',
+  [
+    { name: 'Home', url: 'https://openlit.io' },
+    { name: 'Blog', url: 'https://openlit.io/blogs' },
+  ]
+)
+
 export default function BlogPage() {
   const posts = allCoreContent(sortPosts(allBlogs))
   const initialDisplayPosts = posts
 
   return (
     <div className="mx-auto max-w-6xl">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(pageSchema) }}
+      />
       <section className="relative overflow-hidden px-4 py-20">
         <div className="container mx-auto max-w-6xl px-0">
           <div className="space-y-6 text-center">

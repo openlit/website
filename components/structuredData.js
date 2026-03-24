@@ -1,6 +1,7 @@
 export const organisationSchema = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
+  '@id': 'https://openlit.io/#organization',
   name: 'OpenLIT',
   url: 'https://openlit.io',
   logo: {
@@ -20,7 +21,7 @@ export const organisationSchema = {
     },
   ],
   sameAs: [
-    'https://twitter.com/openlit_io',
+    'https://x.com/openlit_io',
     'https://github.com/openlit/openlit',
     'https://linkedin.com/company/openlit',
     'https://www.youtube.com/@openlit',
@@ -28,13 +29,14 @@ export const organisationSchema = {
   contactPoint: {
     '@type': 'ContactPoint',
     email: 'contact@openlit.io',
-    contactType: 'customer support',
+    contactType: 'customer service',
   },
 }
 
 export const applicationSchema = {
   '@context': 'https://schema.org',
   '@type': 'SoftwareApplication',
+  '@id': 'https://openlit.io/#software',
   name: 'OpenLIT',
   operatingSystem: 'Linux, Windows, macOS',
   applicationCategory: 'DeveloperApplication',
@@ -44,10 +46,13 @@ export const applicationSchema = {
     '@type': 'Offer',
     price: '0',
     priceCurrency: 'USD',
-    availability: 'https://schema.org/OnlineOnly',
+    availability: 'https://schema.org/InStock',
   },
   url: 'https://openlit.io',
   downloadUrl: 'https://github.com/openlit/openlit/pkgs/container/openlit',
+  codeRepository: 'https://github.com/openlit/openlit',
+  license: 'https://github.com/openlit/openlit/blob/main/LICENSE',
+  author: { '@id': 'https://openlit.io/#organization' },
   featureList: [
     'Unified Traces and Metrics',
     'OpenTelemetry Support',
@@ -60,34 +65,34 @@ export const applicationSchema = {
   ],
 }
 
-export const webpageSchema = {
+export const websiteSchema = {
   '@context': 'https://schema.org',
-  '@type': 'WebPage',
-  name: 'OpenLIT - OpenTelemetry-Native Observability Platform',
+  '@type': 'WebSite',
+  '@id': 'https://openlit.io/#website',
+  name: 'OpenLIT',
   url: 'https://openlit.io',
-  description:
-    'OpenLIT is an open-source platform for observability and APM. Built on OpenTelemetry, it provides seamless monitoring for GenAI and LLM applications.',
-  breadcrumb: {
-    '@type': 'BreadcrumbList',
-    itemListElement: [
-      {
+  publisher: { '@id': 'https://openlit.io/#organization' },
+}
+
+export function createWebPageSchema(name, url, description, breadcrumbItems) {
+  const schema = {
+    '@context': 'https://schema.org',
+    '@type': 'WebPage',
+    name,
+    url,
+    description,
+    isPartOf: { '@id': 'https://openlit.io/#website' },
+  }
+  if (breadcrumbItems && breadcrumbItems.length > 0) {
+    schema.breadcrumb = {
+      '@type': 'BreadcrumbList',
+      itemListElement: breadcrumbItems.map((item, i) => ({
         '@type': 'ListItem',
-        position: 1,
-        name: 'Home',
-        item: 'https://openlit.io',
-      },
-      {
-        '@type': 'ListItem',
-        position: 2,
-        name: 'Docs',
-        item: 'https://docs.openlit.io/latest/introduction',
-      },
-      {
-        '@type': 'ListItem',
-        position: 3,
-        name: 'Blogs',
-        item: 'https://openlit.io/blogs',
-      },
-    ],
-  },
+        position: i + 1,
+        name: item.name,
+        item: item.url,
+      })),
+    }
+  }
+  return schema
 }

@@ -7,8 +7,8 @@ import Image from 'next/image'
 
 export default function Hero() {
   return (
-    <div className="relative flex min-h-screen w-full items-center justify-center px-4">
-      <section className="relative mb-10 flex min-h-screen w-full flex-col items-center justify-center">
+    <div className="relative flex min-h-[100dvh] w-full items-center justify-center px-4">
+      <section className="relative mb-10 flex min-h-[100dvh] w-full flex-col items-center justify-center">
         <div className="flex justify-center">
           <a
             href={siteMetadata.siteRepo}
@@ -49,7 +49,7 @@ export default function Hero() {
           <a
             href="https://docs.openlit.io/latest/introduction"
             target="_blank"
-            className={`group relative flex items-center gap-4 rounded-full border border-primary-300 bg-gradient-to-br from-primary-300 to-primary-400 px-8 py-2 text-sm text-primary-800 transition duration-200 hover:shadow-2xl hover:shadow-white/[0.1]`}
+            className={`group relative flex items-center gap-4 rounded-full border border-primary-300 bg-gradient-to-br from-primary-300 to-primary-400 px-8 py-3 text-sm text-primary-800 transition duration-200 hover:shadow-2xl hover:shadow-white/[0.1]`}
           >
             <div className="absolute inset-x-0 -top-px mx-auto h-px w-1/2 bg-gradient-to-r  from-transparent via-primary-800 to-transparent shadow-2xl" />
             <b className="relative z-20">Documentation</b>
@@ -73,25 +73,24 @@ export default function Hero() {
             </svg>
           </a>
           <Dialog>
-            <DialogTrigger>
-              <a
-                target="_blank"
-                className={`group relative flex items-center gap-4 rounded-full border border-primary-300 bg-white px-8 py-2 text-sm text-primary-800 transition duration-200 hover:shadow-2xl hover:shadow-white/[0.1] dark:bg-black`}
+            <DialogTrigger asChild>
+              <button
+                type="button"
+                className={`group relative flex items-center gap-4 rounded-full border border-primary-300 bg-white px-8 py-3 text-sm text-primary-800 transition duration-200 hover:shadow-2xl hover:shadow-white/[0.1] dark:bg-black`}
               >
                 <div className="absolute inset-x-0 -top-px mx-auto h-px w-1/2 bg-gradient-to-r  from-transparent via-primary-800 to-transparent shadow-2xl" />
                 <b className="relative z-20">View Demo</b>
-              </a>
+              </button>
             </DialogTrigger>
             <DialogContent
               showCloseButton={false}
               className="flex h-auto w-auto items-center justify-center bg-white dark:bg-black [&]:max-w-full [&]:sm:max-w-full"
             >
-              {/* eslint-disable jsx-a11y/media-has-caption */}
               <video controls className="m-auto">
                 <source src="https://openlit.io/static/images/demo.mp4" type="video/mp4" />
+                <track kind="captions" label="English" default />
                 Your browser does not support the video tag.
               </video>
-              {/* eslint-enable jsx-a11y/media-has-caption */}
             </DialogContent>
           </Dialog>
         </div>

@@ -165,3 +165,29 @@ input:-webkit-autofill:focus {
 .no-visible-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+/* ─── Trusted-by marquee ─────────────────────────────────────────────────── */
+@keyframes marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  animation: marquee 30s linear infinite;
+}
+
+.marquee-track:hover .animate-marquee {
+  animation-play-state: paused;
+}
+
+/* ─── High Contrast Mode fallback for gradient text ────────────────────── */
+@media (forced-colors: active) {
+  .bg-clip-text {
+    -webkit-text-fill-color: ButtonText;
+    color: ButtonText;
+  }
+}
