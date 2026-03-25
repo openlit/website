@@ -6,7 +6,7 @@ tags: ['openlit', 'prompt-management', 'prompt-hub', 'versioning', 'llm', 'exper
 draft: false
 summary: Manage LLM prompts with version control, variable templating, and A/B comparison using OpenLIT's Prompt Hub and OpenGround. Includes SDK integration examples.
 authors: ['OpenLIT']
-images: ['/static/images/blog/managing-llm-prompts-at-scale.png']
+images: ['/static/images/managing-llm-prompts-at-scale.png']
 ---
 
 # Managing LLM Prompts at Scale: Version Control, Variables, and Experiments
