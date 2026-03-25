@@ -6,7 +6,7 @@ tags: ['openlit', 'opentelemetry', 'llm', 'observability', 'getting-started']
 draft: false
 summary: Add full tracing, metrics, and cost tracking to any LLM application with one line of code using OpenLIT and OpenTelemetry. Works with OpenAI, Anthropic, and 40+ providers.
 authors: ['OpenLIT']
-images: ['/static/images/blog/llm-observability-in-2-minutes.png']
+images: ['/static/images/llm-observability-in-2-minutes.png']
 ---
 
 # How to Add Observability to Your LLM App in 2 Minutes with OpenTelemetry
