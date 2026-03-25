@@ -6,7 +6,7 @@ tags: ['openlit', 'cost-tracking', 'finops', 'llm', 'opentelemetry', 'production
 draft: false
 summary: Break down LLM costs by model, service, user, and environment using OpenLIT. Auto-calculated token costs exported as OpenTelemetry metrics to Grafana, Datadog, or any backend.
 authors: ['OpenLIT']
-images: ['/static/images/blog/llm-cost-tracking-production.png']
+images: ['/static/images/llm-cost-tracking-production.png']
 ---
 
 # Tracking LLM Costs in Production: Per-Model, Per-Request, Per-User Attribution
