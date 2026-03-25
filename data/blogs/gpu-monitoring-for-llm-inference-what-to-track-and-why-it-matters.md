@@ -6,7 +6,7 @@ tags: ['openlit', 'gpu', 'nvidia', 'opentelemetry', 'infrastructure', 'llm']
 draft: false
 summary: Learn which GPU metrics matter for LLM inference workloads and how to collect them as OpenTelemetry signals using OpenLIT's GPU collector. Supports NVIDIA and AMD.
 authors: ['OpenLIT']
-images: ['/static/images/blog/gpu-monitoring-llm-inference.png']
+images: ['/static/images/gpu-monitoring-llm-inference.png']
 ---
 
 # GPU Monitoring for LLM Inference: What to Track and Why It Matters
