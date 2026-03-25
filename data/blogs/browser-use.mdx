@@ -1,0 +1,164 @@
+Track Every Action, Every Decision of your browser agent with OpenLIT
+
+Web automation with AI agents has become increasingly powerful, but understanding what your agents are doing and why can be challenging. browser-use enables AI agents to control web browsers through natural language instructions; however, without proper monitoring, debugging failures, or optimizing performance becomes a matter of guesswork.
+Why We Need to Monitor Browser Agents
+
+AI-powered browser automation represents a paradigm shift in web interaction, but it introduces unique observability challenges that traditional monitoring tools weren't designed to handle. When your browser-use agent fails or behaves unexpectedly, you need answers:
+
+Which step failed and why? - Agents execute multi-step workflows where one failure can cascade through the entire task
+What was the agent thinking at each decision point? - Understanding the LLM's reasoning is crucial for debugging and optimization
+How much is each automation task costing? - LLM token usage directly impacts operational costs, especially with vision-enabled models
+Which actions succeeded and which ones failed? - Browser actions can fail silently or produce unexpected results
+How long did each step take? - Performance bottlenecks can occur in LLM inference, browser actions, or network requests
+What browser state led to this decision? - Page content, available elements, and navigation history all influence agent behavior
+
+Without proper observability, debugging these issues means adding print statements, guessing at failure points, and blindly optimizing costs. You're essentially flying blind through complex automation workflows where every decision matters.
+The Hidden Complexity of Agent Failures
+
+Consider a typical scenario: Your agent fails to complete a checkout flow on an e-commerce site. Without proper tracing, you're left wondering:
+Did the LLM misinterpret the page structure?
+Was an element selector incorrect?
+Did the page take too long to load?
+Did the agent run out of allowed steps?
+Was the failure due to cost-saving measures that used a less capable model?
+
+Each of these failures requires different solutions, but without visibility into the agent's execution, you're reduced to trial-and-error debugging.
+The Role of OpenTelemetry in AI Observability
+
+OpenTelemetry has emerged as the industry standard for observability, offering a vendor-neutral approach to collecting traces, metrics, and logs. For AI applications, OpenTelemetry's structured tracing is particularly powerful because it can capture:
+
+Distributed execution flows - Following requests across multiple services and components
+Hierarchical relationships - Parent-child relationships between operations (agent → step → LLM call → browser action)
+Rich contextual data - Arbitrary attributes attached to each span for detailed analysis
+Performance metrics - Timing data at every level of the execution stack
+Standard semantic conventions - Consistent attribute naming for AI workloads (model name, token counts, prompts, completions)
+
+Why OpenTelemetry Matters for AI Agents
+
+Traditional APM tools excel at monitoring web servers and databases, but they fall short with AI agents because:
+
+AI workflows are non-deterministic - The same input can produce different outputs, making traditional error tracking insufficient
+Context is everything - You need to see not just that a step failed, but what the agent was thinking and what information it had
+Token costs are variable - Unlike fixed compute costs, LLM costs vary dramatically based on prompt size and model choice
+Multi-step reasoning - Agent decisions build on previous steps, requiring full execution history for debugging
+
+Monitoring browser agents with OpenLIT
+
+OpenLIT is an open-source observability tool built on OpenTelemetry, specifically designed for AI applications. It provides automatic instrumentation for popular AI frameworks, including browser use, with minimal configuration.
+
+Why OpenLIT for Browser Agent Monitoring?
+
+OpenLIT stands out because it provides:
+
+Automatic instrumentation - Zero code changes beyond initialization
+Complete LLM visibility - Full prompts and responses, not just token counts
+Browser-specific telemetry - Specialized tracking for browser actions, page state, and navigation
+Agent reasoning capture - Extracts and displays the agent's thinking, memory, and decision-making process
+Cost tracking - Real-time token usage and cost calculation across multiple models
+Performance analysis - Identifies bottlenecks in LLM inference, browser operations, or network requests
+
+What OpenLIT Captures
+
+OpenLIT's browser-use instrumentation provides comprehensive visibility at every level:
+
+Agent Level
+Agent initialization and configuration
+Complete execution trace from start to finish
+Success/failure metrics and error tracking
+Total token usage and cost across all steps
+Step Level
+Agent thinking and reasoning at each decision point
+Current browser state (URL, page title, available elements)
+Actions taken and their results
+Step duration and success status
+LLM Level
+Complete prompts sent to the model (system message, task, browser state, history)
+Full model responses (thinking, memory, next goal, evaluation, actions)
+Token usage (input, output, total) and cost per call
+Model configuration (temperature, max_tokens, etc.)
+Action Level
+Individual browser actions (goto, click, input_text, scroll, extract_content, etc.)
+Action parameters and results
+Browser state changes
+Action duration and success status
+
+Getting started
+
+Getting started requires just two packages:
+
+```bash
+pip install openlit browser-use
+```
+Basic Configuration
+
+Setting up OpenLIT monitoring is simple - just one line of code:
+
+```python
+from browser_use import Agent, Browser, ChatOpenAI
+import asyncio
+import openlit
+
+# Initialize OpenLIT - that's it!
+openlit.init()
+
+async def example():
+    browser = Browser()
+
+    # Initialize the model
+    llm = ChatOpenAI(
+        model="gpt-4o",
+    )
+
+    agent = Agent(
+        task="Find the number trending post on Hacker news",
+        llm=llm,
+        browser=browser,
+    )
+
+    history = await agent.run()
+    return history
+
+if __name__ == "__main__":
+    history = asyncio.run(example())
+```
+
+That's it. With just `openlit.init()`, you now have complete observability into your browser-use automation.
+
+Advanced Configuration
+
+For production deployments, you can customize the OpenLIT configuration:
+
+```python
+import openlit
+
+# Configure custom endpoints and metadata
+openlit.init(
+    otlp_endpoint="http://localhost:4318",  # Your OTLP collector endpoint
+    application_name="my-browser-automation",
+    environment="production",
+    tracer_provider=None,  # Optional: use existing tracer provider
+    collect_gpu_stats=False  # Optional: collect GPU metrics
+)
+```
+Visualizing browser agent telemetry
+​​All this telemetry data flows into the OpenLIT dashboard, providing a comprehensive view of your agent's execution. The dashboard displays the complete execution tree with timing information for every span, allowing you to drill down into any LLM call to see the exact prompt sent, the full response including the agent's thinking and reasoning, token usage, costs, and latency metrics. This visibility is like having a time machine into your agent's mind at every decision point.
+
+The platform excels at cost analysis and optimization. You can see cost breakdowns by agent, task, and model, with detailed token usage for every LLM call. This makes it easy to compare costs across different providers like GPT-4, Claude, or Gemini, identify expensive operations like unnecessary vision processing, and optimize your automation workflows for better cost efficiency.
+Conclusion and Next Steps
+
+Browser automation with AI agents is powerful but complex. Understanding what your agents are doing and optimizing their performance and costs requires comprehensive observability that traditional monitoring tools simply can't provide.
+
+OpenLIT transforms AI agent observability by providing complete, granular traces with minimal setup. With just one line of code (`openlit.init()`), you get unprecedented visibility into every aspect of your browser-use automations:
+
+- Complete LLM visibility - See exactly what your agent was thinking at every decision point
+- End-to-end tracing - From agent initialization through every browser action
+- Cost tracking - Real-time token usage and cost calculation
+- Performance insights - Identify bottlenecks in LLM, browser, or network operations
+- Failure debugging - Understand not just what failed, but why
+
+
+Whether you're debugging a failed automation, optimizing costs, or monitoring production systems, OpenLIT gives you the visibility you need to build reliable, efficient browser agents.
+
+Ready to get started? Visit [github.com/openlit/openlit](https://github.com/openlit/openlit) to learn more and join the growing community of developers building observable AI applications.
+
+
