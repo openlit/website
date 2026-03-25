@@ -6,7 +6,7 @@ tags: ['openlit', 'langfuse', 'arize', 'comparison', 'llm', 'observability']
 draft: false
 summary: An honest comparison of OpenLIT, Langfuse, and Arize Phoenix for LLM observability. Compare OTel support, self-hosting, integrations, evals, GPU monitoring, and more.
 authors: ['OpenLIT']
-images: ['/static/images/blog/openlit-vs-langfuse-vs-arize.png']
+images: ['/static/images/openlit-vs-langfuse-vs-arize.png']
 ---
 
 # OpenLIT vs. Langfuse vs. Arize Phoenix: Choosing Your LLM Observability Stack
