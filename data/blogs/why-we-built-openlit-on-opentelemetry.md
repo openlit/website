@@ -6,7 +6,7 @@ tags: ['openlit', 'opentelemetry', 'architecture', 'otlp', 'vendor-neutral', 'll
 draft: false
 summary: The architectural decision behind building OpenLIT as an OTel-native LLM observability platform. How OpenTelemetry GenAI semantic conventions, OTLP, and Fleet Hub enable vendor-neutral AI monitoring.
 authors: ['OpenLIT']
-images: ['/static/images/blog/why-openlit-on-opentelemetry.png']
+images: ['/static/images/why-openlit-on-opentelemetry.png']
 ---
 
 # Why We Built OpenLIT on OpenTelemetry (and What It Means for Your Stack)
