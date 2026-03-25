@@ -6,7 +6,7 @@ tags: ['openlit', 'kubernetes', 'operator', 'opentelemetry', 'auto-instrumentati
 draft: false
 summary: Auto-instrument Python LLM applications on Kubernetes without code changes using the OpenLIT Operator. Add a label, get full OpenTelemetry traces for every LLM call.
 authors: ['OpenLIT']
-images: ['/static/images/blog/zero-code-k8s-llm-instrumentation.png']
+images: ['/static/images/zero-code-k8s-llm-instrumentation.png']
 ---
 
 # Zero-Code LLM Instrumentation on Kubernetes with the OpenLIT Operator
