@@ -6,7 +6,7 @@ tags: ['openlit', 'agents', 'crewai', 'langgraph', 'pydantic-ai', 'observability
 draft: false
 summary: Trace multi-step AI agent workflows in production using OpenLIT. Auto-instrument CrewAI, LangGraph, Pydantic AI, OpenAI Agents, and more with one line of code.
 authors: ['OpenLIT']
-images: ['/static/images/blog/monitor-ai-agents-production.png']
+images: ['/static/images/monitor-ai-agents-production.png']
 ---
 
 # How to Monitor AI Agents in Production: Tracing CrewAI, LangGraph, and Pydantic AI
