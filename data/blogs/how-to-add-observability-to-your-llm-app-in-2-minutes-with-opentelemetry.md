@@ -1,0 +1,234 @@
+---
+title: How to Add Observability to Your LLM App in 2 Minutes with OpenTelemetry
+date: '2026-03-26'
+lastmod: '2026-03-26'
+tags: ['openlit', 'opentelemetry', 'llm', 'observability', 'getting-started']
+draft: false
+summary: Add full tracing, metrics, and cost tracking to any LLM application with one line of code using OpenLIT and OpenTelemetry. Works with OpenAI, Anthropic, and 40+ providers.
+authors: ['OpenLIT']
+images: ['/static/images/llm-observability-in-2-minutes.png']
+---
+
+# How to Add Observability to Your LLM App in 2 Minutes with OpenTelemetry
+
+**TL;DR:** One line of code — `openlit.init()` — gives you full traces, metrics, token counts, latency, and cost tracking for 44+ LLM providers. Data goes out as standard OpenTelemetry (OTLP), so you can send it to Grafana, Datadog, or any backend you already use.
+
+---
+
+## The Problem: Your LLM Is a Black Box
+
+You shipped an LLM-powered feature. Users are hitting it. And you have no idea what's happening inside.
+
+- How many tokens did that summarization call use?
+- Why did response latency spike at 3 AM?
+- Which model is eating your budget?
+- Is the retrieval step actually returning useful context?
+
+Traditional APM tools don't understand LLM calls. They see an HTTP POST to `api.openai.com` and that's it. You need observability that speaks the language of prompts, completions, tokens, and models.
+
+## The Fix: One Line of Code
+
+Install the OpenLIT SDK:
+
+```bash
+pip install openlit
+```
+
+Add one line before your LLM calls:
+
+```python
+import openlit
+
+openlit.init()
+```
+
+That's it. Every call to OpenAI, Anthropic, Cohere, Mistral, Bedrock, or any of the 40+ supported providers is now automatically traced with full OpenTelemetry spans, metrics, and attributes.
+
+Here's a complete example:
+
+```python
+import openlit
+from openai import OpenAI
+
+openlit.init(
+    otlp_endpoint="http://localhost:4318",
+    application_name="my-chatbot",
+    environment="production",
+)
+
+client = OpenAI()
+response = client.chat.completions.create(
+    model="gpt-4o",
+    messages=[{"role": "user", "content": "Explain observability in one sentence."}],
+)
+print(response.choices[0].message.content)
+```
+
+Every call to `client.chat.completions.create` now emits:
+
+- A **trace span** with the prompt, completion, model name, and parameters
+- **Token counts** (input and output)
+- **Latency** (time-to-first-token and total duration)
+- **Cost** (auto-calculated from the model's pricing)
+
+## TypeScript? Same Story
+
+```bash
+npm install openlit
+```
+
+```typescript
+import Openlit from "openlit";
+import OpenAI from "openai";
+
+Openlit.init({
+  otlpEndpoint: "http://localhost:4318",
+  applicationName: "my-chatbot",
+  environment: "production",
+});
+
+const client = new OpenAI();
+const response = await client.chat.completions.create({
+  model: "gpt-4o",
+  messages: [{ role: "user", content: "Explain observability in one sentence." }],
+});
+console.log(response.choices[0].message.content);
+```
+
+The TypeScript SDK covers OpenAI, Anthropic, Cohere, Groq, Mistral, Google AI, Bedrock, Vercel AI SDK, LangChain, LlamaIndex, and more.
+
+## What You Get Out of the Box
+
+Once `openlit.init()` is running, your LLM calls produce OpenTelemetry data that includes:
+
+| Data Point | Example |
+|---|---|
+| Model name | `gpt-4o` |
+| Provider | `openai` |
+| Input tokens | `142` |
+| Output tokens | `87` |
+| Total cost | `$0.0034` |
+| Latency | `1.2s` |
+| Prompt content | `"Explain observability..."` |
+| Completion content | `"Observability is the ability to..."` |
+| Environment | `production` |
+| Application name | `my-chatbot` |
+
+All of this follows the [OpenTelemetry GenAI semantic conventions](https://opentelemetry.io/docs/specs/semconv/gen-ai/), so the data is structured and consistent across providers.
+
+## Where Does the Data Go?
+
+This is where OpenLIT differs from most LLM observability tools. Because everything is standard OTLP, you pick the backend:
+
+**Option 1: OpenLIT Platform (self-hosted, free)**
+
+Spin up the full stack with Docker Compose — ClickHouse for storage, an OTel Collector, and the OpenLIT dashboard:
+
+```bash
+git clone https://github.com/openlit/openlit.git
+cd openlit
+docker compose up -d
+```
+
+Dashboard runs on `http://localhost:3000`. OTLP endpoints are on ports `4317` (gRPC) and `4318` (HTTP).
+
+**Option 2: Grafana Cloud / Grafana + Tempo**
+
+Point `otlp_endpoint` to your Grafana OTLP endpoint. Traces show up in Tempo, metrics in Prometheus/Mimir.
+
+**Option 3: Datadog, New Relic, Elastic, SigNoz, Dynatrace...**
+
+Any backend that accepts OTLP works. Configure the endpoint and headers:
+
+```python
+openlit.init(
+    otlp_endpoint="https://your-backend.example.com/v1/traces",
+    otlp_headers={"Authorization": "Bearer YOUR_TOKEN"},
+)
+```
+
+No vendor lock-in. Your data, your infrastructure.
+
+## What Gets Auto-Instrumented?
+
+OpenLIT doesn't just cover LLM providers. It auto-instruments the full stack:
+
+**LLM Providers:** OpenAI, Anthropic, Cohere, Mistral, Groq, Google AI Studio, Bedrock, Azure AI, Vertex AI, Ollama, vLLM, Together, LiteLLM, HuggingFace, and more.
+
+**Agent Frameworks:** LangChain, LangGraph, LlamaIndex, CrewAI, Pydantic AI, OpenAI Agents, AG2, Haystack, Browser Use, MCP.
+
+**Vector Databases:** Pinecone, Chroma, Qdrant, Milvus, Astra, PostgreSQL (pgvector).
+
+**Web Frameworks:** FastAPI, Flask, Django, Starlette, ASGI — because you probably want to trace the HTTP layer too.
+
+All of these are auto-detected. If the library is imported, OpenLIT instruments it. No configuration needed.
+
+## Controlling What Gets Captured
+
+Need to disable instrumentation for a specific provider? Use `disabled_instrumentors`:
+
+```python
+openlit.init(
+    disabled_instrumentors=["langchain", "chroma"],
+)
+```
+
+Want to skip capturing prompt/completion content (for privacy or compliance)?
+
+```python
+openlit.init(
+    capture_message_content=False,
+)
+```
+
+Want to truncate long prompts instead of dropping them entirely?
+
+```python
+openlit.init(
+    max_content_length=500,
+)
+```
+
+## Streaming Works Too
+
+OpenLIT handles streaming responses from all providers. Token counts and latency are calculated correctly even when the response comes back chunk by chunk. No extra configuration needed.
+
+## Next Steps
+
+Once you have traces flowing, you can layer on more capabilities — all from the same SDK:
+
+- **[Evaluations](/blog/how-to-detect-hallucinations-in-your-rag-pipeline):** Detect hallucinations, toxicity, and bias programmatically
+- **[Guardrails](/blog/prompt-injection-detection-practical-guide):** Block prompt injection attempts before they hit your model
+- **[Cost Tracking](/blog/tracking-llm-costs-in-production):** Break down spend by model, user, and environment
+- **[GPU Monitoring](/blog/gpu-monitoring-for-llm-inference):** Track GPU utilization alongside your LLM metrics
+
+---
+
+## FAQ
+
+**Do I need to change my LLM code?**
+
+No. `openlit.init()` uses monkey-patching to instrument supported libraries automatically. Your existing OpenAI, Anthropic, or LangChain code stays exactly the same.
+
+**Does it support streaming?**
+
+Yes. Streaming responses are fully traced with accurate token counts and latency measurements across all supported providers.
+
+**What's the performance overhead?**
+
+Minimal. Span creation and metric recording add microseconds per call. The OTLP export happens asynchronously in a background batch processor by default.
+
+**Can I use my own OpenTelemetry TracerProvider?**
+
+Yes. Pass your own `tracer` and `meter` instances to `openlit.init()` if you already have an OTel setup:
+
+```python
+openlit.init(
+    tracer=my_tracer,
+    meter=my_meter,
+)
+```
+
+**Is it open source?**
+
+Yes. OpenLIT is Apache-2.0 licensed. The SDK, platform, and all integrations are fully open source on [GitHub](https://github.com/openlit/openlit).
