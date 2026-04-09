@@ -7,80 +7,15 @@ type LogoEntry =
   | { kind: 'img'; name: string; src: string; width: number; height: number }
   | { kind: 'text'; name: string }
 
-const logos: LogoEntry[] = [
-  {
-    kind: 'img',
-    name: 'Grafana',
-    src: '/static/images/trusted-by/grafana.svg',
-    width: 120,
-    height: 32,
-  },
-  {
-    kind: 'img',
-    name: 'Microsoft',
-    src: '/static/images/trusted-by/microsoft.svg',
-    width: 120,
-    height: 32,
-  },
-  {
-    kind: 'img',
-    name: 'AWS',
-    src: '/static/images/trusted-by/aws.svg',
-    width: 120,
-    height: 40,
-  },
-  {
-    kind: 'img',
-    name: 'Docker',
-    src: '/static/images/trusted-by/docker.svg',
-    width: 120,
-    height: 40,
-  },
-  {
-    kind: 'img',
-    name: 'Splunk',
-    src: '/static/images/trusted-by/splunk.svg',
-    width: 120,
-    height: 32,
-  },
-  {
-    kind: 'img',
-    name: 'Elastic',
-    src: '/static/images/trusted-by/elastic.svg',
-    width: 40,
-    height: 40,
-  },
-  {
-    kind: 'img',
-    name: 'GPT4All',
-    src: '/static/images/integrations/gpt4all.svg',
-    width: 40,
-    height: 40,
-  },
-  {
-    kind: 'img',
-    name: 'Dash0',
-    src: '/static/images/trusted-by/dash0.svg',
-    width: 40,
-    height: 40,
-  },
-  {
-    kind: 'img',
-    name: 'Judgment',
-    src: '/static/images/trusted-by/judgment.webp',
-    width: 40,
-    height: 40,
-  },
-  {
-    kind: 'img',
-    name: 'Egg AI',
-    src: '/static/images/trusted-by/egg-ai.svg',
-    width: 40,
-    height: 40,
-  },
-]
+const logos: LogoEntry[] = Array.from({ length: 26 }, (_, index) => ({
+  kind: 'img',
+  src: `/static/images/trusted-by/${index + 1}.png`,
+  width: 3000,
+  height: 500,
+  name: `Logo ${index + 1}`,
+}))
 
-const LOGO_HEIGHT = 28
+const LOGO_HEIGHT = 40
 
 function LogoItem({ entry }: { entry: LogoEntry }) {
   if (entry.kind === 'img') {
@@ -126,7 +61,7 @@ export function TrustedBy() {
 
       {/* Fade edges */}
       <div
-        className="marquee-track relative overflow-hidden"
+        className="marquee-track group relative overflow-hidden bg-white py-2 opacity-70"
         style={{
           maskImage:
             'linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%)',
