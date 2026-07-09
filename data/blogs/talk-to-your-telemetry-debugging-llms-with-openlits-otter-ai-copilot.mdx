@@ -1,0 +1,153 @@
+---
+title: "Talk to Your Telemetry: Debugging LLMs with OpenLIT's Otter AI Copilot"
+date: '2026-07-08'
+lastmod: '2026-07-08'
+tags: ['openlit', 'opentelemetry', 'llm', 'observability', 'otter', 'ai-copilot']
+draft: false
+summary: A deep dive into OpenLIT's Otter AI Copilot—the tool-calling assistant that lets you query traces, write Rule Engine rules, manage the Prompt Hub, and register custom model pricing conversationally.
+authors: ['Aman']
+images: ['/static/images/otter_trace_sketch.png']
+---
+
+## Introduction
+
+As LLM applications grow into multi-agent systems and multi-step RAG pipelines, the telemetry they produce grows with them. Developers end up wading through nested spans and tool calls just to answer simple questions: _Why did this trace take 9 seconds? What did this session actually cost? Which model should we route this task to?_
+
+Answering those questions usually means hand-writing SQL against your telemetry store, or clicking through span-by-span until something looks wrong. OpenLIT's **Otter** is a chat-based copilot built directly into the dashboard to shortcut that process. It isn't a general-purpose chatbot bolted on top of your data—it's a tool-calling agent (built on the Vercel AI SDK) wired directly into OpenLIT's own platform services: ClickHouse, the Rule Engine, the Vault secret manager, and the Prompt Hub. Because OpenLIT is fully open-source and self-hosted, Otter runs inside your own infrastructure—your prompts, traces, and credentials never have to leave your VPC.
+
+This post walks through what Otter can actually do today, grounded in the real tool implementations rather than the marketing pitch, plus a worked example of using it to investigate a slow, repetitive trace.
+
+<div className="flex items-center justify-center text-center italic">
+  <img
+    src="/static/images/otter_trace_sketch.png"
+    className="max-h-[512px]"
+    alt="Otter, OpenLIT's AI Copilot"
+  />
+</div>
+<div className="text-center italic">Otter, OpenLIT's AI Copilot</div>
+
+## Why It's Important
+
+Once you have OpenTelemetry-native traces flowing in—via a single `openlit.init()` call in Python or `init()` in the TypeScript SDK—you're sitting on a large amount of structured data: span hierarchies, token counts, costs, latencies, and any custom attributes you tag. The bottleneck shifts from _collecting_ telemetry to _interrogating_ it quickly enough to be useful during an incident or a routine cost review.
+
+That's the gap Otter closes:
+
+- **No manual SQL required.** Otter can write and execute ClickHouse queries against your `otel_traces` table on your behalf, filtered by attributes you already emit—`session.id`, `user.id`, `tenant`, or any custom tag.
+- **Direct write access to platform primitives.** Otter doesn't just read data back to you—it can create Rule Engine rules, store secrets in the Vault, register custom model pricing, and manage Prompt Hub entries, all from a chat turn.
+- **Self-hosted by default.** Because OpenLIT is OTel-native and self-hosted, Otter's reads and writes happen against your own ClickHouse instance and Postgres-backed platform services—useful if you're operating under HIPAA/GDPR-style constraints on where trace data (which can include user conversations) is allowed to live.
+
+## How to Implement/Do It
+
+### 1. Get traces into OpenLIT
+
+Otter analyzes whatever OpenLIT's automatic instrumentation already captures. There's no separate setup for Otter itself beyond having traces flowing in:
+
+```python
+import openlit
+
+openlit.init(
+    otlp_endpoint="http://127.0.0.1:4318",
+    application_name="agent-orchestrator",
+    environment="production",
+)
+```
+
+```typescript
+import * as openlit from 'openlit'
+
+openlit.init({
+  otlpEndpoint: 'http://127.0.0.1:4318',
+  applicationName: 'agent-orchestrator',
+  environment: 'production',
+})
+```
+
+Any custom attribute you set on a span (a `session.id`, a `tenant` tag, or a bespoke field like `tool.call.count`) becomes something you can later ask Otter to query or build a rule against.
+
+### 2. Ask Otter to analyze a trace
+
+Two tools cover single-trace and batch analysis:
+
+- `analyze_trace` takes a `span_id` and a `scope` (`trace` or `span`) and returns a structured review—covering things like whether the routing/execution path picked the right tools, avoided repetitive calls, and kept orchestration efficient, plus a look at token/cost efficiency.
+- `analyze_trace_batch` does the same across up to five spans at once, useful for comparing a handful of slow runs.
+
+This is a real, working feature, but it's worth being precise about what it is: an LLM-generated qualitative read of the trace, not a deterministic loop detector or anomaly-detection system. It's a strong first pass, not a guarantee it catches everything.
+
+### 3. Query traces by attribute, conversationally
+
+`analyze_traces_by_attribute` is where Otter's ClickHouse integration is most direct—you give it a key/value pair, and it builds and runs a query along the lines of:
+
+```sql
+SELECT TraceId AS traceId, any(SpanId) AS spanId, count() AS spanCount, max(Timestamp) AS lastSeen
+FROM otel_traces
+WHERE SpanAttributes['session.id'] = 'session_abc123'
+GROUP BY TraceId
+ORDER BY lastSeen DESC
+LIMIT 20
+```
+
+You can ask for this in plain language ("find the latest trace for session `session_abc123`"), and Otter resolves the attribute key/value, runs the query, and hands you back the matching traces to analyze further.
+
+### 4. Turn a finding into a Rule Engine rule
+
+Once you've spotted a pattern worth flagging automatically, `create_rule` lets Otter build a rule out of condition groups—each with a field, an operator (`equals`, `contains`, `gt`, `gte`, and similar), and a value. `link_entity_to_rule` then attaches that rule to a context document, prompt, or evaluation.
+
+It's important to be clear about what "field" means here: the Rule Engine is generic. It matches on whatever data you're already capturing—there's no built-in concept of "tool call count" or "loop detected." If you want a rule like `tool.call.count > 10`, you need to be emitting that attribute yourself; Otter just makes the rule-authoring conversational instead of a form.
+
+### 5. Register custom model pricing
+
+If you're running local models via Ollama or vLLM alongside cloud APIs, `create_custom_model` lets you register a provider, model ID, and input/output pricing in USD per million tokens. Once registered, that model's costs are computed correctly and show up consistently across dashboards and Otter's own cost analysis.
+
+### 6. Manage secrets and prompts
+
+`create_vault_secret` stores a credential in OpenLIT's Vault, automatically normalizing whatever key you give it to `UPPER_SNAKE_CASE` (so `anthropic key` or `anthropic-key` both become `ANTHROPIC_KEY`). On the Prompt Hub side, `create_prompt` (plus `get_prompt`, `update_prompt_version`, `list_prompts`, and `delete_prompt`) lets Otter manage versioned prompts with `{{variable}}` templating directly from chat.
+
+## A Worked Example
+
+Here's what a real interaction looks like, using the tools above:
+
+**Step 1 — Trace diagnostics**
+
+> **You:** "Otter, find the latest trace for session `session_abc123` and analyze it."
+>
+> **Otter:** Runs `analyze_traces_by_attribute` matching `session.id`, then `analyze_trace` on the result: _"I found trace `t-ef8a2` with 18 spans. As part of the routing/execution-path review, I noticed the agent called `get_inventory_status` 12 times, each time receiving `404 Not Found`—likely the cause of the repeated calls. Total latency was 9.4 seconds, costing $0.12."_
+
+**Step 2 — Configure a rule**
+
+> **You:** "We tag a `tool.call.count` attribute on our agent spans—create a rule to flag anything over 10."
+>
+> **Otter:** Runs `create_rule` with a condition matching `tool.call.count > 10`: _"I've created Rule `agent_loop_limit` (ID `rule-bf92a`). You can now filter or analyze runs that match it in the dashboard."_
+
+**Step 3 — Register a secret and custom pricing**
+
+> **You:** "Store our Anthropic key as `anthropic key` in the vault, and set pricing for our local `gemma3` model on Ollama: $0.15 input and $0.45 output per million tokens."
+>
+> **Otter:** Normalizes the key to `ANTHROPIC_KEY`, calls `create_vault_secret`, then `create_custom_model` for provider `ollama`: _"Stored `ANTHROPIC_KEY` in the Vault, and registered `gemma3` under `ollama` with $0.15/M input and $0.45/M output pricing."_
+
+## Benefits and Outcomes
+
+- **Faster first-pass triage.** Going from "something's slow in session X" to a candidate root cause takes one or two chat turns instead of a manual ClickHouse query and a span-by-span read.
+- **Lower barrier to writing Rule Engine rules.** Condition groups are powerful but fiddly to build by hand in a UI form; describing the rule in plain language and letting Otter fill in the fields removes friction.
+- **Accurate cost accounting for hybrid deployments.** Registering local-model pricing once means every dashboard view and every future Otter cost analysis reflects real blended spend, not just cloud API costs.
+- **Data stays where it already lives.** Because Otter runs against your self-hosted ClickHouse and platform database, none of this requires exporting trace data to a third-party SaaS to get conversational analysis.
+
+## When It's Required/Recommended
+
+Otter is most useful once you already have a meaningful volume of traces flowing through OpenLIT and you're spending real time on manual investigation—teams running multi-agent pipelines (LangGraph, CrewAI, or custom orchestrators) where tool-calling loops are a recurring failure mode, or teams mixing local and cloud models who need pricing to reflect reality. It's less necessary if you're still early with a single-service integration and low trace volume—at that stage, browsing traces directly in the dashboard is usually just as fast.
+
+Keep in mind Otter's actual capabilities when deciding how much to lean on it: it's a strong assistant for querying, summarizing, and rule-authoring, not an automated anomaly-detection or cost-optimization system that runs in the background without being asked.
+
+## Conclusion
+
+Otter turns a handful of real platform primitives—ClickHouse queries, Rule Engine conditions, Vault secrets, custom model pricing, and Prompt Hub entries—into something you can drive conversationally instead of through separate forms and hand-written SQL. It's a practical accelerant for trace triage and rule authoring, built on top of OpenTelemetry data you're already collecting.
+
+- 🚀 **Run OpenLIT locally:**
+  ```bash
+  git clone https://github.com/openlit/openlit.git
+  cd openlit
+  docker compose up -d
+  ```
+- ⭐ **Star the repository:** [github.com/openlit/openlit](https://github.com/openlit/openlit)
+- 📖 **Explore the docs:** [docs.openlit.io](https://docs.openlit.io)
+
+What's the first trace you'd ask Otter to investigate?

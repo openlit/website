@@ -118,6 +118,21 @@ export default function Hero() {
               unoptimized
             />
           </a>
+          <a
+            href="https://launchpadly.co/startup/openlit?ref=badge"
+            target="_blank"
+            rel="noopener noreferrer"
+            data-launchpadly-badge="openlit"
+            data-launchpadly-badge-variant="listed-on"
+          >
+            <img
+              src="https://launchpadly.co/embed/badges/startup/openlit.svg?variant=listed-on"
+              alt="Launchpadly Startup Directory"
+              width="260"
+              height="48"
+              style={{ display: 'block', border: 0 }}
+            />
+          </a>
         </div>
       </section>
     </div>
