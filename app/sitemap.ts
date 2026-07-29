@@ -42,4 +42,5 @@ export default function sitemap(): MetadataRoute.Sitemap {
   return [...routes, ...compareRoutes, ...blogRoutes, ...markdownRoutes]
 }
 
-export const runtime = 'edge'
+// Must stay static (no edge). Contentlayer in an edge sitemap breaks the
+// Vercel/Cloudflare edge bundler: "Can't build edge function /sitemap.xml".

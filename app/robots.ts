@@ -15,4 +15,4 @@ export default function robots(): MetadataRoute.Robots {
   }
 }
 
-export const runtime = 'edge'
+// Static at build time — no edge runtime needed (same as sitemap).
