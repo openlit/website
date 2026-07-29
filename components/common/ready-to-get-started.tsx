@@ -19,7 +19,7 @@ export default function ReadyToGetStarted({ className }: { className?: string })
         </p>
         <div className="flex flex-col justify-center gap-3 sm:flex-row">
           <Link
-            href="https://docs.openlit.io/latest/quickstart"
+            href="https://docs.openlit.io/latest/openlit/quickstart-ai-observability"
             target="_blank"
             rel="noopener noreferrer"
           >

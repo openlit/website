@@ -85,7 +85,7 @@ export default function ComparisonPage({ competitor }: { competitor: Competitor 
       {/* Quick CTA */}
       <div className="mb-12 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
         <a
-          href="https://docs.openlit.io/latest/introduction"
+          href="https://docs.openlit.io/latest/openlit/quickstart-ai-observability"
           target="_blank"
           rel="noopener noreferrer"
           className="flex items-center gap-2 rounded-lg bg-brandPrimary px-6 py-3 text-sm font-semibold text-white transition-opacity hover:opacity-90"
@@ -100,16 +100,6 @@ export default function ComparisonPage({ competitor }: { competitor: Competitor 
         >
           <Github className="h-4 w-4" /> View on GitHub
         </a>
-        {competitor.openSourceUrl && (
-          <a
-            href={competitor.openSourceUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-sm opacity-60 hover:opacity-80"
-          >
-            {competitor.name} on GitHub ↗
-          </a>
-        )}
       </div>
 
       {/* Comparison Table */}

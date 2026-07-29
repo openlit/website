@@ -78,8 +78,8 @@ export default function WhyOpenlit() {
       title: 'Production-proven',
       description: (
         <>
-          Trusted by teams worldwide with {formatDownloads(sdk_downloads)} SDK downloads and 300+
-          Slack members.
+          Trusted by teams worldwide with {formatDownloads(sdk_downloads)} SDK downloads and{' '}
+          {formatStars(info?.stargazers_count)} GitHub stars.
         </>
       ),
     },

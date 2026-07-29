@@ -126,7 +126,7 @@ export default function HeaderContextRow() {
             <ThemeToggle />
           </div>
           <a
-            href="https://docs.openlit.io/latest/quickstart"
+            href="https://docs.openlit.io/latest/openlit/quickstart-ai-observability"
             target="_blank"
             rel="noopener noreferrer"
             className={cn(buttonVariants({ size: 'sm' }), 'hidden sm:inline-flex')}
@@ -177,7 +177,7 @@ export default function HeaderContextRow() {
               )
             })}
             <a
-              href="https://docs.openlit.io/latest/quickstart"
+              href="https://docs.openlit.io/latest/openlit/quickstart-ai-observability"
               target="_blank"
               rel="noopener noreferrer"
               className={cn(buttonVariants({ size: 'sm' }), 'mt-2')}

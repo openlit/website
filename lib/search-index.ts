@@ -77,7 +77,7 @@ export const STATIC_SEARCH_ITEMS: SearchItem[] = [
     id: 'docs-quickstart',
     title: 'Quickstart',
     description: 'Get started with OpenLIT',
-    href: 'https://docs.openlit.io/latest/quickstart',
+    href: 'https://docs.openlit.io/latest/openlit/quickstart-ai-observability',
     category: 'Docs',
     external: true,
     keywords: 'install setup',

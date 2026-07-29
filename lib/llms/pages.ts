@@ -46,7 +46,7 @@ export function homeMarkdown() {
 > ${HERO_DESCRIPTION}
 
 - Site: ${SITE}
-- Docs: https://docs.openlit.io/latest/introduction
+- Docs: https://docs.openlit.io/latest/openlit/quickstart-ai-observability
 - GitHub: ${siteMetadata.siteRepo}
 - License: Apache 2.0
 - Markdown: ${SITE}/index.md
@@ -152,7 +152,7 @@ Today OpenLIT is used by developers worldwide. The project is open, community-dr
 
 - Contribute: ${siteMetadata.siteRepo}/blob/main/CONTRIBUTING.md
 - Docs: https://docs.openlit.io/latest/overview
-- Slack: ${siteMetadata.slack}
+- GitHub: ${siteMetadata.siteRepo}
 - Email: ${siteMetadata.email}
 
 Live contributor avatars and public GitHub metrics are shown on the HTML About page.
@@ -197,7 +197,6 @@ export function comparePageMarkdown(competitor: Competitor) {
 
 - HTML: ${SITE}/compare/${competitor.slug}
 - Markdown: ${SITE}/compare/${competitor.slug}.md
-${competitor.openSourceUrl ? `- ${competitor.name} open source: ${competitor.openSourceUrl}` : ''}
 
 ${competitor.description}
 
@@ -217,7 +216,7 @@ ${competitor.summary.chooseCompetitor.map((item) => `- ${item}`).join('\n')}
 
 - All comparisons: ${SITE}/compare.md
 - Pricing: ${SITE}/pricing.md
-- Docs: https://docs.openlit.io/latest/introduction
+- Docs: https://docs.openlit.io/latest/openlit/quickstart-ai-observability
 `
 }
 
@@ -299,7 +298,7 @@ ${marketing}
 
 - Docs llms.txt: ${DOCS_LLMS}
 - Docs overview: https://docs.openlit.io/latest/overview
-- Quickstart: https://docs.openlit.io/latest/introduction
+- Quickstart: https://docs.openlit.io/latest/openlit/quickstart-ai-observability
 
 ## Project
 

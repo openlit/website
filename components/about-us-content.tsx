@@ -3,7 +3,7 @@
 import { useContext } from 'react'
 import Image from 'next/image'
 import Link from 'next/link'
-import { Github, BookOpen, MessageCircle, Star, GitFork, Download } from 'lucide-react'
+import { Github, BookOpen, Star, GitFork, Download } from 'lucide-react'
 import siteMetadata from '@/data/siteMetadata'
 import { GithubContext } from 'contexts/github'
 import ReadyToGetStarted from './common/ready-to-get-started'
@@ -162,10 +162,10 @@ export default function AboutUsContent() {
               body: 'Fix bugs, add integrations, improve docs.',
             },
             {
-              icon: MessageCircle,
-              label: 'Join Slack',
-              href: siteMetadata.slack,
-              body: 'Ask questions and meet other builders.',
+              icon: Github,
+              label: 'Star the project',
+              href: siteMetadata.siteRepo,
+              body: 'Follow releases and support open source Harness Engineering.',
             },
             {
               icon: BookOpen,

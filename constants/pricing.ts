@@ -88,7 +88,7 @@ export const PRICING_PLANS = {
     ctaLabel: 'Deploy from GitHub',
     ctaHref: 'https://github.com/openlit/openlit',
     secondaryLabel: 'Documentation',
-    secondaryHref: 'https://docs.openlit.io/latest/introduction',
+    secondaryHref: 'https://docs.openlit.io/latest/openlit/quickstart-ai-observability',
     highlights: [
       'Apache 2.0 licensed OpenLIT platform',
       'Full stack AI infra monitoring for GPUs, LLMs, MCP, vector DBs, and coding agents',

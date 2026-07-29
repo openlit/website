@@ -20,10 +20,7 @@ export const organisationSchema = {
     },
   ],
   sameAs: [
-    'https://x.com/openlit_io',
     'https://github.com/openlit/openlit',
-    'https://linkedin.com/company/openlit',
-    'https://www.youtube.com/@openlit',
   ],
   contactPoint: {
     '@type': 'ContactPoint',

@@ -1,7 +1,7 @@
 import siteMetadata from 'data/siteMetadata'
 
 import Image from 'next/image'
-import { Github, Linkedin, Mail, Slack, Twitter, Youtube } from '../social-icons/icons'
+import { Github, Mail } from '../social-icons/icons'
 
 const Item = ({ link, text, target }: { link?: string; text?: string; target?: string }) =>
   link &&
@@ -17,7 +17,7 @@ const linkGroups = [
     links: [
       { text: 'Introduction', link: 'https://docs.openlit.io/latest/overview' },
       { text: 'SDK Overview', link: 'https://docs.openlit.io/latest/sdk/overview' },
-      { text: 'Kubernetes Operator', link: 'https://docs.openlit.io/latest/operator/overview' },
+      { text: 'Self-hosting', link: 'https://docs.openlit.io/latest/openlit/installation' },
       { text: 'Integrations', link: 'https://docs.openlit.io/latest/sdk/integrations/overview' },
       { text: 'Destinations', link: 'https://docs.openlit.io/latest/sdk/destinations/overview' },
     ],
@@ -28,8 +28,8 @@ const linkGroups = [
       { text: 'GPU Monitoring', link: 'https://docs.openlit.io/latest/sdk/features/gpu' },
       { text: 'Evaluations', link: 'https://docs.openlit.io/latest/sdk/features/evaluations' },
       {
-        text: 'Fleet Hub',
-        link: 'https://docs.openlit.io/latest/openlit/observability/fleet-hub',
+        text: 'Installation',
+        link: 'https://docs.openlit.io/latest/openlit/installation',
       },
       {
         text: 'Prompt Hub',
@@ -47,7 +47,7 @@ const linkGroups = [
       { text: 'About Us', link: '/about-us' },
       { text: 'Blog', link: '/blogs' },
       { text: 'Pricing', link: '/pricing' },
-      { text: 'Support Us', link: 'https://opencollective.com/openlit' },
+      { text: 'GitHub', link: 'https://github.com/openlit/openlit' },
     ],
   },
   {
@@ -80,11 +80,7 @@ const linkGroups = [
 
 const socialLinks = [
   { href: siteMetadata.github, icon: Github, label: 'GitHub' },
-  { href: siteMetadata.twitter, icon: Twitter, label: 'Twitter' },
   { href: `mailto:${siteMetadata.email}`, icon: Mail, label: 'Email' },
-  { href: siteMetadata.linkedin, icon: Linkedin, label: 'LinkedIn' },
-  { href: siteMetadata.youtube, icon: Youtube, label: 'YouTube' },
-  { href: siteMetadata.slack, icon: Slack, label: 'Slack' },
 ]
 
 export default function Footer() {

@@ -167,7 +167,9 @@ export default function OpenPlatform() {
                   </TextLink>
                 </li>
                 <li>
-                  <TextLink href={siteMetadata.slack}>300+ Slack members</TextLink>
+                  <TextLink href={`${siteMetadata.siteRepo}/blob/main/CONTRIBUTING.md`}>
+                    Contribute on GitHub
+                  </TextLink>
                 </li>
               </ul>
             </OpenCell>

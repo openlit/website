@@ -53,7 +53,7 @@ export default function Hero() {
 
         <div className="relative z-10 mt-8 flex flex-wrap items-center justify-center gap-3">
           <a
-            href="https://docs.openlit.io/latest/introduction"
+            href="https://docs.openlit.io/latest/openlit/quickstart-ai-observability"
             target="_blank"
             rel="noopener noreferrer"
             className="inline-flex h-10 items-center gap-2 rounded-md bg-brandPrimary px-6 text-sm font-medium text-white transition hover:bg-primary-700"

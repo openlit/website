@@ -10,8 +10,6 @@ import Bleed from 'pliny/ui/Bleed'
 import Image from 'next/image'
 
 const editUrl = (path) => `${siteMetadata.siteRepo}/blob/main/data/${path}`
-const discussUrl = (path) =>
-  `https://mobile.twitter.com/search?q=${encodeURIComponent(`${siteMetadata.siteUrl}/${path}`)}`
 
 const postDateTemplate: Intl.DateTimeFormatOptions = {
   weekday: 'long',
@@ -31,7 +29,7 @@ interface LayoutProps {
 export default function PostLayout({ content, authorDetails, next, prev, children }: LayoutProps) {
   const { filePath, path, date, title, tags, images, layout } = content
   const displayImage =
-    images && images.length > 0 ? images[0] : 'https://picsum.photos/seed/picsum/800/400'
+    images && images.length > 0 ? images[0] : '/static/images/twitter-card.png'
 
   return (
     <article>
@@ -66,10 +64,6 @@ export default function PostLayout({ content, authorDetails, next, prev, childre
           <div className="prose max-w-none pb-4 pt-10 dark:prose-invert">{children}</div>
 
           <div className="pb-2 pt-2 text-sm text-stone-700 dark:text-stone-300">
-            <Link href={discussUrl(path)} rel="nofollow">
-              Discuss on Twitter
-            </Link>
-            {` • `}
             <Link href={editUrl(filePath)}>
               <strong>View on GitHub</strong>
             </Link>
