@@ -14,7 +14,7 @@ export default function ReadyToGetStarted({ className }: { className?: string })
           Ready to use the OpenLIT UI in production?
         </h3>
         <p className="mx-auto mb-8 max-w-2xl text-base text-black dark:text-white md:text-lg">
-          Self-host or connect your stack in minutes. Same observability UI — traces, dashboards,
+          Self-host or connect your stack in minutes. Same harness UI for traces, dashboards,
           prompts, and evaluations.
         </p>
         <div className="flex flex-col justify-center gap-3 sm:flex-row">

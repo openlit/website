@@ -7,11 +7,13 @@ import WhyOpenlit from '@/components/home/why-openlit'
 import HomeFaq from '@/components/home/home-faq'
 import { genPageMetadata } from 'app/seo'
 import { createWebPageSchema } from '@/components/structuredData'
-import { HERO_DESCRIPTION, HERO_TITLE } from 'constants/hero'
+import { HERO_DESCRIPTION, HERO_KEYWORDS, HERO_TITLE } from 'constants/hero'
+import { createFaqPageSchema, HOME_FAQ_ITEMS } from 'constants/home-faq'
 
 export const metadata = genPageMetadata({
   title: HERO_TITLE,
   description: HERO_DESCRIPTION,
+  keywords: HERO_KEYWORDS,
   canonicalUrl: 'https://openlit.io',
 })
 
@@ -22,12 +24,18 @@ const homepageSchema = createWebPageSchema(
   [{ name: 'Home', url: 'https://openlit.io' }]
 )
 
+const faqSchema = createFaqPageSchema(HOME_FAQ_ITEMS)
+
 export default function Page() {
   return (
     <main className="mb-auto overflow-hidden">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(homepageSchema) }}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
       />
       <div className="mx-auto flex min-h-screen w-full flex-col items-center justify-between">
         <Hero />

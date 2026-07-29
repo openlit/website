@@ -21,8 +21,8 @@ export default function Layout({ children }: { children: React.ReactNode }) {
   return (
     <GithubProvider>
       <SiteShell blogItems={blogItems}>
-        <div className="relative min-h-full bg-white text-black dark:bg-stone-950 dark:text-white">
-          {children}
+        <div className="relative flex min-h-full flex-col bg-white text-black dark:bg-stone-950 dark:text-white">
+          <div className="flex-1">{children}</div>
           <Footer />
         </div>
       </SiteShell>

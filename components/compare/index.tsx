@@ -1,5 +1,4 @@
 import { ArrowRight, Check } from 'lucide-react'
-import { BadgeWithGradient } from '../ui/badge'
 import Link from 'next/link'
 import ReadyToGetStarted from '../common/ready-to-get-started'
 import competitors from '@/data/comparisons'
@@ -15,22 +14,19 @@ const openlitStrengths = [
 
 export default function CompareIndex() {
   return (
-    <div className="container py-16">
-      {/* Header */}
-      <div className="mb-16 text-center">
-        <BadgeWithGradient className="mb-4">Compare</BadgeWithGradient>
-        <h1 className="mb-4 text-4xl font-bold md:text-5xl">
-          OpenLIT vs the <span className="text-brandPrimary">Alternatives</span>
-        </h1>
-        <p className="mx-auto max-w-2xl text-lg opacity-70">
-          See how OpenLIT compares to other LLM observability and monitoring tools — feature by
-          feature, with honest analysis.
+    <div className="container py-10 md:py-12">
+      <div className="mb-10 max-w-3xl">
+        <h2 className="text-3xl font-bold tracking-tight text-stone-950 dark:text-stone-50 md:text-4xl">
+          Compare
+        </h2>
+        <p className="mt-3 text-base leading-relaxed text-stone-600 dark:text-stone-300">
+          See how OpenLIT compares with other AI engineering and LLM observability tools.
         </p>
       </div>
 
       {/* Why OpenLIT */}
       <div className="mb-16 rounded-2xl border border-brandPrimary/20 bg-brandPrimary/5 px-8 py-10">
-        <h2 className="mb-6 text-xl font-bold">Why teams choose OpenLIT</h2>
+        <h3 className="mb-6 text-xl font-bold">Why teams choose OpenLIT</h3>
         <ul className="grid gap-3 sm:grid-cols-2">
           {openlitStrengths.map((s) => (
             <li key={s} className="flex items-start gap-3">
@@ -43,7 +39,7 @@ export default function CompareIndex() {
 
       {/* Comparison Cards */}
       <div className="mb-16">
-        <h2 className="mb-6 text-2xl font-bold">Detailed Comparisons</h2>
+        <h3 className="mb-6 text-2xl font-bold">Detailed Comparisons</h3>
         <div className="grid gap-5 md:grid-cols-2">
           {competitors.map((c) => (
             <Link

@@ -1,9 +1,6 @@
 'use client'
 
-import siteMetadata from 'data/siteMetadata'
-import { StarFilledIcon } from '@radix-ui/react-icons'
 import { Dialog, DialogContent, DialogTrigger } from '../ui/dialog'
-import { HERO_DESCRIPTION } from 'constants/hero'
 import { HarnessCanvas, useHarnessSelection } from './harness-canvas'
 
 function MarkerUnderline() {
@@ -39,19 +36,6 @@ export default function Hero() {
   return (
     <div className="relative w-full bg-white dark:bg-stone-950">
       <section className="relative mx-auto flex w-full max-w-6xl flex-col items-center px-4 pb-10 pt-10 md:pt-14">
-        <a
-          href={siteMetadata.siteRepo}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="z-20 mb-8 inline-flex items-center gap-2 rounded-md border border-stone-200 bg-white px-3 py-1.5 text-xs text-black transition hover:border-brandPrimary/40 dark:border-stone-700 dark:bg-stone-950 dark:text-white"
-        >
-          <span className="rounded bg-brandPrimary px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-white">
-            Open source
-          </span>
-          <StarFilledIcon className="h-3.5 w-3.5 text-black dark:text-white" />
-          <span>Star us on GitHub</span>
-        </a>
-
         <div className="relative z-10 mx-auto max-w-4xl text-center">
           <h1 className="text-4xl font-bold tracking-tight text-black dark:text-white md:text-5xl lg:text-6xl">
             Open source{' '}
@@ -61,9 +45,6 @@ export default function Hero() {
             </span>{' '}
             Engineering Platform
           </h1>
-          <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-black dark:text-white md:text-lg">
-            {HERO_DESCRIPTION}
-          </p>
         </div>
 
         <div className="relative z-10 mt-8 flex flex-wrap items-center justify-center gap-3">

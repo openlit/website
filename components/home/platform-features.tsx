@@ -9,47 +9,51 @@ type Feature = {
 
 const FEATURES: Feature[] = [
   {
-    title: 'Observability',
+    title: 'LLM tracing',
     description:
-      'Hierarchical traces for every LLM call, tool invocation, and retrieval. Filter by user, session, cost, latency, or metadata.',
+      'OpenTelemetry LLM tracing for every call, tool, and retrieval. Filter by user, session, cost, latency, or metadata.',
     href: 'https://docs.openlit.io/latest/openlit/observability/telemetry',
     visual: 'observe',
   },
   {
-    title: 'Evaluation',
+    title: 'LLM evaluation',
     description:
-      'LLM-as-a-judge, heuristics, or human review. Run evaluators on production traffic or during experiments.',
+      'LLM evaluation with LLM-as-a-judge, heuristics, or human review on production traffic or experiments.',
     href: 'https://docs.openlit.io/latest/openlit/evaluations/llm-as-a-judge',
     visual: 'evals',
   },
   {
-    title: 'Prompt Hub',
+    title: 'Prompt management',
     description:
-      'Separate prompts from code with versioning, one-click deploys, and rollbacks so improving prompts is a team sport.',
+      'Prompt Hub for prompt management and versioning. Deploy and roll back prompts without shipping app code.',
     href: 'https://docs.openlit.io/latest/openlit/prompts-experiments/prompt-hub/overview',
     visual: 'prompts',
   },
   {
-    title: 'Openground',
-    description: 'Test prompts on real inputs and compare models side-by-side before you ship.',
+    title: 'Model comparison',
+    description:
+      'OpenGround model comparison playground. Test prompts on real inputs and compare LLMs side by side.',
     href: 'https://docs.openlit.io/latest/openlit/prompts-experiments/openground/overview',
     visual: 'openground',
   },
   {
-    title: 'Agents',
-    description: 'Monitor coding agents end to end: tools, costs, and outcomes in one view.',
+    title: 'AI agent monitoring',
+    description:
+      'AI agent monitoring for coding agents and tool loops. See tools, cost, and outcomes in one view.',
     href: 'https://docs.openlit.io/latest/openlit/coding-agents/setup-and-configure',
     visual: 'agents',
   },
   {
-    title: 'Vault',
-    description: 'Store and rotate API keys and secrets without leaking them into application code.',
+    title: 'API key management',
+    description:
+      'Vault for LLM API key management. Store and rotate OpenAI, Anthropic, and other secrets outside app code.',
     href: 'https://docs.openlit.io/latest/openlit/developer-resources/vault/overview',
     visual: 'vault',
   },
   {
     title: 'Cost & latency',
-    description: 'Track spend, latency, and quality with dashboards built for AI workloads.',
+    description:
+      'Track spend, latency, and quality for AI workloads so you can improve cost and speed with real data.',
     href: 'https://docs.openlit.io/latest/openlit/costs/overview',
     visual: 'cost',
   },
@@ -345,8 +349,8 @@ export default function PlatformFeatures() {
             </span>
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-stone-600 dark:text-stone-300 md:text-lg">
-            Trace, manage prompts, evaluate, and experiment from prototype to production in one open
-            platform.
+            AI engineering tools for LLM tracing, prompt management, LLM evaluation, and model
+            comparison from prototype to production.
           </p>
         </div>
 

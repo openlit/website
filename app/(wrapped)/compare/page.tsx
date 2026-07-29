@@ -1,6 +1,8 @@
 import { genPageMetadata } from 'app/seo'
 import CompareIndex from 'components/compare/index'
 import { createWebPageSchema } from '@/components/structuredData'
+import FeaturePageHeader from '@/components/shell/feature-page-header'
+import { GitCompare } from 'lucide-react'
 
 export const metadata = genPageMetadata({
   title: 'OpenLIT vs Alternatives — LLM Observability Comparison',
@@ -25,6 +27,12 @@ export default function ComparePage() {
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(pageSchema) }}
+      />
+      <FeaturePageHeader
+        eyebrow="Product"
+        title="Compare"
+        icon={<GitCompare className="h-4 w-4" />}
+        tone="border-blue-200 bg-blue-50 text-blue-700 dark:border-blue-900/70 dark:bg-blue-950/40 dark:text-blue-300"
       />
       <CompareIndex />
     </>

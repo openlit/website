@@ -6,6 +6,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from 'react'
@@ -82,17 +83,23 @@ function SearchDialog({
     [onOpenChange, router]
   )
 
+  const inputRef = useRef<HTMLInputElement>(null)
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
         showCloseButton={false}
-        className="gap-0 overflow-hidden border-stone-200 bg-white p-0 sm:max-w-xl dark:border-stone-800 dark:bg-black"
+        onOpenAutoFocus={(event) => {
+          event.preventDefault()
+          inputRef.current?.focus()
+        }}
+        className="gap-0 overflow-hidden border-stone-200 bg-white p-0 outline-none focus:outline-none focus-visible:outline-none focus-visible:ring-0 sm:max-w-xl dark:border-stone-800 dark:bg-black"
       >
         <DialogTitle className="sr-only">Search the website</DialogTitle>
         <div className="flex items-center gap-2 border-b border-stone-200 px-3 dark:border-stone-800">
           <SearchIcon className="size-4 shrink-0 text-black dark:text-white" />
           <input
-            autoFocus
+            ref={inputRef}
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             onKeyDown={(event) => {
@@ -108,7 +115,7 @@ function SearchDialog({
               }
             }}
             placeholder="Search pages, blogs, comparisons…"
-            className="h-12 w-full bg-transparent text-sm text-black outline-none placeholder:text-stone-400 dark:text-white"
+            className="h-12 w-full bg-transparent text-sm text-black outline-none ring-0 placeholder:text-stone-400 focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 dark:text-white"
           />
           <kbd className="hidden rounded border border-stone-200 px-1.5 py-0.5 text-[10px] text-stone-500 sm:inline dark:border-stone-700">
             esc

@@ -1,4 +1,5 @@
 'use client'
+
 import siteMetadata from '@/data/siteMetadata'
 import { createContext, useEffect, useState } from 'react'
 
@@ -14,15 +15,58 @@ export type GithubInformation = {
   subscribers_count: number
 }
 
-export const GithubContext = createContext<{
+export type GithubContributor = {
+  login: string
+  id: number
+  avatar_url: string
+  html_url: string
+  contributions: number
+  type: string
+}
+
+type GithubContextValue = {
   info: GithubInformation | null
   sdk_downloads: number
-}>({ info: null, sdk_downloads: 0 })
+  contributors: GithubContributor[]
+}
+
+export const GithubContext = createContext<GithubContextValue>({
+  info: null,
+  sdk_downloads: 0,
+  contributors: [],
+})
+
+const REPO_API = siteMetadata.siteRepo.replace('https://github.com/', 'https://api.github.com/repos/')
+
+function isHumanContributor(contributor: GithubContributor) {
+  if (contributor.type !== 'User') return false
+  if (contributor.login.endsWith('[bot]')) return false
+  if (contributor.login.toLowerCase().includes('dependabot')) return false
+  return true
+}
+
+async function fetchAllContributors(): Promise<GithubContributor[]> {
+  const collected: GithubContributor[] = []
+  let page = 1
+
+  while (page <= 10) {
+    const response = await fetch(`${REPO_API}/contributors?per_page=100&page=${page}`)
+    if (!response.ok) break
+    const batch = (await response.json()) as GithubContributor[]
+    if (!Array.isArray(batch) || batch.length === 0) break
+    collected.push(...batch.filter(isHumanContributor))
+    if (batch.length < 100) break
+    page += 1
+  }
+
+  return collected
+}
 
 export const GithubProvider = ({ children }: { children: React.ReactNode }) => {
-  const [github, setGithub] = useState<{ info: GithubInformation | null; sdk_downloads: number }>({
+  const [github, setGithub] = useState<GithubContextValue>({
     info: null,
     sdk_downloads: 0,
+    contributors: [],
   })
 
   const extractSDKDownloads = () => {
@@ -41,10 +85,20 @@ export const GithubProvider = ({ children }: { children: React.ReactNode }) => {
   }
 
   useEffect(() => {
-    fetch(siteMetadata.siteRepo.replace('https://github.com/', 'https://api.github.com/repos/'))
+    fetch(REPO_API)
       .then((res) => res.json())
       .then((data) => {
         setGithub((e) => ({ ...e, info: data }))
+      })
+    fetchAllContributors()
+      .then((contributors) => {
+        const sorted = [...contributors].sort((a, b) =>
+          a.login.localeCompare(b.login, undefined, { sensitivity: 'base' })
+        )
+        setGithub((e) => ({ ...e, contributors: sorted }))
+      })
+      .catch(() => {
+        setGithub((e) => ({ ...e, contributors: [] }))
       })
     extractSDKDownloads()
   }, [])

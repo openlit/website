@@ -106,7 +106,7 @@ export default function Footer() {
               {siteMetadata.headerTitle}
             </a>
             <p className="text-sm leading-relaxed opacity-60">
-              Open-source LLM observability and AI engineering platform built on OpenTelemetry.
+              Open-source Harness Engineering platform built on OpenTelemetry.
             </p>
             <div className="flex gap-4">
               {socialLinks.map(({ href, icon: Icon, label }) => (
@@ -140,11 +140,12 @@ export default function Footer() {
         </div>
       </section>
 
-      <section className="container border-t border-stone-200 py-6 text-center dark:border-stone-800">
-        <p className="text-sm opacity-70">
+      <section className="flex h-12 items-center justify-center border-t border-stone-200 dark:border-stone-800">
+        <p className="px-4 text-sm opacity-70">
           &copy; {new Date().getFullYear()} AI Engineering Platform by{' '}
           <a
             target="_blank"
+            rel="noopener noreferrer"
             href={siteMetadata.github}
             className="text-brandPrimary underline opacity-100 transition-all hover:no-underline"
           >

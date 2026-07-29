@@ -133,7 +133,7 @@ function NativeSdkPath() {
       id="01"
       badge="Open source"
       title="Native SDKs"
-      body="Drop in openlit.init() when you want deep app-level traces."
+      body="Drop in openlit.init() for OpenTelemetry LLM tracing at the app level."
     >
       <OptionTabs options={SDK_OPTIONS} active={active} onChange={setActive} />
       <code className="block truncate rounded-md border border-stone-200 bg-stone-50 px-2.5 py-2 font-mono text-[11px] text-stone-700 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-200">
@@ -174,7 +174,7 @@ function GpuCollectorPath() {
       id="03"
       badge="Open source"
       title="GPU collector"
-      body="OpenTelemetry GPU metrics for utilization, memory, temperature, and power."
+      body="GPU monitoring for LLM inference: utilization, memory, temperature, and power via OpenTelemetry."
     >
       <OptionTabs options={GPU_OPTIONS} active={active} onChange={setActive} />
       <code className="block truncate rounded-md border border-stone-200 bg-stone-50 px-2.5 py-2 font-mono text-[11px] text-stone-700 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-200">

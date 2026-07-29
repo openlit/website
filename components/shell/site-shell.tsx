@@ -32,7 +32,7 @@ function SiteShellFrame({ children }: { children: ReactNode }) {
       <div className="flex min-h-0 flex-1">
         <div
           className={cn(
-            'relative z-30 hidden shrink-0 flex-col border-r border-stone-200 dark:border-stone-800 md:flex',
+            'relative z-30 hidden shrink-0 flex-col overflow-visible border-r border-stone-200 dark:border-stone-800 md:flex',
             sidebarWidthClass
           )}
         >

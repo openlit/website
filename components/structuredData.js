@@ -11,7 +11,7 @@ export const organisationSchema = {
     height: 512,
   },
   description:
-    'OpenLIT is an open-source platform built on OpenTelemetry, providing observability for GenAI and LLM applications.',
+    'OpenLIT is an open source Harness Engineering platform, built on OpenTelemetry.',
   email: 'contact@openlit.io',
   foundingDate: '2023-01-01',
   founders: [
@@ -41,7 +41,7 @@ export const applicationSchema = {
   operatingSystem: 'Linux, Windows, macOS',
   applicationCategory: 'DeveloperApplication',
   description:
-    'Open-source platform for observability and application performance monitoring (APM) built on OpenTelemetry, optimized for GenAI and LLM applications.',
+    'Open source Harness Engineering platform for AI engineering. LLM tracing, LLM evaluation, prompt management, AI agent monitoring, API key management, and model comparison on OpenTelemetry.',
   offers: {
     '@type': 'Offer',
     price: '0',
@@ -54,14 +54,15 @@ export const applicationSchema = {
   license: 'https://github.com/openlit/openlit/blob/main/LICENSE',
   author: { '@id': 'https://openlit.io/#organization' },
   featureList: [
-    'Unified Traces and Metrics',
+    'Harness Engineering',
+    'LLM tracing',
     'OpenTelemetry Support',
-    'LLM Observability',
-    'Fleet Hub',
-    'Prompt Hub',
-    'Vault',
-    'OpenGround',
-    'Kubernetes Operator',
+    'LLM evaluation',
+    'Prompt management',
+    'AI agent monitoring',
+    'API key management (Vault)',
+    'Model comparison (OpenGround)',
+    'GPU monitoring',
   ],
 }
 

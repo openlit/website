@@ -33,12 +33,12 @@ export default function WhyOpenlit() {
     {
       title: 'The full harness loop',
       description:
-        'Instrument, develop, manage, observe, and improve AI agents in one platform from prototype to production.',
+        'Instrument, develop, manage, observe, and improve AI systems in one Harness Engineering platform from prototype to production.',
     },
     {
       title: 'Unified platform',
       description:
-        'Tracing, evaluations, Prompt Hub, Vault, OpenGround, and Otter work alone or together on the same production data.',
+        'LLM tracing, LLM evaluation, prompt management, Vault, OpenGround, and Otter work alone or together on the same production data.',
     },
     {
       title: 'Open source (Apache 2.0)',
@@ -52,7 +52,7 @@ export default function WhyOpenlit() {
     {
       title: 'OpenTelemetry-native',
       description:
-        'Standard OTel traces and metrics you can keep in OpenLIT or export to Grafana, Datadog, and any OTLP backend.',
+        'Standard OpenTelemetry tracing and metrics you can keep in OpenLIT or export to Grafana, Datadog, and any OTLP backend.',
     },
     {
       title: `${integrationCount}+ integrations`,
@@ -70,9 +70,9 @@ export default function WhyOpenlit() {
         'Instrument in-process with SDKs or zero-code tooling. No mandatory proxy on every LLM call.',
     },
     {
-      title: 'GPU-aware',
+      title: 'GPU monitoring',
       description:
-        'Dedicated OpenTelemetry GPU collector for NVIDIA, AMD, and Intel utilization, memory, temperature, and power.',
+        'OpenTelemetry GPU collector for NVIDIA, AMD, and Intel utilization, memory, temperature, and power during LLM inference.',
     },
     {
       title: 'Production-proven',
@@ -105,8 +105,8 @@ export default function WhyOpenlit() {
             OpenLIT?
           </h2>
           <p className="mt-4 text-base leading-relaxed text-stone-600 dark:text-stone-300 md:text-lg">
-            OpenLIT is an OpenTelemetry-native harness engineering platform. Trace, evaluate, and
-            improve AI agents with production data, without locking your telemetry into a proprietary
+            OpenLIT is an OpenTelemetry-native Harness Engineering platform. Trace, evaluate, and
+            improve AI systems with production data, without locking telemetry into a proprietary
             format.
           </p>
         </div>

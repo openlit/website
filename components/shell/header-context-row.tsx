@@ -14,7 +14,6 @@ import { cn } from 'lib/utils'
 const MOBILE_LINKS = [
   { label: 'Home', href: '/' },
   { label: 'Pricing', href: '/pricing' },
-  { label: 'Compare', href: '/compare' },
   { label: 'Blogs', href: '/blogs' },
   { label: 'About', href: '/about-us' },
   { label: 'Docs', href: 'https://docs.openlit.io/latest/overview', external: true },
