@@ -50,7 +50,7 @@ module.exports = {
         14: '3.5rem',
       },
       fontFamily: {
-        sans: ['var(--font-space-grotesk)', ...fontFamily.sans],
+        sans: ['var(--font-inter)', ...fontFamily.sans],
       },
       colors: {
         primary: {
@@ -68,6 +68,11 @@ module.exports = {
         },
         gray: colors.gray,
         brandPrimary: '#F36C06',
+        brandSecondary: '#FFF4D8',
+        surface: '#F9F9F9',
+      },
+      borderRadius: {
+        ui: '8px',
       },
       typography: ({ theme }) => ({
         DEFAULT: {

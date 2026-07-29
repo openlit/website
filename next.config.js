@@ -9,10 +9,10 @@ const ContentSecurityPolicy = `
   script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com;
   style-src 'self' 'unsafe-inline';
   img-src * blob: data:;
-  media-src 'self' *.s3.amazonaws.com openlit.io mintcdn.com;
+  media-src 'self' *.s3.amazonaws.com *.s3.us-west-1.amazonaws.com openlit.io docs.openlit.io mintcdn.com;
   connect-src *;
   font-src 'self';
-  frame-src openlit.io story.screenspace.io cards.producthunt.com;
+  frame-src openlit.io story.screenspace.io;
   frame-ancestors 'none';
 `
 

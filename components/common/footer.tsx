@@ -140,7 +140,7 @@ export default function Footer() {
         </div>
       </section>
 
-      <section className="container border-t border-white/10 py-6 text-center">
+      <section className="container border-t border-stone-200 py-6 text-center dark:border-stone-800">
         <p className="text-sm opacity-70">
           &copy; {new Date().getFullYear()} AI Engineering Platform by{' '}
           <a
