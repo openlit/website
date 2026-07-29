@@ -85,6 +85,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <meta name="theme-color" media="(prefers-color-scheme: light)" content="#F9F9F9" />
         <meta name="theme-color" media="(prefers-color-scheme: dark)" content="#0C0A09" />
         <link rel="alternate" type="application/rss+xml" href="/feed.xml" />
+        <link rel="alternate" type="text/plain" href="/llms.txt" title="llms.txt" />
+        <link rel="alternate" type="text/plain" href="/llms-full.txt" title="llms-full.txt" />
+        <link rel="alternate" type="text/markdown" href="/index.md" title="Home (Markdown)" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organisationSchema) }}

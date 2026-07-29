@@ -52,6 +52,15 @@ const securityHeaders = [
     key: 'Permissions-Policy',
     value: 'camera=(), microphone=(), geolocation=(), payment=(), usb=()',
   },
+  {
+    key: 'X-Llms-Txt',
+    value: 'https://openlit.io/llms.txt',
+  },
+  {
+    key: 'Link',
+    value:
+      '<https://openlit.io/llms.txt>; rel="llms-txt", <https://openlit.io/llms-full.txt>; rel="llms-full-txt"',
+  },
 ]
 
 /**
@@ -88,6 +97,15 @@ module.exports = () => {
           hostname: 'miro.medium.com',
         },
       ],
+    },
+    async rewrites() {
+      return [
+        { source: '/index.md', destination: '/markdown' },
+        { source: '/pricing.md', destination: '/markdown/pricing' },
+        { source: '/about-us.md', destination: '/markdown/about-us' },
+        { source: '/compare.md', destination: '/markdown/compare' },
+        { source: '/compare/:slug.md', destination: '/markdown/compare/:slug' },
+      ]
     },
     async headers() {
       return [

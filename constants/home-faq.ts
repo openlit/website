@@ -71,6 +71,11 @@ export const HOME_FAQ_ITEMS: HomeFaqItem[] = [
       'OpenLIT instruments in process and exports data in the background over OpenTelemetry. There is no required proxy in front of every LLM call.',
   },
   {
+    question: 'Why does this website look like this?',
+    answer:
+      'Because our product looks like this. We liked the UI so much we let it escape the dashboard and take over the marketing site. Same sidebar energy, same Otter vibes, fewer traces (for now).',
+  },
+  {
     question: 'How do I get started with OpenLIT?',
     answer:
       'Run docker compose up -d to start the platform. Then install the SDK with pip install openlit and call openlit.init(), or point any OTLP exporter at your OpenLIT endpoint.',
