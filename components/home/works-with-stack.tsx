@@ -102,8 +102,8 @@ function OptionTabs({
             onClick={() => onChange(option.label)}
             className={
               isActive
-                ? 'rounded-md border border-brandPrimary/40 bg-brandPrimary/10 px-2.5 py-1 text-xs font-semibold text-brandPrimary'
-                : 'rounded-md border border-stone-200 bg-white px-2.5 py-1 text-xs font-medium text-stone-600 transition hover:border-stone-300 dark:border-stone-700 dark:bg-stone-950 dark:text-stone-300'
+                ? 'min-h-9 rounded-md border border-brandPrimary/40 bg-brandPrimary/10 px-3 py-1.5 text-xs font-semibold text-brandPrimary'
+                : 'min-h-9 rounded-md border border-stone-200 bg-white px-3 py-1.5 text-xs font-medium text-stone-600 transition hover:border-stone-300 dark:border-stone-700 dark:bg-stone-950 dark:text-stone-300'
             }
           >
             {option.label}
@@ -130,14 +130,14 @@ function PathShell({
   children: ReactNode
 }) {
   return (
-    <div className="flex h-full flex-col bg-white p-5 dark:bg-stone-950 sm:p-6">
+    <div className="flex h-full min-w-0 flex-col overflow-hidden bg-white p-4 dark:bg-stone-950 sm:p-5 lg:p-6">
       <div className="flex items-center justify-between gap-3">
         <span className="font-mono text-xs text-stone-400">{id}</span>
         <span
           className={
             badgeTone === 'enterprise'
-              ? 'rounded bg-brandPrimary/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-brandPrimary'
-              : 'rounded bg-stone-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-stone-500 dark:bg-stone-900 dark:text-stone-400'
+              ? 'shrink-0 rounded bg-brandPrimary/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-brandPrimary'
+              : 'shrink-0 rounded bg-stone-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-stone-500 dark:bg-stone-900 dark:text-stone-400'
           }
         >
           {badge}
@@ -145,7 +145,7 @@ function PathShell({
       </div>
       <h3 className="mt-4 text-lg font-semibold text-stone-900 dark:text-stone-50">{title}</h3>
       <p className="mt-2 text-sm leading-relaxed text-stone-600 dark:text-stone-300">{body}</p>
-      <div className="mt-auto flex flex-col gap-4 pt-5">{children}</div>
+      <div className="mt-auto flex min-w-0 flex-col gap-4 pt-5">{children}</div>
     </div>
   )
 }
@@ -174,9 +174,9 @@ function CopyableCommand({ display, copyText }: { display: string; copyText?: st
   }
 
   return (
-    <div className="flex min-w-0 items-center gap-1.5 rounded-md border border-stone-200 bg-stone-50 dark:border-stone-700 dark:bg-stone-900">
+    <div className="flex min-w-0 max-w-full items-center gap-1.5 overflow-hidden rounded-md border border-stone-200 bg-stone-50 dark:border-stone-700 dark:bg-stone-900">
       <code
-        className="min-w-0 flex-1 truncate px-2.5 py-2 font-mono text-[11px] text-stone-700 dark:text-stone-200"
+        className="min-w-0 flex-1 overflow-hidden text-ellipsis whitespace-nowrap px-2.5 py-2 font-mono text-[11px] text-stone-700 dark:text-stone-200"
         title={value}
       >
         {display}
@@ -185,7 +185,7 @@ function CopyableCommand({ display, copyText }: { display: string; copyText?: st
         type="button"
         onClick={handleCopy}
         aria-label={copied ? 'Copied' : 'Copy command'}
-        className="mr-1 inline-flex size-7 shrink-0 items-center justify-center rounded text-stone-500 transition hover:bg-stone-200/70 hover:text-stone-800 dark:hover:bg-stone-800 dark:hover:text-stone-100"
+        className="mr-1 inline-flex size-9 shrink-0 items-center justify-center rounded text-stone-500 transition hover:bg-stone-200/70 hover:text-stone-800 dark:hover:bg-stone-800 dark:hover:text-stone-100 sm:size-7"
       >
         {copied ? <Check className="size-3.5 text-brandPrimary" /> : <Copy className="size-3.5" />}
       </button>
@@ -336,7 +336,7 @@ export default function WorksWithStack() {
           </p>
         </div>
 
-        <div className="mt-12 grid gap-px overflow-hidden rounded-xl border border-stone-200 bg-stone-200 dark:border-stone-800 dark:bg-stone-800 md:grid-cols-2 xl:grid-cols-4">
+        <div className="mt-12 grid grid-cols-1 gap-px overflow-hidden rounded-xl border border-stone-200 bg-stone-200 dark:border-stone-800 dark:bg-stone-800 lg:grid-cols-2 xl:grid-cols-4">
           <NativeSdkPath />
           <EbpfPath />
           <GpuCollectorPath />

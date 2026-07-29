@@ -15,8 +15,6 @@ const logos: LogoEntry[] = Array.from({ length: 26 }, (_, index) => ({
   name: `Logo ${index + 1}`,
 }))
 
-const LOGO_HEIGHT = 40
-
 function LogoItem({ entry }: { entry: LogoEntry }) {
   if (entry.kind === 'img') {
     // Square images (icons) get the company name label alongside them
@@ -28,11 +26,10 @@ function LogoItem({ entry }: { entry: LogoEntry }) {
           alt={entry.name}
           width={entry.width}
           height={entry.height}
-          className="opacity-50 transition-opacity duration-300 group-hover:opacity-100"
-          style={{ height: LOGO_HEIGHT, width: 'auto' }}
+          className="h-7 w-auto opacity-50 transition-opacity duration-300 group-hover:opacity-100 sm:h-9"
         />
         {isIcon && entry.name && (
-          <span className="text-base font-semibold opacity-50 transition-opacity duration-300 group-hover:opacity-100">
+          <span className="text-sm font-semibold opacity-50 transition-opacity duration-300 group-hover:opacity-100 sm:text-base">
             {entry.name}
           </span>
         )}
@@ -41,7 +38,7 @@ function LogoItem({ entry }: { entry: LogoEntry }) {
   }
 
   return (
-    <span className="shrink-0 text-base font-semibold opacity-60 transition-opacity duration-300 hover:opacity-80">
+    <span className="shrink-0 text-sm font-semibold opacity-60 transition-opacity duration-300 hover:opacity-80 sm:text-base">
       {entry.name}
     </span>
   )
@@ -52,9 +49,9 @@ export function TrustedBy() {
   const track = [...logos, ...logos]
 
   return (
-    <section className="w-full py-12">
-      <div className="container mb-8 text-center">
-        <p className="text-sm font-medium uppercase tracking-widest opacity-60">
+    <section className="w-full py-8 sm:py-12">
+      <div className="container mb-6 text-center sm:mb-8">
+        <p className="text-xs font-medium uppercase tracking-widest opacity-60 sm:text-sm">
           Trusted &amp; used by developers and engineers at
         </p>
       </div>
@@ -64,12 +61,12 @@ export function TrustedBy() {
         className="marquee-track group relative overflow-hidden bg-white py-2 opacity-70"
         style={{
           maskImage:
-            'linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%)',
+            'linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%)',
           WebkitMaskImage:
-            'linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%)',
+            'linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%)',
         }}
       >
-        <div className="animate-marquee flex w-max items-center gap-16 px-8">
+        <div className="animate-marquee flex w-max items-center gap-10 px-6 sm:gap-16 sm:px-8">
           {track.map((entry, i) => (
             <LogoItem key={`${entry.name}-${i}`} entry={entry} />
           ))}

@@ -86,7 +86,7 @@ const socialLinks = [
 export default function Footer() {
   return (
     <footer id="footer">
-      <section className="container py-16">
+      <section className="container px-4 py-12 sm:py-16">
         <div className="flex flex-col gap-12 lg:flex-row lg:gap-16">
           {/* Brand */}
           <div className="flex flex-col gap-5 lg:w-56 lg:shrink-0">
@@ -104,13 +104,13 @@ export default function Footer() {
             <p className="text-sm leading-relaxed opacity-60">
               Open-source Harness Engineering platform built on OpenTelemetry.
             </p>
-            <div className="flex gap-4">
+            <div className="flex gap-3">
               {socialLinks.map(({ href, icon: Icon, label }) => (
                 <a
                   key={label}
                   href={href}
                   aria-label={label}
-                  className="flex h-6 w-6 shrink-0 items-center justify-center fill-current opacity-60 hover:text-brandPrimary hover:opacity-100"
+                  className="flex size-9 shrink-0 items-center justify-center fill-current opacity-60 hover:text-brandPrimary hover:opacity-100"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
@@ -121,9 +121,9 @@ export default function Footer() {
           </div>
 
           {/* Link columns */}
-          <div className="grid flex-1 grid-cols-2 gap-x-8 gap-y-10 sm:grid-cols-3 lg:grid-cols-5">
+          <div className="grid flex-1 grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-3 sm:gap-x-8 lg:grid-cols-5">
             {linkGroups.map((group) => (
-              <div key={group.heading} className="flex flex-col gap-3">
+              <div key={group.heading} className="flex min-w-0 flex-col gap-3">
                 <h3 className="text-sm font-semibold uppercase tracking-wider opacity-70">
                   {group.heading}
                 </h3>

@@ -73,13 +73,13 @@ function PlanCard({
         <p className="mt-1 text-sm text-stone-500 dark:text-stone-400">{plan.priceHint}</p>
       </div>
 
-      <div className="mt-6 flex flex-col gap-2 sm:flex-row">
+      <div className="mt-6 flex flex-col gap-2">
         <a
           href={plan.ctaHref}
           target={plan.ctaHref.startsWith('http') ? '_blank' : undefined}
           rel={plan.ctaHref.startsWith('http') ? 'noopener noreferrer' : undefined}
           className={cn(
-            'inline-flex flex-1 items-center justify-center gap-2 rounded-md px-4 py-2.5 text-sm font-semibold transition',
+            'inline-flex w-full items-center justify-center gap-2 rounded-md px-4 py-2.5 text-sm font-semibold transition',
             featured
               ? 'bg-brandPrimary text-white hover:bg-primary-700'
               : 'border border-stone-200 text-stone-800 hover:border-brandPrimary/40 dark:border-stone-700 dark:text-stone-100'
@@ -93,7 +93,7 @@ function PlanCard({
           href={plan.secondaryHref}
           target={plan.secondaryHref.startsWith('http') ? '_blank' : undefined}
           rel={plan.secondaryHref.startsWith('http') ? 'noopener noreferrer' : undefined}
-          className="inline-flex flex-1 items-center justify-center rounded-md border border-stone-200 px-4 py-2.5 text-sm font-medium text-stone-700 transition hover:border-brandPrimary/40 dark:border-stone-700 dark:text-stone-200"
+          className="inline-flex w-full items-center justify-center rounded-md border border-stone-200 px-4 py-2.5 text-sm font-medium text-stone-700 transition hover:border-brandPrimary/40 dark:border-stone-700 dark:text-stone-200"
         >
           {plan.secondaryLabel}
         </a>
@@ -128,7 +128,7 @@ export default function PricingContent() {
         </p>
       </div>
 
-      <div className="mb-14 grid gap-4 md:grid-cols-2">
+      <div className="mb-14 grid gap-4 sm:grid-cols-2">
         <PlanCard plan={PRICING_PLANS.oss} featured />
         <PlanCard plan={PRICING_PLANS.cloud} />
       </div>
@@ -142,14 +142,22 @@ export default function PricingContent() {
         </p>
       </div>
 
-      <div className="overflow-x-auto rounded-xl border border-stone-200 dark:border-stone-800">
-        <table className="w-full min-w-[28rem] border-collapse text-sm">
+      {/* Mobile: stacked list (main shell uses overflow-x-hidden, so wide tables get clipped). */}
+      <div className="overflow-hidden rounded-xl border border-stone-200 dark:border-stone-800 md:hidden">
+        {OSS_FEATURE_ROWS.map((section) => (
+          <MobileSection key={section.category} section={section} />
+        ))}
+      </div>
+
+      {/* Desktop / tablet landscape: full table */}
+      <div className="hidden min-w-0 overflow-x-auto rounded-xl border border-stone-200 dark:border-stone-800 md:block">
+        <table className="w-full border-collapse text-sm">
           <thead>
             <tr className="border-b border-stone-200 bg-stone-50 dark:border-stone-800 dark:bg-stone-900/60">
               <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-stone-500">
                 Feature
               </th>
-              <th className="w-36 px-4 py-3 text-center text-xs font-semibold uppercase tracking-wide text-brandPrimary">
+              <th className="w-40 px-4 py-3 text-center text-xs font-semibold uppercase tracking-wide text-brandPrimary">
                 Included in OSS
               </th>
             </tr>
@@ -191,6 +199,44 @@ export default function PricingContent() {
       </p>
 
       <ReadyToGetStarted />
+    </div>
+  )
+}
+
+function MobileSection({ section }: { section: (typeof OSS_FEATURE_ROWS)[number] }) {
+  return (
+    <div className="border-b border-stone-200 last:border-b-0 dark:border-stone-800">
+      <div className="bg-stone-50 px-4 py-3 dark:bg-stone-900/40">
+        <p className="text-xs font-semibold uppercase tracking-wide text-stone-500">
+          {section.category}
+        </p>
+        {section.blurb ? (
+          <p className="mt-1 text-xs leading-relaxed text-stone-400 dark:text-stone-500">
+            {section.blurb}
+          </p>
+        ) : null}
+      </div>
+      <ul>
+        {section.features.map((feature) => (
+          <li
+            key={feature.name}
+            className="flex items-start gap-3 border-t border-stone-100 px-4 py-3 dark:border-stone-800/80"
+          >
+            <span className="mt-0.5 shrink-0">
+              {feature.included === true ? (
+                <Check className="h-4 w-4 text-brandPrimary" aria-label="Included" />
+              ) : (
+                <span className="text-xs font-medium text-stone-600 dark:text-stone-300">
+                  {feature.included}
+                </span>
+              )}
+            </span>
+            <span className="min-w-0 flex-1 text-sm leading-snug text-stone-700 dark:text-stone-300">
+              {feature.name}
+            </span>
+          </li>
+        ))}
+      </ul>
     </div>
   )
 }

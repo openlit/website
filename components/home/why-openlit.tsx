@@ -95,7 +95,7 @@ export default function WhyOpenlit() {
     <section className="w-full bg-white px-4 py-16 dark:bg-stone-950 md:py-20">
       <div className="mx-auto max-w-6xl">
         <div className="max-w-3xl">
-          <h2 className="text-3xl font-bold tracking-tight text-stone-900 dark:text-stone-50 md:text-4xl">
+          <h2 className="text-balance text-3xl font-bold tracking-tight text-stone-900 dark:text-stone-50 md:text-4xl">
             <MarkedWord>Why use OpenLIT?</MarkedWord>
           </h2>
           <p className="mt-4 text-base leading-relaxed text-stone-600 dark:text-stone-300 md:text-lg">

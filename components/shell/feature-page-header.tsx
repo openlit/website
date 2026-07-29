@@ -43,7 +43,7 @@ export default function FeaturePageHeader({
           </div>
         </div>
         {actions ? (
-          <div className="flex min-w-0 shrink-0 flex-wrap items-center justify-end gap-2">
+          <div className="flex min-w-0 shrink-0 flex-wrap items-center gap-2 md:justify-end">
             {actions}
           </div>
         ) : null}

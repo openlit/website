@@ -12,20 +12,21 @@ export default function Hero() {
     <div className="relative w-full bg-white dark:bg-stone-950">
       <section className="relative mx-auto flex w-full max-w-6xl flex-col items-center px-4 pb-10 pt-10 md:pt-14">
         <div className="relative z-10 mx-auto max-w-4xl text-center">
-          <h1 className="text-4xl font-bold tracking-tight text-black dark:text-white md:text-5xl lg:text-6xl">
-            Open source <MarkedWord>Harness</MarkedWord> Engineering Platform
+          <h1 className="text-balance text-3xl font-bold tracking-tight text-black dark:text-white sm:text-4xl md:text-5xl lg:text-6xl">
+            Open source <MarkedWord className="whitespace-nowrap">Harness</MarkedWord> Engineering
+            Platform
           </h1>
           <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-black dark:text-white md:text-lg">
             {HERO_DESCRIPTION}
           </p>
         </div>
 
-        <div className="relative z-10 mt-8 flex flex-wrap items-center justify-center gap-3">
+        <div className="relative z-10 mt-8 flex w-full max-w-md flex-col items-stretch justify-center gap-3 sm:max-w-none sm:flex-row sm:flex-wrap sm:items-center">
           <a
             href="https://docs.openlit.io/latest/openlit/quickstart-ai-observability"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex h-10 items-center gap-2 rounded-md bg-brandPrimary px-6 text-sm font-medium text-white transition hover:bg-primary-700"
+            className="inline-flex h-11 items-center justify-center gap-2 rounded-md bg-brandPrimary px-6 text-sm font-medium text-white transition hover:bg-primary-700 sm:h-10"
           >
             Documentation
             <svg
@@ -50,16 +51,21 @@ export default function Hero() {
             <DialogTrigger asChild>
               <button
                 type="button"
-                className="inline-flex h-10 items-center rounded-md border border-stone-200 bg-white px-6 text-sm font-medium text-black transition hover:border-brandPrimary/40 dark:border-stone-700 dark:bg-stone-950 dark:text-white"
+                className="inline-flex h-11 items-center justify-center rounded-md border border-stone-200 bg-white px-6 text-sm font-medium text-black transition hover:border-brandPrimary/40 dark:border-stone-700 dark:bg-stone-950 dark:text-white sm:h-10"
               >
                 View Demo
               </button>
             </DialogTrigger>
             <DialogContent
-              showCloseButton={false}
-              className="flex h-auto w-auto items-center justify-center bg-white dark:bg-stone-950 [&]:max-w-full [&]:sm:max-w-full"
+              showCloseButton
+              className="flex w-[calc(100%-1.5rem)] max-w-4xl items-center justify-center overflow-hidden bg-white p-2 dark:bg-stone-950 sm:p-4"
             >
-              <video controls preload="none" className="m-auto" playsInline>
+              <video
+                controls
+                preload="none"
+                className="m-auto max-h-[min(70dvh,32rem)] w-full rounded-md"
+                playsInline
+              >
                 <source src="https://openlit.io/static/images/demo.mp4" type="video/mp4" />
                 <track kind="captions" label="English" default />
                 Your browser does not support the video tag.

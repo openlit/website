@@ -353,7 +353,7 @@ export default function PlatformFeatures() {
               target="_blank"
               rel="noopener noreferrer"
               className={cn(
-                'group relative flex h-full min-h-[18.5rem] flex-col overflow-hidden rounded-xl border border-stone-200 bg-white p-5 transition hover:border-brandPrimary/40 hover:shadow-[0_8px_24px_-16px_rgba(28,25,23,0.35)] dark:border-stone-800 dark:bg-stone-950 dark:hover:border-orange-400/40',
+                'group relative flex h-full min-h-[16rem] flex-col overflow-hidden rounded-xl border border-stone-200 bg-white p-4 transition hover:border-brandPrimary/40 hover:shadow-[0_8px_24px_-16px_rgba(28,25,23,0.35)] dark:border-stone-800 dark:bg-stone-950 dark:hover:border-orange-400/40 sm:min-h-[18.5rem] sm:p-5',
                 index < 3 ? 'lg:col-span-4' : 'lg:col-span-3'
               )}
             >
