@@ -129,13 +129,17 @@ module.exports = () => {
     },
     webpack: (config, options) => {
       config.plugins.push(new DuplicatePackageCheckerPlugin())
-      config.devtool = false
 
-      if (config.cache && !options.dev) {
-        config.cache = Object.freeze({
-          type: 'memory',
-        })
-        config.cache.maxMemoryGenerations = 0
+      // Disabling source maps in development breaks HMR and causes
+      // "Cannot read properties of undefined (reading 'call')" chunk errors.
+      if (!options.dev) {
+        config.devtool = false
+        if (config.cache) {
+          config.cache = Object.freeze({
+            type: 'memory',
+          })
+          config.cache.maxMemoryGenerations = 0
+        }
       }
       return config
     },

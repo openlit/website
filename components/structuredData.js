@@ -19,9 +19,7 @@ export const organisationSchema = {
       name: 'Aman Agarwal',
     },
   ],
-  sameAs: [
-    'https://github.com/openlit/openlit',
-  ],
+  sameAs: ['https://github.com/openlit/openlit'],
   contactPoint: {
     '@type': 'ContactPoint',
     email: 'contact@openlit.io',

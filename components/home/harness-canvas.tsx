@@ -204,9 +204,14 @@ export function HarnessCanvas({
   const activeStage = HARNESS_STAGES.find((s) => s.label === activeLabel) ?? null
 
   return (
+    // Canvas background dismisses selection; stage cards / preview keep it open.
+    // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions -- non-interactive dismiss surface
     <div
       role="presentation"
-      onClick={() => onDismiss?.()}
+      onClick={(e) => {
+        if ((e.target as HTMLElement).closest('[data-harness-keep]')) return
+        onDismiss?.()
+      }}
       className="relative aspect-[16/9] min-h-[20rem] overflow-hidden rounded-xl border border-stone-200 bg-white dark:border-stone-800 dark:bg-stone-950 sm:min-h-[24rem]"
       style={{
         backgroundImage:
@@ -230,8 +235,8 @@ export function HarnessCanvas({
       />
 
       <div
+        data-harness-keep
         className="absolute inset-x-3 top-[12%] z-10 grid grid-cols-5 gap-1.5 sm:inset-x-4 sm:gap-2"
-        onClick={(e) => e.stopPropagation()}
       >
         {HARNESS_STAGES.map((stage) => {
           const isActive = activeLabel === stage.label
@@ -252,7 +257,7 @@ export function HarnessCanvas({
       {/* Full-width content area under the stage row */}
       <div className="absolute inset-x-3 bottom-[6%] top-[42%] z-10 sm:inset-x-4">
         {activeStage && activeStage.video ? (
-          <div className="flex h-full min-h-0 gap-2 sm:gap-3" onClick={(e) => e.stopPropagation()}>
+          <div data-harness-keep className="flex h-full min-h-0 gap-2 sm:gap-3">
             <div className="min-h-0 min-w-0 flex-1">
               <ZoneVideo src={activeStage.video} label={activeStage.label} />
             </div>

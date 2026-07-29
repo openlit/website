@@ -28,8 +28,7 @@ interface LayoutProps {
 
 export default function PostLayout({ content, authorDetails, next, prev, children }: LayoutProps) {
   const { filePath, path, date, title, tags, images, layout } = content
-  const displayImage =
-    images && images.length > 0 ? images[0] : '/static/images/twitter-card.png'
+  const displayImage = images && images.length > 0 ? images[0] : '/static/images/twitter-card.png'
 
   return (
     <article>

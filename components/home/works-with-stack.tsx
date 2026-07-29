@@ -150,13 +150,7 @@ function PathShell({
   )
 }
 
-function CopyableCommand({
-  display,
-  copyText,
-}: {
-  display: string
-  copyText?: string
-}) {
+function CopyableCommand({ display, copyText }: { display: string; copyText?: string }) {
   const [copied, setCopied] = useState(false)
   const value = copyText ?? display
 

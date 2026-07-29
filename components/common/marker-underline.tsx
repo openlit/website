@@ -32,13 +32,7 @@ export function MarkerUnderline({ className }: { className?: string }) {
 }
 
 /** Wraps a word/phrase with the hero-style orange brush underline. */
-export function MarkedWord({
-  children,
-  className,
-}: {
-  children: ReactNode
-  className?: string
-}) {
+export function MarkedWord({ children, className }: { children: ReactNode; className?: string }) {
   return (
     <span className={cn('relative inline-block whitespace-nowrap', className)}>
       {children}
