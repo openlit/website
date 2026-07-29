@@ -93,14 +93,19 @@ export default function HeaderContextRow() {
     { label: current, current: true },
   ]
 
+  const mobileTrail = [
+    { label: 'Website', href: '/', showChevron: true },
+    { label: current, current: true },
+  ]
+
   return (
     <div className="relative flex min-w-0 flex-1 flex-col">
       <div
         className={siteTopBarClassName(
-          'min-w-0 flex-1 items-center gap-x-2 gap-y-0.5 bg-white pl-3 pr-2 dark:bg-stone-950 sm:gap-x-3 sm:pr-3 md:pl-6'
+          'min-w-0 flex-1 gap-x-2 bg-white pl-3 pr-2 dark:bg-stone-950 sm:gap-x-3 sm:pr-3 md:pl-6'
         )}
       >
-        <Link href="/" className="mr-1 flex shrink-0 items-center md:hidden">
+        <Link href="/" className="flex shrink-0 items-center md:hidden">
           <Image
             src="/static/images/logo.png"
             alt="OpenLIT"
@@ -110,14 +115,27 @@ export default function HeaderContextRow() {
           />
         </Link>
 
-        {/* Phone: current page only. md+: full product-style trail. */}
-        <nav aria-label="Breadcrumb" className="flex min-w-0 flex-1 items-center gap-x-2">
-          <span className="md:hidden">
-            <ScopeItem label={current} current />
+        {/* Phone: Website / current. md+: Open Source / Website / current. */}
+        <nav
+          aria-label="Breadcrumb"
+          className="flex min-w-0 flex-1 items-center gap-x-1.5 overflow-hidden sm:gap-x-2"
+        >
+          <span className="flex min-w-0 items-center gap-x-1.5 md:hidden">
+            {mobileTrail.map((item, index) => (
+              <Fragment key={`m-${item.label}-${index}`}>
+                {index > 0 && <ScopeSeparator />}
+                <ScopeItem
+                  label={item.label}
+                  href={item.href}
+                  current={item.current}
+                  showChevron={item.showChevron}
+                />
+              </Fragment>
+            ))}
           </span>
           <span className="hidden min-w-0 flex-wrap items-center gap-x-2 gap-y-0.5 md:flex">
             {desktopTrail.map((item, index) => (
-              <Fragment key={`${item.label}-${index}`}>
+              <Fragment key={`d-${item.label}-${index}`}>
                 {index > 0 && <ScopeSeparator />}
                 <ScopeItem
                   label={item.label}
@@ -164,7 +182,7 @@ export default function HeaderContextRow() {
       </div>
 
       {mobileOpen && (
-        <div className="absolute inset-x-0 top-11 z-50 max-h-[min(70dvh,28rem)] overflow-y-auto border-b border-stone-200 bg-white p-3 shadow-sm dark:border-stone-800 dark:bg-stone-950 md:hidden">
+        <div className="absolute inset-x-0 top-full z-50 max-h-[min(70dvh,28rem)] overflow-y-auto border-b border-stone-200 bg-white p-3 shadow-sm dark:border-stone-800 dark:bg-stone-950 md:hidden">
           <div className="flex flex-col gap-1">
             {MOBILE_LINKS.map((item) => {
               const className =

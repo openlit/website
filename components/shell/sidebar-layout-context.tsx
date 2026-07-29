@@ -39,7 +39,8 @@ export function useSidebarLayout() {
   return context
 }
 
-export const SITE_TOP_BAR_CLASS = 'flex h-11 shrink-0 items-center'
+export const SITE_TOP_BAR_CLASS =
+  'flex min-h-11 shrink-0 items-center py-2.5 md:h-11 md:min-h-11 md:py-0'
 
 export function siteTopBarClassName(className?: string) {
   return cn(SITE_TOP_BAR_CLASS, className)

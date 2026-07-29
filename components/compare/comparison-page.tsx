@@ -1,4 +1,5 @@
 import { Check, X, Minus, ArrowRight, Github } from 'lucide-react'
+import { Fragment } from 'react'
 import type { Competitor, ComparisonFeature } from '@/data/comparisons'
 import siteMetadata from '@/data/siteMetadata'
 import ReadyToGetStarted from '../common/ready-to-get-started'
@@ -36,8 +37,8 @@ function ComparisonTable({
         </thead>
         <tbody>
           {data.map((section) => (
-            <>
-              <tr key={section.category}>
+            <Fragment key={section.category}>
+              <tr>
                 <td
                   colSpan={3}
                   className="border-t border-white/10 pb-2 pt-5 text-xs font-semibold uppercase tracking-wider opacity-50"
@@ -61,7 +62,7 @@ function ComparisonTable({
                   </td>
                 </tr>
               ))}
-            </>
+            </Fragment>
           ))}
         </tbody>
       </table>

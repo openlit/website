@@ -72,7 +72,7 @@ function Card({
   const body = (
     <>
       <div className="flex items-start justify-between gap-1.5">
-        <span className="font-mono text-[10px] font-semibold uppercase leading-snug tracking-wide text-stone-800 dark:text-stone-100 sm:text-[10px]">
+        <span className="font-mono text-[10px] font-semibold uppercase leading-snug tracking-wide text-stone-800 dark:text-stone-100">
           {label}
         </span>
         {icon ? (
@@ -320,9 +320,9 @@ function DesktopHarness({
               <ZoneVideo src={activeStage.video} label={activeStage.label} />
             </div>
             {activeStage.items.length > 0 ? (
-              <div className="flex w-[5rem] shrink-0 flex-col gap-1.5 sm:w-[6.5rem] lg:w-[7.5rem]">
+              <div className="flex w-40 shrink-0 flex-col gap-1.5 xl:w-48">
                 {activeStage.items.map((item) => (
-                  <Card key={item} label={item} className="min-h-0 flex-1 p-1.5 sm:p-2" />
+                  <Card key={item} label={item} className="min-h-0 flex-1 p-2.5 sm:p-3" />
                 ))}
               </div>
             ) : null}

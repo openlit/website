@@ -1,5 +1,3 @@
-import Link from 'next/link'
-import { Button } from '../ui/button'
 import { BookOpen, Zap } from 'lucide-react'
 import { cn } from 'lib/utils'
 
@@ -18,28 +16,24 @@ export default function ReadyToGetStarted({ className }: { className?: string })
           prompts, and evaluations.
         </p>
         <div className="flex flex-col justify-center gap-3 sm:flex-row sm:flex-wrap">
-          <Link
+          <a
             href="https://docs.openlit.io/latest/openlit/quickstart-ai-observability"
             target="_blank"
             rel="noopener noreferrer"
-            className="w-full sm:w-auto"
+            className="inline-flex h-11 w-full items-center justify-center rounded-md bg-brandPrimary px-8 text-sm font-medium text-white transition hover:bg-primary-700 sm:w-auto"
           >
-            <Button size="lg" className="w-full sm:w-auto">
-              <Zap className="mr-2 h-4 w-4" />
-              Get Started Free
-            </Button>
-          </Link>
-          <Link
+            <Zap className="mr-2 h-4 w-4" />
+            Get Started Free
+          </a>
+          <a
             href="https://docs.openlit.io"
             target="_blank"
             rel="noopener noreferrer"
-            className="w-full sm:w-auto"
+            className="inline-flex h-11 w-full items-center justify-center rounded-md border border-stone-200 bg-white px-8 text-sm font-medium text-stone-800 transition hover:border-brandPrimary/40 hover:text-brandPrimary dark:border-stone-700 dark:bg-stone-900 dark:text-stone-100 sm:w-auto"
           >
-            <Button variant="outline" size="lg" className="w-full sm:w-auto">
-              <BookOpen className="mr-2 h-4 w-4" />
-              Read the Docs
-            </Button>
-          </Link>
+            <BookOpen className="mr-2 h-4 w-4" />
+            Read the Docs
+          </a>
         </div>
       </div>
     </section>

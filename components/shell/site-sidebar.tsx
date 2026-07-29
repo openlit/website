@@ -67,7 +67,7 @@ function CollapsedLabel({ label, show }: { label: string; show: boolean }) {
 
 function SidebarAccount() {
   const { isExpanded } = useSidebarLayout()
-  const { theme, toggleTheme } = useTheme()
+  const { toggleTheme } = useTheme()
   const [open, setOpen] = useState(false)
   const rootRef = useRef<HTMLDivElement>(null)
 
@@ -130,8 +130,10 @@ function SidebarAccount() {
               setOpen(false)
             }}
           >
-            {theme === 'dark' ? <Sun className="size-4" /> : <Moon className="size-4" />}
-            {theme === 'dark' ? 'Light mode' : 'Dark mode'}
+            <Moon className="size-4 dark:hidden" />
+            <Sun className="hidden size-4 dark:block" />
+            <span className="dark:hidden">Dark mode</span>
+            <span className="hidden dark:inline">Light mode</span>
           </button>
           <a
             role="menuitem"
