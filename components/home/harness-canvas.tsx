@@ -72,7 +72,7 @@ function Card({
   const body = (
     <>
       <div className="flex items-start justify-between gap-1.5">
-        <span className="font-mono text-[9px] font-semibold uppercase leading-snug tracking-wide text-stone-800 dark:text-stone-100 sm:text-[10px]">
+        <span className="font-mono text-[10px] font-semibold uppercase leading-snug tracking-wide text-stone-800 dark:text-stone-100 sm:text-[10px]">
           {label}
         </span>
         {icon ? (
@@ -191,8 +191,69 @@ export function BrowserChrome({
   )
 }
 
-/** Fixed-height interactive harness canvas (same size collapsed / expanded). */
-export function HarnessCanvas({
+function MobileHarness({
+  activeLabel,
+  onToggle,
+}: {
+  activeLabel: string | null
+  onToggle: (label: string) => void
+}) {
+  const activeStage = HARNESS_STAGES.find((s) => s.label === activeLabel) ?? null
+
+  return (
+    <div className="flex flex-col gap-3 rounded-xl border border-stone-200 bg-white p-3 dark:border-stone-800 dark:bg-stone-950 sm:p-4 lg:hidden">
+      <div className="flex items-center justify-between gap-2 font-mono text-[10px] uppercase tracking-wider text-stone-500">
+        <span>Development</span>
+        <span>Production</span>
+      </div>
+
+      <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
+        {HARNESS_STAGES.map((stage) => {
+          const isActive = activeLabel === stage.label
+          return (
+            <Card
+              key={stage.label}
+              label={stage.label}
+              icon={stage.icon}
+              active={isActive}
+              dimmed={Boolean(activeLabel && !isActive)}
+              onClick={() => onToggle(stage.label)}
+              className="min-h-[3.5rem]"
+            />
+          )
+        })}
+      </div>
+
+      <div className="min-h-[12rem] overflow-hidden rounded-sm border border-dashed border-stone-300/70 dark:border-stone-600/60">
+        {activeStage?.video ? (
+          <div className="flex h-full min-h-[12rem] flex-col gap-3 p-2 sm:p-3">
+            <div className="min-h-[10rem] flex-1">
+              <ZoneVideo src={activeStage.video} label={activeStage.label} />
+            </div>
+            {activeStage.items.length > 0 ? (
+              <div className="flex flex-wrap gap-1.5">
+                {activeStage.items.map((item) => (
+                  <span
+                    key={item}
+                    className="rounded border border-stone-300 bg-white px-2 py-1 font-mono text-[10px] uppercase tracking-wide text-stone-700 dark:border-stone-600 dark:bg-stone-950 dark:text-stone-200"
+                  >
+                    {item}
+                  </span>
+                ))}
+              </div>
+            ) : null}
+          </div>
+        ) : (
+          <div className="flex min-h-[12rem] items-center justify-center px-4">
+            <p className="text-center text-xs text-stone-400">Select a stage to preview</p>
+          </div>
+        )}
+      </div>
+    </div>
+  )
+}
+
+function DesktopHarness({
   activeLabel,
   onToggle,
   onDismiss,
@@ -204,7 +265,6 @@ export function HarnessCanvas({
   const activeStage = HARNESS_STAGES.find((s) => s.label === activeLabel) ?? null
 
   return (
-    // Canvas background dismisses selection; stage cards / preview keep it open.
     // eslint-disable-next-line jsx-a11y/click-events-have-key-events, jsx-a11y/no-static-element-interactions -- non-interactive dismiss surface
     <div
       role="presentation"
@@ -212,14 +272,13 @@ export function HarnessCanvas({
         if ((e.target as HTMLElement).closest('[data-harness-keep]')) return
         onDismiss?.()
       }}
-      className="relative aspect-[16/9] min-h-[20rem] overflow-hidden rounded-xl border border-stone-200 bg-white dark:border-stone-800 dark:bg-stone-950 sm:min-h-[24rem]"
+      className="relative hidden aspect-[16/9] min-h-[26rem] overflow-hidden rounded-xl border border-stone-200 bg-white dark:border-stone-800 dark:bg-stone-950 lg:block"
       style={{
         backgroundImage:
           'linear-gradient(to right, rgba(168,162,158,0.12) 1px, transparent 1px), linear-gradient(to bottom, rgba(168,162,158,0.12) 1px, transparent 1px)',
         backgroundSize: '64px 40px',
       }}
     >
-      {/* Dev / Prod only wrap the top stage cards */}
       <div className="pointer-events-none absolute inset-x-3 top-[10%] z-0 grid h-[28%] grid-cols-5 gap-1.5 sm:inset-x-4 sm:gap-2">
         <div className="col-span-3 rounded-sm border border-dashed border-stone-200 bg-white/70 dark:border-stone-600/60 dark:bg-stone-950/25" />
         <div className="col-span-2 rounded-sm border border-dashed border-stone-200 bg-white/70 dark:border-stone-600/60 dark:bg-stone-950/25" />
@@ -254,7 +313,6 @@ export function HarnessCanvas({
         })}
       </div>
 
-      {/* Full-width content area under the stage row */}
       <div className="absolute inset-x-3 bottom-[6%] top-[42%] z-10 sm:inset-x-4">
         {activeStage && activeStage.video ? (
           <div data-harness-keep className="flex h-full min-h-0 gap-2 sm:gap-3">
@@ -262,7 +320,7 @@ export function HarnessCanvas({
               <ZoneVideo src={activeStage.video} label={activeStage.label} />
             </div>
             {activeStage.items.length > 0 ? (
-              <div className="flex w-[5rem] shrink-0 flex-col gap-1.5 sm:w-[6.5rem]">
+              <div className="flex w-[5rem] shrink-0 flex-col gap-1.5 sm:w-[6.5rem] lg:w-[7.5rem]">
                 {activeStage.items.map((item) => (
                   <Card key={item} label={item} className="min-h-0 flex-1 p-1.5 sm:p-2" />
                 ))}
@@ -276,6 +334,24 @@ export function HarnessCanvas({
         )}
       </div>
     </div>
+  )
+}
+
+/** Interactive harness: stacked below lg, canvas on laptop+. */
+export function HarnessCanvas({
+  activeLabel,
+  onToggle,
+  onDismiss,
+}: {
+  activeLabel: string | null
+  onToggle: (label: string) => void
+  onDismiss?: () => void
+}) {
+  return (
+    <>
+      <MobileHarness activeLabel={activeLabel} onToggle={onToggle} />
+      <DesktopHarness activeLabel={activeLabel} onToggle={onToggle} onDismiss={onDismiss} />
+    </>
   )
 }
 

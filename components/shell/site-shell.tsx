@@ -13,7 +13,7 @@ function SiteShellFrame({ children }: { children: ReactNode }) {
   const { sidebarWidthClass } = useSidebarLayout()
 
   return (
-    <div className="flex h-[100dvh] w-full flex-col overflow-hidden border border-stone-200 bg-white dark:border-stone-800 dark:bg-stone-950">
+    <div className="flex h-[100dvh] w-full flex-col overflow-hidden border-0 border-stone-200 bg-white dark:border-stone-800 dark:bg-stone-950 md:border">
       <div className="flex shrink-0 border-b border-stone-200 bg-white dark:border-stone-800 dark:bg-stone-950">
         <div
           className={cn(

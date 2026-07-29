@@ -32,7 +32,7 @@ function FaqRow({
         </span>
       </button>
       {open ? (
-        <div className="pb-5 pr-10 text-sm leading-relaxed text-stone-600 dark:text-stone-300 md:text-base">
+        <div className="pb-5 pr-2 text-sm leading-relaxed text-stone-600 dark:text-stone-300 sm:pr-10 md:text-base">
           {item.answer}
         </div>
       ) : null}
