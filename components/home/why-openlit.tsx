@@ -3,6 +3,7 @@
 import { useContext, type ReactNode } from 'react'
 import { GithubContext } from 'contexts/github'
 import SUPPORTED_INTEGRATIONS from 'constants/integrations'
+import { MarkedWord } from '@/components/common/marker-underline'
 
 function formatDownloads(count: number) {
   if (!count) return '…'
@@ -95,14 +96,7 @@ export default function WhyOpenlit() {
       <div className="mx-auto max-w-6xl">
         <div className="max-w-3xl">
           <h2 className="text-3xl font-bold tracking-tight text-stone-900 dark:text-stone-50 md:text-4xl">
-            <span className="relative inline-block">
-              <span
-                aria-hidden
-                className="absolute inset-x-[-0.12em] inset-y-[0.12em] -z-10 rounded-sm bg-[#F36C06]/20"
-              />
-              Why use
-            </span>{' '}
-            OpenLIT?
+            <MarkedWord>Why use OpenLIT?</MarkedWord>
           </h2>
           <p className="mt-4 text-base leading-relaxed text-stone-600 dark:text-stone-300 md:text-lg">
             OpenLIT is an OpenTelemetry-native Harness Engineering platform. Trace, evaluate, and

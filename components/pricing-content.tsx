@@ -10,6 +10,7 @@ import {
   type PlanValue,
 } from 'constants/pricing'
 import { cn } from 'lib/utils'
+import { MarkedWord } from '@/components/common/marker-underline'
 
 function PlanValueCell({ value }: { value: PlanValue }) {
   if (value === true) {
@@ -118,7 +119,7 @@ export default function PricingContent() {
     <div className="mx-auto w-full max-w-6xl px-4 py-10 md:px-6 md:py-12">
       <div className="mb-10 max-w-3xl">
         <h2 className="text-3xl font-bold tracking-tight text-stone-950 dark:text-stone-50 md:text-4xl">
-          Pricing
+          <MarkedWord>Plans</MarkedWord>
         </h2>
         <p className="mt-3 text-base leading-relaxed text-stone-600 dark:text-stone-300">
           Self-host OpenLIT free under Apache 2.0 for unlimited LLM tracing, evaluations, prompt

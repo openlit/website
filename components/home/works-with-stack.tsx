@@ -1,9 +1,10 @@
 'use client'
 
 import Image from 'next/image'
-import { Check, Copy } from 'lucide-react'
 import { useEffect, useState, type ReactNode } from 'react'
+import { Check, Copy } from 'lucide-react'
 import SUPPORTED_INTEGRATIONS from 'constants/integrations'
+import { MarkedWord } from '@/components/common/marker-underline'
 
 type Logo = {
   name: string
@@ -332,7 +333,7 @@ export default function WorksWithStack() {
               Instrument once
             </p>
             <h2 className="mt-3 text-3xl font-bold tracking-tight text-stone-900 dark:text-stone-50 md:text-4xl">
-              Your way in. Every stack covered.
+              Your way in. Every <MarkedWord>stack</MarkedWord> covered.
             </h2>
           </div>
           <p className="max-w-xl text-base leading-relaxed text-stone-600 dark:text-stone-300 md:text-lg lg:justify-self-end">

@@ -3,6 +3,7 @@ import type { Competitor, ComparisonFeature } from '@/data/comparisons'
 import siteMetadata from '@/data/siteMetadata'
 import ReadyToGetStarted from '../common/ready-to-get-started'
 import Link from 'next/link'
+import { MarkedWord } from '@/components/common/marker-underline'
 
 function FeatureValue({ value }: { value: boolean | string }) {
   if (value === true) {
@@ -75,7 +76,7 @@ export default function ComparisonPage({ competitor }: { competitor: Competitor 
     <div className="container py-10 md:py-12">
       <div className="mb-10 max-w-3xl">
         <h2 className="text-3xl font-bold tracking-tight text-stone-950 dark:text-stone-50 md:text-4xl">
-          {competitor.heroHeadline}
+          OpenLIT <MarkedWord>vs {competitor.name}</MarkedWord>
         </h2>
         <p className="mt-3 text-base leading-relaxed text-stone-600 dark:text-stone-300">
           {competitor.heroSubheadline}

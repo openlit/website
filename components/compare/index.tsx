@@ -2,6 +2,7 @@ import { ArrowRight, Check } from 'lucide-react'
 import Link from 'next/link'
 import ReadyToGetStarted from '../common/ready-to-get-started'
 import competitors from '@/data/comparisons'
+import { MarkedWord } from '@/components/common/marker-underline'
 
 const openlitStrengths = [
   'OpenTelemetry-native — vendor-neutral, portable telemetry data',
@@ -17,7 +18,7 @@ export default function CompareIndex() {
     <div className="container py-10 md:py-12">
       <div className="mb-10 max-w-3xl">
         <h2 className="text-3xl font-bold tracking-tight text-stone-950 dark:text-stone-50 md:text-4xl">
-          Compare
+          <MarkedWord>Compare</MarkedWord>
         </h2>
         <p className="mt-3 text-base leading-relaxed text-stone-600 dark:text-stone-300">
           See how OpenLIT compares with other AI engineering and LLM observability tools.

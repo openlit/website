@@ -1,4 +1,5 @@
 import { cn } from 'lib/utils'
+import { MarkedWord } from '@/components/common/marker-underline'
 
 type Feature = {
   title: string
@@ -336,14 +337,7 @@ export default function PlatformFeatures() {
       <div className="mx-auto max-w-6xl">
         <div className="mx-auto max-w-3xl text-center">
           <h2 className="text-3xl font-bold tracking-tight text-stone-900 dark:text-stone-50 md:text-4xl">
-            All the tools,{' '}
-            <span className="relative inline-block">
-              <span
-                aria-hidden
-                className="absolute inset-x-[-0.12em] inset-y-[0.12em] -z-10 rounded-sm bg-[#F36C06]/20"
-              />
-              one harness platform.
-            </span>
+            All the tools, one <MarkedWord>harness</MarkedWord> platform.
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-stone-600 dark:text-stone-300 md:text-lg">
             AI engineering tools for LLM tracing, prompt management, LLM evaluation, and model

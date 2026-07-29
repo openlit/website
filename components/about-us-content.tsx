@@ -7,6 +7,7 @@ import { Github, BookOpen, Star, GitFork, Download } from 'lucide-react'
 import siteMetadata from '@/data/siteMetadata'
 import { GithubContext } from 'contexts/github'
 import ReadyToGetStarted from './common/ready-to-get-started'
+import { MarkedWord } from '@/components/common/marker-underline'
 
 function formatNumber(num: number | undefined) {
   if (num == null) return '…'
@@ -21,7 +22,7 @@ export default function AboutUsContent() {
   return (
     <div className="mx-auto w-full max-w-3xl px-4 py-10 md:px-6 md:py-14">
       <h2 className="text-3xl font-bold tracking-tight text-stone-950 dark:text-stone-50 md:text-4xl">
-        About us
+        <MarkedWord>About</MarkedWord> us
       </h2>
 
       <article className="mt-6 space-y-6 text-base leading-relaxed text-stone-700 prose-headings:font-semibold prose-p:text-stone-600 dark:text-stone-300 dark:prose-p:text-stone-300">

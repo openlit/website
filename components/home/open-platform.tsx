@@ -3,6 +3,7 @@
 import { useContext, type ReactNode } from 'react'
 import { GithubContext } from 'contexts/github'
 import siteMetadata from '@/data/siteMetadata'
+import { MarkedWord } from '@/components/common/marker-underline'
 
 function formatStars(count: number | undefined) {
   if (count == null || count === 0) return '…'
@@ -76,14 +77,7 @@ export default function OpenPlatform() {
       <div className="mx-auto max-w-6xl">
         <div className="mx-auto max-w-3xl text-center">
           <h2 className="text-3xl font-bold tracking-tight text-stone-900 dark:text-stone-50 md:text-4xl">
-            <span className="relative inline-block">
-              <span
-                aria-hidden
-                className="absolute inset-x-[-0.12em] inset-y-[0.12em] -z-10 rounded-sm bg-[#F36C06]/20"
-              />
-              Open platform.
-            </span>{' '}
-            Open source.
+            Open platform. <MarkedWord>Open source</MarkedWord>.
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-stone-600 dark:text-stone-300 md:text-lg">
             Built on OpenTelemetry so your traces stay portable. Self-host under Apache 2.0, keep
