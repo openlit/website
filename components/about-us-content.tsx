@@ -24,7 +24,7 @@ export default function AboutUsContent() {
         About us
       </h2>
 
-      <article className="prose-headings:font-semibold prose-p:text-stone-600 dark:prose-p:text-stone-300 mt-6 space-y-6 text-base leading-relaxed text-stone-700 dark:text-stone-300">
+      <article className="mt-6 space-y-6 text-base leading-relaxed text-stone-700 prose-headings:font-semibold prose-p:text-stone-600 dark:text-stone-300 dark:prose-p:text-stone-300">
         <p className="text-lg text-stone-900 dark:text-stone-50">
           OpenLIT is building the open source{' '}
           <span className="font-semibold">Harness Engineering</span> platform to help teams
@@ -37,8 +37,8 @@ export default function AboutUsContent() {
         </p>
 
         <p>
-          OpenLIT started from the pain of shipping LLM apps without clear traces, cost, quality,
-          or agent visibility. The answer was an{' '}
+          OpenLIT started from the pain of shipping LLM apps without clear traces, cost, quality, or
+          agent visibility. The answer was an{' '}
           <Link
             href="https://docs.openlit.io/latest/overview"
             target="_blank"
@@ -69,7 +69,9 @@ export default function AboutUsContent() {
       <section className="mt-16">
         <div className="mb-6 flex flex-wrap items-end justify-between gap-3">
           <div>
-            <h2 className="text-xl font-semibold text-stone-950 dark:text-stone-50">Contributors</h2>
+            <h2 className="text-xl font-semibold text-stone-950 dark:text-stone-50">
+              Contributors
+            </h2>
             <p className="mt-1 text-sm text-stone-500 dark:text-stone-400">
               Everyone who has contributed code to{' '}
               <a
@@ -110,7 +112,7 @@ export default function AboutUsContent() {
                   title={`${contributor.login} · ${contributor.contributions} contributions`}
                   className="group flex flex-col items-center gap-1.5"
                 >
-                  <span className="relative block size-12 overflow-hidden rounded-full border border-stone-200 bg-stone-50 transition group-hover:border-brandPrimary/50 sm:size-14 dark:border-stone-800 dark:bg-stone-900">
+                  <span className="relative block size-12 overflow-hidden rounded-full border border-stone-200 bg-stone-50 transition group-hover:border-brandPrimary/50 dark:border-stone-800 dark:bg-stone-900 sm:size-14">
                     <Image
                       src={contributor.avatar_url}
                       alt={contributor.login}
@@ -133,7 +135,7 @@ export default function AboutUsContent() {
                 className="group flex flex-col items-center gap-1.5"
                 title="Become a contributor"
               >
-                <span className="flex size-12 items-center justify-center rounded-full border border-dashed border-stone-300 text-lg font-medium text-stone-400 transition group-hover:border-brandPrimary group-hover:text-brandPrimary sm:size-14 dark:border-stone-700">
+                <span className="flex size-12 items-center justify-center rounded-full border border-dashed border-stone-300 text-lg font-medium text-stone-400 transition group-hover:border-brandPrimary group-hover:text-brandPrimary dark:border-stone-700 sm:size-14">
                   ?
                 </span>
                 <span className="text-center text-[11px] text-stone-500 group-hover:text-brandPrimary dark:text-stone-400">

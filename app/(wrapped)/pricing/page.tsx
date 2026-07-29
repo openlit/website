@@ -48,8 +48,7 @@ const offerSchema = {
       '@type': 'Offer',
       name: 'OpenLIT Cloud',
       availability: 'https://schema.org/PreOrder',
-      description:
-        'Fully hosted OpenLIT coming soon. Feature set and pricing shared at launch.',
+      description: 'Fully hosted OpenLIT coming soon. Feature set and pricing shared at launch.',
       url: 'https://openlit.io/pricing',
     },
   ],

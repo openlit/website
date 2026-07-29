@@ -1,7 +1,7 @@
 export const HERO_TITLE = 'Open source Harness Engineering Platform'
 
 export const HERO_DESCRIPTION =
-  'OpenLIT is an open source Harness Engineering platform. Trace LLMs and AI agents with OpenTelemetry, run LLM evaluations, manage prompts, compare models, store API keys in Vault, and self-host free under Apache 2.0.'
+  'Trace LLMs and AI agents with OpenTelemetry, run LLM evaluations, manage prompts, compare models, store API keys in Vault, and self-host free under Apache 2.0.'
 
 export const HERO_KEYWORDS = [
   'Harness Engineering',

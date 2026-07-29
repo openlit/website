@@ -2,10 +2,7 @@
 
 import type { ReactNode } from 'react'
 import { cn } from 'lib/utils'
-import {
-  SidebarLayoutProvider,
-  useSidebarLayout,
-} from './sidebar-layout-context'
+import { SidebarLayoutProvider, useSidebarLayout } from './sidebar-layout-context'
 import SidebarBrand from './sidebar-brand'
 import HeaderContextRow from './header-context-row'
 import SiteSidebar from './site-sidebar'

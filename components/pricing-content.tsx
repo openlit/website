@@ -100,7 +100,10 @@ function PlanCard({
 
       <ul className="mt-6 space-y-2.5 border-t border-stone-200 pt-6 dark:border-stone-800">
         {plan.highlights.map((item) => (
-          <li key={item} className="flex items-start gap-2.5 text-sm text-stone-600 dark:text-stone-300">
+          <li
+            key={item}
+            className="flex items-start gap-2.5 text-sm text-stone-600 dark:text-stone-300"
+          >
             <Check className="mt-0.5 h-4 w-4 shrink-0 text-brandPrimary" />
             <span>{item}</span>
           </li>
@@ -191,11 +194,7 @@ export default function PricingContent() {
   )
 }
 
-function SectionRows({
-  section,
-}: {
-  section: (typeof OSS_FEATURE_ROWS)[number]
-}) {
+function SectionRows({ section }: { section: (typeof OSS_FEATURE_ROWS)[number] }) {
   return (
     <>
       <tr className="border-t border-stone-200 bg-stone-50/80 dark:border-stone-800 dark:bg-stone-900/40">

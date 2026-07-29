@@ -1,6 +1,7 @@
 'use client'
 
 import { Dialog, DialogContent, DialogTrigger } from '../ui/dialog'
+import { HERO_DESCRIPTION } from 'constants/hero'
 import { HarnessCanvas, useHarnessSelection } from './harness-canvas'
 
 function MarkerUnderline() {
@@ -45,6 +46,9 @@ export default function Hero() {
             </span>{' '}
             Engineering Platform
           </h1>
+          <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-black dark:text-white md:text-lg">
+            {HERO_DESCRIPTION}
+          </p>
         </div>
 
         <div className="relative z-10 mt-8 flex flex-wrap items-center justify-center gap-3">
@@ -86,7 +90,7 @@ export default function Hero() {
               showCloseButton={false}
               className="flex h-auto w-auto items-center justify-center bg-white dark:bg-stone-950 [&]:max-w-full [&]:sm:max-w-full"
             >
-              <video controls className="m-auto">
+              <video controls preload="none" className="m-auto" playsInline>
                 <source src="https://openlit.io/static/images/demo.mp4" type="video/mp4" />
                 <track kind="captions" label="English" default />
                 Your browser does not support the video tag.

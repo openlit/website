@@ -1,13 +1,6 @@
 'use client'
 
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useMemo,
-  useState,
-  type ReactNode,
-} from 'react'
+import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react'
 import { cn } from 'lib/utils'
 
 type SidebarLayoutContextValue = {
@@ -35,9 +28,7 @@ export function SidebarLayoutProvider({ children }: { children: ReactNode }) {
     [isExpanded, toggleSidebar]
   )
 
-  return (
-    <SidebarLayoutContext.Provider value={value}>{children}</SidebarLayoutContext.Provider>
-  )
+  return <SidebarLayoutContext.Provider value={value}>{children}</SidebarLayoutContext.Provider>
 }
 
 export function useSidebarLayout() {

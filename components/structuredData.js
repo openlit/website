@@ -10,8 +10,7 @@ export const organisationSchema = {
     width: 512,
     height: 512,
   },
-  description:
-    'OpenLIT is an open source Harness Engineering platform, built on OpenTelemetry.',
+  description: 'OpenLIT is an open source Harness Engineering platform, built on OpenTelemetry.',
   email: 'contact@openlit.io',
   foundingDate: '2023-01-01',
   founders: [

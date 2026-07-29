@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState, type ReactNode } from 'react'
 import {
   BookText,
   ChevronsUpDown,
@@ -83,7 +83,10 @@ function SidebarAccount() {
   }, [open])
 
   return (
-    <div ref={rootRef} className="relative mt-auto border-t border-stone-200 p-2 dark:border-stone-800">
+    <div
+      ref={rootRef}
+      className="relative mt-auto border-t border-stone-200 p-2 dark:border-stone-800"
+    >
       <button
         type="button"
         aria-expanded={open}

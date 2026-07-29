@@ -13,11 +13,7 @@ import {
 import { useRouter } from 'next/navigation'
 import { FileText, BookOpen, GitCompare, Search as SearchIcon, Layout } from 'lucide-react'
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
-import {
-  STATIC_SEARCH_ITEMS,
-  matchesSearch,
-  type SearchItem,
-} from 'lib/search-index'
+import { STATIC_SEARCH_ITEMS, matchesSearch, type SearchItem } from 'lib/search-index'
 import { cn } from 'lib/utils'
 
 type SearchContextValue = {
@@ -93,7 +89,7 @@ function SearchDialog({
           event.preventDefault()
           inputRef.current?.focus()
         }}
-        className="gap-0 overflow-hidden border-stone-200 bg-white p-0 outline-none focus:outline-none focus-visible:outline-none focus-visible:ring-0 sm:max-w-xl dark:border-stone-800 dark:bg-black"
+        className="gap-0 overflow-hidden border-stone-200 bg-white p-0 outline-none focus:outline-none focus-visible:outline-none focus-visible:ring-0 dark:border-stone-800 dark:bg-black sm:max-w-xl"
       >
         <DialogTitle className="sr-only">Search the website</DialogTitle>
         <div className="flex items-center gap-2 border-b border-stone-200 px-3 dark:border-stone-800">
@@ -117,7 +113,7 @@ function SearchDialog({
             placeholder="Search pages, blogs, comparisons…"
             className="h-12 w-full bg-transparent text-sm text-black outline-none ring-0 placeholder:text-stone-400 focus:outline-none focus:ring-0 focus-visible:outline-none focus-visible:ring-0 dark:text-white"
           />
-          <kbd className="hidden rounded border border-stone-200 px-1.5 py-0.5 text-[10px] text-stone-500 sm:inline dark:border-stone-700">
+          <kbd className="hidden rounded border border-stone-200 px-1.5 py-0.5 text-[10px] text-stone-500 dark:border-stone-700 sm:inline">
             esc
           </kbd>
         </div>
@@ -200,7 +196,7 @@ export function SiteSearchProvider({
   return (
     <SearchContext.Provider value={value}>
       {children}
-      <SearchDialog open={open} onOpenChange={setOpen} items={items} />
+      {open ? <SearchDialog open={open} onOpenChange={setOpen} items={items} /> : null}
     </SearchContext.Provider>
   )
 }

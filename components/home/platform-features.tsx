@@ -118,10 +118,7 @@ function EvalsVisual() {
                 <span className="font-medium">{row.value}</span>
               </div>
               <div className="h-1 rounded-full bg-stone-100">
-                <div
-                  className="h-1 rounded-full bg-brandPrimary/50"
-                  style={{ width: row.width }}
-                />
+                <div className="h-1 rounded-full bg-brandPrimary/50" style={{ width: row.width }} />
               </div>
             </div>
           ))}

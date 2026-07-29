@@ -1,7 +1,8 @@
 'use client'
 
 import Image from 'next/image'
-import { useState, type ReactNode } from 'react'
+import { Check, Copy } from 'lucide-react'
+import { useEffect, useState, type ReactNode } from 'react'
 import SUPPORTED_INTEGRATIONS from 'constants/integrations'
 
 type Logo = {
@@ -19,6 +20,12 @@ type NamedOption = {
   label: string
 }
 
+type GpuOption = {
+  label: string
+  display: string
+  copy: string
+}
+
 const SDK_OPTIONS: SdkOption[] = [
   {
     label: 'Python',
@@ -34,9 +41,27 @@ const SDK_OPTIONS: SdkOption[] = [
   },
 ]
 
-const GPU_OPTIONS: NamedOption[] = [{ label: 'NVIDIA' }, { label: 'AMD' }, { label: 'Intel' }]
+const GPU_OPTIONS: GpuOption[] = [
+  {
+    label: 'NVIDIA',
+    display: 'docker run ... otel-gpu-collector',
+    copy: "docker run -d --name otel-gpu-collector --gpus all --pid=host -e OTEL_SERVICE_NAME=my-app -e OTEL_RESOURCE_ATTRIBUTES='deployment.environment=production' -e OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318 ghcr.io/openlit/otel-gpu-collector:latest",
+  },
+  {
+    label: 'AMD',
+    display: 'docker run ... otel-gpu-collector',
+    copy: "docker run -d --name otel-gpu-collector --device /dev/kfd:/dev/kfd --device /dev/dri:/dev/dri --pid=host -e OTEL_SERVICE_NAME=my-app -e OTEL_RESOURCE_ATTRIBUTES='deployment.environment=production' -e OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318 ghcr.io/openlit/otel-gpu-collector:latest",
+  },
+  {
+    label: 'Intel',
+    display: 'docker run ... otel-gpu-collector',
+    copy: "docker run -d --name otel-gpu-collector --device /dev/dri:/dev/dri --pid=host -e OTEL_SERVICE_NAME=my-app -e OTEL_RESOURCE_ATTRIBUTES='deployment.environment=production' -e OTEL_EXPORTER_OTLP_ENDPOINT=http://localhost:4318 ghcr.io/openlit/otel-gpu-collector:latest",
+  },
+]
 
-const GPU_INSTALL = 'docker run openlit/gpu-collector'
+const CONTROLLER_DISPLAY = 'helm install ... openlit-controller'
+const CONTROLLER_COPY =
+  'helm repo add openlit https://openlit.github.io/helm/ && helm repo update && helm install openlit openlit/openlit --set openlit-controller.enabled=true'
 
 const OTEL_SNIPPET = 'OTEL_EXPORTER_OTLP_ENDPOINT=https://your-openlit-url:4318'
 
@@ -124,6 +149,55 @@ function PathShell({
   )
 }
 
+function CopyableCommand({
+  display,
+  copyText,
+}: {
+  display: string
+  copyText?: string
+}) {
+  const [copied, setCopied] = useState(false)
+  const value = copyText ?? display
+
+  useEffect(() => {
+    setCopied(false)
+  }, [value])
+
+  useEffect(() => {
+    if (!copied) return
+    const timeout = window.setTimeout(() => setCopied(false), 1600)
+    return () => window.clearTimeout(timeout)
+  }, [copied])
+
+  const handleCopy = async () => {
+    try {
+      await navigator.clipboard.writeText(value)
+      setCopied(true)
+    } catch {
+      setCopied(false)
+    }
+  }
+
+  return (
+    <div className="flex min-w-0 items-center gap-1.5 rounded-md border border-stone-200 bg-stone-50 dark:border-stone-700 dark:bg-stone-900">
+      <code
+        className="min-w-0 flex-1 truncate px-2.5 py-2 font-mono text-[11px] text-stone-700 dark:text-stone-200"
+        title={value}
+      >
+        {display}
+      </code>
+      <button
+        type="button"
+        onClick={handleCopy}
+        aria-label={copied ? 'Copied' : 'Copy command'}
+        className="mr-1 inline-flex size-7 shrink-0 items-center justify-center rounded text-stone-500 transition hover:bg-stone-200/70 hover:text-stone-800 dark:hover:bg-stone-800 dark:hover:text-stone-100"
+      >
+        {copied ? <Check className="size-3.5 text-brandPrimary" /> : <Copy className="size-3.5" />}
+      </button>
+    </div>
+  )
+}
+
 function NativeSdkPath() {
   const [active, setActive] = useState(SDK_OPTIONS[0].label)
   const selected = SDK_OPTIONS.find((o) => o.label === active) ?? SDK_OPTIONS[0]
@@ -136,9 +210,7 @@ function NativeSdkPath() {
       body="Drop in openlit.init() for OpenTelemetry LLM tracing at the app level."
     >
       <OptionTabs options={SDK_OPTIONS} active={active} onChange={setActive} />
-      <code className="block truncate rounded-md border border-stone-200 bg-stone-50 px-2.5 py-2 font-mono text-[11px] text-stone-700 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-200">
-        {selected.install}
-      </code>
+      <CopyableCommand display={selected.install} />
     </PathShell>
   )
 }
@@ -159,15 +231,14 @@ function EbpfPath() {
           </span>
         ))}
       </div>
-      <code className="block truncate rounded-md border border-stone-200 bg-stone-50 px-2.5 py-2 font-mono text-[11px] text-stone-700 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-200">
-        kubectl apply -f openlit-controller
-      </code>
+      <CopyableCommand display={CONTROLLER_DISPLAY} copyText={CONTROLLER_COPY} />
     </PathShell>
   )
 }
 
 function GpuCollectorPath() {
   const [active, setActive] = useState(GPU_OPTIONS[0].label)
+  const selected = GPU_OPTIONS.find((o) => o.label === active) ?? GPU_OPTIONS[0]
 
   return (
     <PathShell
@@ -177,9 +248,7 @@ function GpuCollectorPath() {
       body="GPU monitoring for LLM inference: utilization, memory, temperature, and power via OpenTelemetry."
     >
       <OptionTabs options={GPU_OPTIONS} active={active} onChange={setActive} />
-      <code className="block truncate rounded-md border border-stone-200 bg-stone-50 px-2.5 py-2 font-mono text-[11px] text-stone-700 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-200">
-        {GPU_INSTALL}
-      </code>
+      <CopyableCommand display={selected.display} copyText={selected.copy} />
     </PathShell>
   )
 }
@@ -195,9 +264,7 @@ function AnyOtelPath() {
       body="Already instrumented? Point OTel SDKs, OBI, OpenLLMetry, or any OTLP exporter at OpenLIT."
     >
       <OptionTabs options={OTEL_OPTIONS} active={active} onChange={setActive} />
-      <code className="block truncate rounded-md border border-stone-200 bg-stone-50 px-2.5 py-2 font-mono text-[11px] text-stone-700 dark:border-stone-700 dark:bg-stone-900 dark:text-stone-200">
-        {OTEL_SNIPPET}
-      </code>
+      <CopyableCommand display={OTEL_SNIPPET} />
     </PathShell>
   )
 }
@@ -217,7 +284,9 @@ function IntegrationPill({ item }: { item: Logo }) {
           {item.name.slice(0, 1)}
         </span>
       )}
-      <span className="whitespace-nowrap text-sm text-stone-800 dark:text-stone-100">{item.name}</span>
+      <span className="whitespace-nowrap text-sm text-stone-800 dark:text-stone-100">
+        {item.name}
+      </span>
     </a>
   )
 }

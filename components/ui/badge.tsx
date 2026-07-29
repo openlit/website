@@ -30,18 +30,4 @@ function Badge({ className, variant, ...props }: BadgeProps) {
   return <div className={cn(badgeVariants({ variant }), className)} {...props} />
 }
 
-function BadgeWithGradient({ className, ...props }: BadgeProps) {
-  return (
-    <div
-      className={cn(
-        'inline-flex items-center rounded-md border border-orange-200 bg-orange-50 px-2.5 py-1 text-xs font-semibold uppercase tracking-wide text-brandPrimary dark:border-orange-900/70 dark:bg-orange-950/40 dark:text-orange-300',
-        className
-      )}
-      {...props}
-    >
-      <span>{props.children}</span>
-    </div>
-  )
-}
-
-export { Badge, badgeVariants, BadgeWithGradient }
+export { Badge, badgeVariants }

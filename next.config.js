@@ -65,19 +65,15 @@ module.exports = () => {
     eslint: {
       dirs: ['app', 'components', 'layouts', 'scripts'],
     },
+    experimental: {
+      optimizePackageImports: ['lucide-react'],
+    },
     images: {
+      formats: ['image/avif', 'image/webp'],
       remotePatterns: [
         {
           protocol: 'https',
           hostname: 'picsum.photos',
-        },
-        {
-          protocol: 'https',
-          hostname: 'images.unsplash.com',
-        },
-        {
-          protocol: 'https',
-          hostname: 'assets.aceternity.com',
         },
         {
           protocol: 'https',

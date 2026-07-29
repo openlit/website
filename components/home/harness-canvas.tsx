@@ -250,12 +250,9 @@ export function HarnessCanvas({
       </div>
 
       {/* Full-width content area under the stage row */}
-      <div className="absolute inset-x-3 top-[42%] bottom-[6%] z-10 sm:inset-x-4">
+      <div className="absolute inset-x-3 bottom-[6%] top-[42%] z-10 sm:inset-x-4">
         {activeStage && activeStage.video ? (
-          <div
-            className="flex h-full min-h-0 gap-2 sm:gap-3"
-            onClick={(e) => e.stopPropagation()}
-          >
+          <div className="flex h-full min-h-0 gap-2 sm:gap-3" onClick={(e) => e.stopPropagation()}>
             <div className="min-h-0 min-w-0 flex-1">
               <ZoneVideo src={activeStage.video} label={activeStage.label} />
             </div>

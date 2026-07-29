@@ -135,7 +135,7 @@ export default function HeaderContextRow() {
           </a>
           <button
             type="button"
-            className="inline-flex size-8 items-center justify-center rounded-md border border-stone-200 text-stone-700 md:hidden dark:border-stone-700 dark:text-stone-200"
+            className="inline-flex size-8 items-center justify-center rounded-md border border-stone-200 text-stone-700 dark:border-stone-700 dark:text-stone-200 md:hidden"
             aria-label={mobileOpen ? 'Close menu' : 'Open menu'}
             aria-expanded={mobileOpen}
             onClick={() => setMobileOpen((open) => !open)}
@@ -146,7 +146,7 @@ export default function HeaderContextRow() {
       </div>
 
       {mobileOpen && (
-        <div className="absolute inset-x-0 top-11 z-50 border-b border-stone-200 bg-white p-3 shadow-sm md:hidden dark:border-stone-800 dark:bg-stone-950">
+        <div className="absolute inset-x-0 top-11 z-50 border-b border-stone-200 bg-white p-3 shadow-sm dark:border-stone-800 dark:bg-stone-950 md:hidden">
           <div className="flex flex-col gap-1">
             {MOBILE_LINKS.map((item) => {
               const className =
