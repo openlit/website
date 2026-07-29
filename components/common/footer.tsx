@@ -1,7 +1,7 @@
 import siteMetadata from 'data/siteMetadata'
 
 import Image from 'next/image'
-import { Github, Linkedin, Mail, Slack, Twitter, Youtube } from '../social-icons/icons'
+import { Github, Mail } from '../social-icons/icons'
 
 const Item = ({ link, text, target }: { link?: string; text?: string; target?: string }) =>
   link &&
@@ -17,7 +17,7 @@ const linkGroups = [
     links: [
       { text: 'Introduction', link: 'https://docs.openlit.io/latest/overview' },
       { text: 'SDK Overview', link: 'https://docs.openlit.io/latest/sdk/overview' },
-      { text: 'Kubernetes Operator', link: 'https://docs.openlit.io/latest/operator/overview' },
+      { text: 'Self-hosting', link: 'https://docs.openlit.io/latest/openlit/installation' },
       { text: 'Integrations', link: 'https://docs.openlit.io/latest/sdk/integrations/overview' },
       { text: 'Destinations', link: 'https://docs.openlit.io/latest/sdk/destinations/overview' },
     ],
@@ -28,8 +28,8 @@ const linkGroups = [
       { text: 'GPU Monitoring', link: 'https://docs.openlit.io/latest/sdk/features/gpu' },
       { text: 'Evaluations', link: 'https://docs.openlit.io/latest/sdk/features/evaluations' },
       {
-        text: 'Fleet Hub',
-        link: 'https://docs.openlit.io/latest/openlit/observability/fleet-hub',
+        text: 'Installation',
+        link: 'https://docs.openlit.io/latest/openlit/installation',
       },
       {
         text: 'Prompt Hub',
@@ -47,7 +47,7 @@ const linkGroups = [
       { text: 'About Us', link: '/about-us' },
       { text: 'Blog', link: '/blogs' },
       { text: 'Pricing', link: '/pricing' },
-      { text: 'Support Us', link: 'https://opencollective.com/openlit' },
+      { text: 'GitHub', link: 'https://github.com/openlit/openlit' },
     ],
   },
   {
@@ -80,11 +80,7 @@ const linkGroups = [
 
 const socialLinks = [
   { href: siteMetadata.github, icon: Github, label: 'GitHub' },
-  { href: siteMetadata.twitter, icon: Twitter, label: 'Twitter' },
   { href: `mailto:${siteMetadata.email}`, icon: Mail, label: 'Email' },
-  { href: siteMetadata.linkedin, icon: Linkedin, label: 'LinkedIn' },
-  { href: siteMetadata.youtube, icon: Youtube, label: 'YouTube' },
-  { href: siteMetadata.slack, icon: Slack, label: 'Slack' },
 ]
 
 export default function Footer() {
@@ -106,7 +102,7 @@ export default function Footer() {
               {siteMetadata.headerTitle}
             </a>
             <p className="text-sm leading-relaxed opacity-60">
-              Open-source LLM observability and AI engineering platform built on OpenTelemetry.
+              Open-source Harness Engineering platform built on OpenTelemetry.
             </p>
             <div className="flex gap-4">
               {socialLinks.map(({ href, icon: Icon, label }) => (
@@ -140,11 +136,12 @@ export default function Footer() {
         </div>
       </section>
 
-      <section className="container border-t border-white/10 py-6 text-center">
-        <p className="text-sm opacity-70">
+      <section className="flex h-12 items-center justify-center border-t border-stone-200 dark:border-stone-800">
+        <p className="px-4 text-sm opacity-70">
           &copy; {new Date().getFullYear()} AI Engineering Platform by{' '}
           <a
             target="_blank"
+            rel="noopener noreferrer"
             href={siteMetadata.github}
             className="text-brandPrimary underline opacity-100 transition-all hover:no-underline"
           >

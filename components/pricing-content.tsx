@@ -1,289 +1,224 @@
 'use client'
 
-import { Check, X, Github, ArrowRight, Server, Cloud, Heart } from 'lucide-react'
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from './ui/card'
-import { Button } from './ui/button'
-import { BadgeWithGradient } from './ui/badge'
-import Link from 'next/link'
+import { Check, Github, ArrowRight, Server, Cloud } from 'lucide-react'
 import siteMetadata from '@/data/siteMetadata'
 import ReadyToGetStarted from './common/ready-to-get-started'
+import {
+  OSS_FEATURE_ROWS,
+  PRICING_FAQ_ITEMS,
+  PRICING_PLANS,
+  type PlanValue,
+} from 'constants/pricing'
+import { cn } from 'lib/utils'
+import { MarkedWord } from '@/components/common/marker-underline'
 
-const selfHostedFeatures = [
-  'Full LLM observability (60+ integrations)',
-  'OpenTelemetry-native traces & metrics',
-  'Token usage & cost tracking',
-  'GPU monitoring (NVIDIA + AMD)',
-  'Vector DB monitoring',
-  'Prompt Hub with versioning',
-  'Secrets Vault',
-  'Fleet Hub (multi-deployment)',
-  'LLM Evaluations',
-  'Custom model pricing',
-  'Manage organisations',
-  'Export to Grafana, Datadog, and any OTLP backend',
-  'Community support (GitHub, Discord)',
-]
+function PlanValueCell({ value }: { value: PlanValue }) {
+  if (value === true) {
+    return <Check className="mx-auto h-4 w-4 text-brandPrimary" aria-label="Included" />
+  }
+  return <span className="text-xs font-medium text-stone-600 dark:text-stone-300">{value}</span>
+}
 
-const cloudFeatures = [
-  'Everything in Self-Hosted (60+ integrations)',
-  'Managed infrastructure — no ops overhead',
-  'Automatic upgrades',
-  'Dedicated support',
-  'SLA guarantees',
-  'SSO / SAML',
-  'Audit logs',
-  'Priority feature requests',
-]
+function PlanCard({
+  plan,
+  featured = false,
+}: {
+  plan: (typeof PRICING_PLANS)[keyof typeof PRICING_PLANS]
+  featured?: boolean
+}) {
+  const Icon = plan.name === 'OSS' ? Server : Cloud
 
-const supportTiers = [
-  {
-    name: 'Token Supporter',
-    price: '$10',
-    period: '/month',
-    description: 'Show your appreciation and help keep OpenLIT maintained.',
-    href: 'https://opencollective.com/openlit',
-    features: [
-      'Community supporter badge',
-      'Priority GitHub issue triage',
-      'Access to sponsor channel on Discord',
-    ],
-  },
-  {
-    name: 'Context Window Hero',
-    price: '$50',
-    period: '/month',
-    description: 'Directly fund new features and integrations.',
-    href: 'https://opencollective.com/openlit',
-    features: [
-      'Everything in Token Supporter',
-      'Your logo in README sponsors section',
-      'Direct input on roadmap priorities',
-      'Monthly call with core team',
-    ],
-  },
-]
-
-function FeatureRow({ text }: { text: string }) {
   return (
-    <li className="flex items-start gap-3">
-      <Check className="mt-0.5 h-4 w-4 shrink-0 text-brandPrimary" />
-      <span className="text-sm opacity-80">{text}</span>
-    </li>
+    <div
+      className={cn(
+        'flex h-full flex-col rounded-xl border bg-white p-6 dark:bg-stone-950',
+        featured
+          ? 'border-brandPrimary/40 shadow-[0_8px_24px_-16px_rgba(243,108,6,0.45)]'
+          : 'border-stone-200 dark:border-stone-800'
+      )}
+    >
+      <div className="flex items-start justify-between gap-3">
+        <div className="flex items-center gap-3">
+          <span
+            className={cn(
+              'inline-flex size-9 items-center justify-center rounded-md border',
+              featured
+                ? 'border-orange-200 bg-orange-50 text-orange-700 dark:border-orange-900/70 dark:bg-orange-950/40 dark:text-orange-300'
+                : 'border-stone-200 bg-stone-50 text-stone-700 dark:border-stone-800 dark:bg-stone-900 dark:text-stone-200'
+            )}
+          >
+            <Icon className="h-4 w-4" />
+          </span>
+          <div>
+            <h2 className="text-lg font-semibold text-stone-950 dark:text-stone-50">{plan.name}</h2>
+            <p className="text-xs text-stone-500 dark:text-stone-400">{plan.summary}</p>
+          </div>
+        </div>
+        <span
+          className={cn(
+            'shrink-0 rounded-md px-2 py-1 text-[11px] font-semibold uppercase tracking-wide',
+            featured
+              ? 'bg-brandPrimary text-white'
+              : 'border border-stone-200 text-stone-500 dark:border-stone-700 dark:text-stone-400'
+          )}
+        >
+          {plan.badge}
+        </span>
+      </div>
+
+      <div className="mt-6">
+        <p className="text-3xl font-bold tracking-tight text-stone-950 dark:text-stone-50">
+          {plan.priceLabel}
+        </p>
+        <p className="mt-1 text-sm text-stone-500 dark:text-stone-400">{plan.priceHint}</p>
+      </div>
+
+      <div className="mt-6 flex flex-col gap-2 sm:flex-row">
+        <a
+          href={plan.ctaHref}
+          target={plan.ctaHref.startsWith('http') ? '_blank' : undefined}
+          rel={plan.ctaHref.startsWith('http') ? 'noopener noreferrer' : undefined}
+          className={cn(
+            'inline-flex flex-1 items-center justify-center gap-2 rounded-md px-4 py-2.5 text-sm font-semibold transition',
+            featured
+              ? 'bg-brandPrimary text-white hover:bg-primary-700'
+              : 'border border-stone-200 text-stone-800 hover:border-brandPrimary/40 dark:border-stone-700 dark:text-stone-100'
+          )}
+        >
+          {plan.name === 'OSS' ? <Github className="h-4 w-4" /> : null}
+          {plan.ctaLabel}
+          {plan.name !== 'OSS' ? <ArrowRight className="h-4 w-4" /> : null}
+        </a>
+        <a
+          href={plan.secondaryHref}
+          target={plan.secondaryHref.startsWith('http') ? '_blank' : undefined}
+          rel={plan.secondaryHref.startsWith('http') ? 'noopener noreferrer' : undefined}
+          className="inline-flex flex-1 items-center justify-center rounded-md border border-stone-200 px-4 py-2.5 text-sm font-medium text-stone-700 transition hover:border-brandPrimary/40 dark:border-stone-700 dark:text-stone-200"
+        >
+          {plan.secondaryLabel}
+        </a>
+      </div>
+
+      <ul className="mt-6 space-y-2.5 border-t border-stone-200 pt-6 dark:border-stone-800">
+        {plan.highlights.map((item) => (
+          <li
+            key={item}
+            className="flex items-start gap-2.5 text-sm text-stone-600 dark:text-stone-300"
+          >
+            <Check className="mt-0.5 h-4 w-4 shrink-0 text-brandPrimary" />
+            <span>{item}</span>
+          </li>
+        ))}
+      </ul>
+    </div>
   )
 }
 
 export default function PricingContent() {
   return (
-    <div className="container py-16">
-      {/* Header */}
-      <div className="mb-16 text-center">
-        <BadgeWithGradient className="mb-4">Pricing</BadgeWithGradient>
-        <h1 className="mb-4 text-4xl font-bold md:text-5xl">
-          100% Open Source. <span className="text-brandPrimary">Forever Free.</span>
-        </h1>
-        <p className="mx-auto max-w-2xl text-lg opacity-70">
-          OpenLIT is Apache 2.0 licensed. Self-host everything with zero licensing fees. A managed
-          cloud option is coming soon for teams who prefer zero-ops.
+    <div className="mx-auto w-full max-w-6xl px-4 py-10 md:px-6 md:py-12">
+      <div className="mb-10 max-w-3xl">
+        <h2 className="text-3xl font-bold tracking-tight text-stone-950 dark:text-stone-50 md:text-4xl">
+          <MarkedWord>Plans</MarkedWord>
+        </h2>
+        <p className="mt-3 text-base leading-relaxed text-stone-600 dark:text-stone-300">
+          Self-host OpenLIT free under Apache 2.0 for unlimited LLM tracing, evaluations, prompt
+          management, and agent monitoring. OpenLIT Cloud is coming soon for teams that want a fully
+          hosted option.
         </p>
       </div>
 
-      {/* Main Tiers */}
-      <div className="mb-20 grid gap-6 md:grid-cols-2">
-        {/* Self-Hosted */}
-        <Card className="relative overflow-hidden border-brandPrimary/40 bg-gradient-to-br from-brandPrimary/5 to-transparent">
-          <div className="absolute right-4 top-4">
-            <span className="rounded-full bg-brandPrimary px-3 py-1 text-xs font-semibold text-white">
-              Available Now
-            </span>
-          </div>
-          <CardHeader className="pb-4">
-            <div className="mb-3 flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-brandPrimary/20">
-                <Server className="h-5 w-5 text-brandPrimary" />
-              </div>
-              <div>
-                <CardTitle className="text-xl">Self-Hosted</CardTitle>
-                <CardDescription>Run on your own infrastructure</CardDescription>
-              </div>
-            </div>
-            <div className="flex items-baseline gap-1">
-              <span className="text-5xl font-bold">$0</span>
-              <span className="opacity-60">/ forever</span>
-            </div>
-            <p className="text-sm opacity-60">Apache 2.0 — no license key, no usage limits</p>
-          </CardHeader>
-          <CardContent>
-            <div className="mb-6 flex flex-col gap-2 sm:flex-row">
-              <a
-                href="https://docs.openlit.io/latest/introduction"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-brandPrimary px-4 py-2.5 text-sm font-semibold text-white transition-opacity hover:opacity-90"
-              >
-                Get Started <ArrowRight className="h-4 w-4" />
-              </a>
-              <a
-                href={siteMetadata.siteRepo}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex flex-1 items-center justify-center gap-2 rounded-lg border border-white/20 px-4 py-2.5 text-sm font-semibold transition-colors hover:border-brandPrimary/60"
-              >
-                <Github className="h-4 w-4" /> View on GitHub
-              </a>
-            </div>
-            <ul className="space-y-3">
-              {selfHostedFeatures.map((f) => (
-                <FeatureRow key={f} text={f} />
-              ))}
-            </ul>
-          </CardContent>
-        </Card>
-
-        {/* Cloud */}
-        <Card className="relative overflow-hidden border-white/10">
-          <div className="absolute right-4 top-4">
-            <span className="rounded-full border border-white/20 px-3 py-1 text-xs font-semibold opacity-60">
-              Coming Soon
-            </span>
-          </div>
-          <CardHeader className="pb-4">
-            <div className="mb-3 flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-white/10">
-                <Cloud className="h-5 w-5 opacity-70" />
-              </div>
-              <div>
-                <CardTitle className="text-xl">Cloud</CardTitle>
-                <CardDescription>Fully managed by the OpenLIT team</CardDescription>
-              </div>
-            </div>
-            <div className="flex items-baseline gap-1">
-              <span className="text-5xl font-bold opacity-50">—</span>
-            </div>
-            <p className="text-sm opacity-60">Join the waitlist to be notified at launch</p>
-          </CardHeader>
-          <CardContent>
-            <div className="mb-6">
-              <a
-                href="mailto:waitlist@openlit.io?subject=OpenLIT Cloud Waitlist"
-                className="flex w-full items-center justify-center gap-2 rounded-lg border border-white/20 px-4 py-2.5 text-sm font-semibold opacity-70 transition-opacity hover:opacity-100"
-              >
-                Join Waitlist
-              </a>
-            </div>
-            <ul className="space-y-3">
-              {cloudFeatures.map((f) => (
-                <FeatureRow key={f} text={f} />
-              ))}
-            </ul>
-          </CardContent>
-        </Card>
+      <div className="mb-14 grid gap-4 md:grid-cols-2">
+        <PlanCard plan={PRICING_PLANS.oss} featured />
+        <PlanCard plan={PRICING_PLANS.cloud} />
       </div>
 
-      {/* Community Support */}
-      <div className="mb-20">
-        <div className="mb-8 text-center">
-          <h2 className="mb-2 text-2xl font-bold">
-            <Heart className="mr-2 inline-block h-6 w-6 text-brandPrimary" />
-            Support the Project
-          </h2>
-          <p className="opacity-60">
-            OpenLIT is free forever. If it saves you time or money, consider sponsoring development
-            via OpenCollective.
-          </p>
-        </div>
-        <div className="grid gap-6 md:grid-cols-2">
-          {supportTiers.map((tier) => (
-            <Card key={tier.name} className="border-white/10">
-              <CardHeader className="pb-3">
-                <CardTitle className="text-lg">{tier.name}</CardTitle>
-                <div className="flex items-baseline gap-1">
-                  <span className="text-3xl font-bold text-brandPrimary">{tier.price}</span>
-                  <span className="opacity-60">{tier.period}</span>
-                </div>
-                <CardDescription>{tier.description}</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <a
-                  href={tier.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mb-4 flex w-full items-center justify-center rounded-lg border border-brandPrimary/40 px-4 py-2 text-sm font-semibold text-brandPrimary transition-colors hover:bg-brandPrimary/10"
-                >
-                  Sponsor on OpenCollective
-                </a>
-                <ul className="space-y-2">
-                  {tier.features.map((f) => (
-                    <FeatureRow key={f} text={f} />
-                  ))}
-                </ul>
-              </CardContent>
-            </Card>
-          ))}
-        </div>
+      <div className="mb-4">
+        <h2 className="text-xl font-semibold text-stone-950 dark:text-stone-50">
+          What is included in free OpenLIT OSS
+        </h2>
+        <p className="mt-1 text-sm text-stone-500 dark:text-stone-400">
+          Everything below ships today in the open source, self-hosted OpenLIT platform.
+        </p>
       </div>
 
-      {/* Comparison vs Competitors */}
-      <div className="mb-20">
-        <div className="mb-8 text-center">
-          <h2 className="mb-2 text-2xl font-bold">How OpenLIT Compares</h2>
-          <p className="opacity-60">
-            See how OpenLIT stacks up against other LLM observability tools.
-          </p>
-        </div>
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
-          {[
-            { slug: 'openlit-vs-langfuse', name: 'Langfuse' },
-            { slug: 'openlit-vs-helicone', name: 'Helicone' },
-            { slug: 'openlit-vs-langsmith', name: 'LangSmith' },
-            { slug: 'openlit-vs-datadog', name: 'Datadog LLM Obs.' },
-          ].map((c) => (
-            <Link
-              key={c.slug}
-              href={`/compare/${c.slug}`}
-              className="flex items-center justify-between rounded-lg border border-white/10 px-4 py-3 text-sm font-medium transition-colors hover:border-brandPrimary/40 hover:text-brandPrimary"
+      <div className="overflow-x-auto rounded-xl border border-stone-200 dark:border-stone-800">
+        <table className="w-full min-w-[28rem] border-collapse text-sm">
+          <thead>
+            <tr className="border-b border-stone-200 bg-stone-50 dark:border-stone-800 dark:bg-stone-900/60">
+              <th className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-stone-500">
+                Feature
+              </th>
+              <th className="w-36 px-4 py-3 text-center text-xs font-semibold uppercase tracking-wide text-brandPrimary">
+                Included in OSS
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {OSS_FEATURE_ROWS.map((section) => (
+              <SectionRows key={section.category} section={section} />
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      <div className="mx-auto mb-14 mt-14 max-w-3xl">
+        <h2 className="mb-6 text-xl font-semibold text-stone-950 dark:text-stone-50">
+          OpenLIT pricing FAQ
+        </h2>
+        <div className="space-y-3">
+          {PRICING_FAQ_ITEMS.map((item) => (
+            <div
+              key={item.question}
+              className="rounded-lg border border-stone-200 px-5 py-4 dark:border-stone-800"
             >
-              OpenLIT vs {c.name}
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-          ))}
-        </div>
-      </div>
-
-      {/* FAQ */}
-      <div className="mx-auto mb-20 max-w-3xl">
-        <h2 className="mb-8 text-center text-2xl font-bold">Frequently Asked Questions</h2>
-        <div className="space-y-6">
-          {[
-            {
-              q: 'Is OpenLIT really free?',
-              a: 'Yes. OpenLIT is Apache 2.0 licensed and free to self-host with no usage limits, no feature gates, and no license key required.',
-            },
-            {
-              q: 'What do I need to self-host?',
-              a: 'Docker and Docker Compose. Run `docker compose up -d` in the OpenLIT repo and you have the full stack running in under two minutes — UI, ClickHouse storage, and OpenTelemetry Collector included.',
-            },
-            {
-              q: 'Can I send data to my existing Grafana or Datadog instance?',
-              a: 'Yes. OpenLIT is OpenTelemetry-native. Configure the OTLP endpoint to point at any OTLP-compatible backend: Grafana, Datadog, New Relic, SigNoz, Jaeger, and more.',
-            },
-            {
-              q: 'Does OpenLIT support GPU monitoring?',
-              a: 'Yes. Enable GPU metrics with `openlit.init(collect_gpu_stats=True)`. OpenLIT collects utilization, VRAM usage, temperature, and power draw from NVIDIA and AMD GPUs.',
-            },
-            {
-              q: 'When will the Cloud tier be available?',
-              a: 'The OpenLIT Cloud managed service is in development. Join the waitlist by emailing contact@openlit.io and you will be notified at launch.',
-            },
-          ].map((item) => (
-            <div key={item.q} className="rounded-lg border border-white/10 px-5 py-4">
-              <h3 className="mb-2 font-semibold">{item.q}</h3>
-              <p className="text-sm opacity-70">{item.a}</p>
+              <h3 className="mb-1.5 text-sm font-semibold text-stone-950 dark:text-stone-50">
+                {item.question}
+              </h3>
+              <p className="text-sm leading-relaxed text-stone-600 dark:text-stone-300">
+                {item.answer}
+              </p>
             </div>
           ))}
         </div>
       </div>
+
+      <p className="mb-8 text-center text-xs text-stone-400">
+        Questions? Email{' '}
+        <a href={`mailto:${siteMetadata.email}`} className="underline hover:text-brandPrimary">
+          {siteMetadata.email}
+        </a>
+      </p>
 
       <ReadyToGetStarted />
     </div>
+  )
+}
+
+function SectionRows({ section }: { section: (typeof OSS_FEATURE_ROWS)[number] }) {
+  return (
+    <>
+      <tr className="border-t border-stone-200 bg-stone-50/80 dark:border-stone-800 dark:bg-stone-900/40">
+        <td colSpan={2} className="px-4 py-3">
+          <p className="text-xs font-semibold uppercase tracking-wide text-stone-500">
+            {section.category}
+          </p>
+          {section.blurb ? (
+            <p className="mt-0.5 text-xs text-stone-400 dark:text-stone-500">{section.blurb}</p>
+          ) : null}
+        </td>
+      </tr>
+      {section.features.map((feature) => (
+        <tr
+          key={feature.name}
+          className="border-t border-stone-100 transition-colors hover:bg-stone-50/70 dark:border-stone-800/80 dark:hover:bg-stone-900/30"
+        >
+          <td className="px-4 py-3 text-stone-700 dark:text-stone-300">{feature.name}</td>
+          <td className="px-4 py-3 text-center">
+            <PlanValueCell value={feature.included} />
+          </td>
+        </tr>
+      ))}
+    </>
   )
 }

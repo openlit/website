@@ -15,16 +15,20 @@ export function genPageMetadata({
   description,
   image,
   canonicalUrl,
+  keywords,
   ...rest
 }: PageSEOProps): Metadata {
+  const desc = description || siteMetadata.description
   return {
     title,
+    description: desc,
+    keywords,
     alternates: {
       canonical: canonicalUrl || siteMetadata.siteUrl,
     },
     openGraph: {
       title: `${title} | ${siteMetadata.title}`,
-      description: description || siteMetadata.description,
+      description: desc,
       url: canonicalUrl || siteMetadata.siteUrl,
       siteName: siteMetadata.title,
       images: image ? [image] : [siteMetadata.socialBanner],
@@ -33,6 +37,7 @@ export function genPageMetadata({
     },
     twitter: {
       title: `${title} | ${siteMetadata.title}`,
+      description: desc,
       card: 'summary_large_image',
       images: image ? [image] : [siteMetadata.socialBanner],
     },

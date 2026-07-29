@@ -1,13 +1,11 @@
 /** @type {import("pliny/config").PlinyConfig } */
 module.exports = {
-  title: 'OpenLIT | OpenTelemetry-native GenAI and LLM Application Observability',
+  title: 'OpenLIT',
   author: 'OpenLIT',
   headerTitle: 'OpenLIT',
   description:
-    'OpenLIT is an open-source LLM observability platform built on OpenTelemetry. Monitor token usage, cost, and latency. Self-host for free under Apache 2.0.',
-  about: `Cutting-edge GenAI and LLM Application Observability tool, seamlessly integrated with OpenTelemetry for effortless monitoring. Simplifying the integration process with just one line of code, OpenLIT ensures smooth observability for GenAI projects, including popular libraries like OpenAI and HuggingFace, and vector databases like ChromaDB. 
-  
-  Committed to adhering to the Semantic Conventions of the OpenTelemetry community, OpenLIT continuously updates to meet the latest observability standards, providing invaluable insights to enhance application performance and reliability.`,
+    'OpenLIT is an open source Harness Engineering platform. Trace LLMs and agents with OpenTelemetry, run LLM evaluations, manage prompts, compare models, and self-host free under Apache 2.0.',
+  about: `OpenLIT is an open source Harness Engineering platform and an open source AI engineering platform. Instrument AI apps with one line of code, manage prompts, run LLM evaluations, monitor agents, store API keys in Vault, and improve quality with production data. Built on OpenTelemetry with support for popular LLM libraries, agent frameworks, vector databases, and GPU collectors.`,
   language: 'en-us',
   theme: 'dark',
   siteUrl: 'https://openlit.io',

@@ -9,10 +9,10 @@ const ContentSecurityPolicy = `
   script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com;
   style-src 'self' 'unsafe-inline';
   img-src * blob: data:;
-  media-src 'self' *.s3.amazonaws.com openlit.io mintcdn.com;
+  media-src 'self' *.s3.amazonaws.com *.s3.us-west-1.amazonaws.com openlit.io docs.openlit.io mintcdn.com;
   connect-src *;
   font-src 'self';
-  frame-src openlit.io story.screenspace.io cards.producthunt.com;
+  frame-src openlit.io story.screenspace.io;
   frame-ancestors 'none';
 `
 
@@ -52,6 +52,15 @@ const securityHeaders = [
     key: 'Permissions-Policy',
     value: 'camera=(), microphone=(), geolocation=(), payment=(), usb=()',
   },
+  {
+    key: 'X-Llms-Txt',
+    value: 'https://openlit.io/llms.txt',
+  },
+  {
+    key: 'Link',
+    value:
+      '<https://openlit.io/llms.txt>; rel="llms-txt", <https://openlit.io/llms-full.txt>; rel="llms-full-txt"',
+  },
 ]
 
 /**
@@ -65,7 +74,11 @@ module.exports = () => {
     eslint: {
       dirs: ['app', 'components', 'layouts', 'scripts'],
     },
+    experimental: {
+      optimizePackageImports: ['lucide-react'],
+    },
     images: {
+      formats: ['image/avif', 'image/webp'],
       remotePatterns: [
         {
           protocol: 'https',
@@ -73,11 +86,7 @@ module.exports = () => {
         },
         {
           protocol: 'https',
-          hostname: 'images.unsplash.com',
-        },
-        {
-          protocol: 'https',
-          hostname: 'assets.aceternity.com',
+          hostname: 'avatars.githubusercontent.com',
         },
         {
           protocol: 'https',
@@ -88,6 +97,15 @@ module.exports = () => {
           hostname: 'miro.medium.com',
         },
       ],
+    },
+    async rewrites() {
+      return [
+        { source: '/index.md', destination: '/markdown' },
+        { source: '/pricing.md', destination: '/markdown/pricing' },
+        { source: '/about-us.md', destination: '/markdown/about-us' },
+        { source: '/compare.md', destination: '/markdown/compare' },
+        { source: '/compare/:slug.md', destination: '/markdown/compare/:slug' },
+      ]
     },
     async headers() {
       return [
@@ -111,13 +129,17 @@ module.exports = () => {
     },
     webpack: (config, options) => {
       config.plugins.push(new DuplicatePackageCheckerPlugin())
-      config.devtool = false
 
-      if (config.cache && !options.dev) {
-        config.cache = Object.freeze({
-          type: 'memory',
-        })
-        config.cache.maxMemoryGenerations = 0
+      // Disabling source maps in development breaks HMR and causes
+      // "Cannot read properties of undefined (reading 'call')" chunk errors.
+      if (!options.dev) {
+        config.devtool = false
+        if (config.cache) {
+          config.cache = Object.freeze({
+            type: 'memory',
+          })
+          config.cache.maxMemoryGenerations = 0
+        }
       }
       return config
     },

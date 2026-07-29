@@ -11,7 +11,7 @@ export function useTheme() {
     if (typeof document !== 'undefined') {
       return document.documentElement.classList.contains('dark') ? 'dark' : 'light'
     }
-    return 'dark'
+    return 'light'
   })
   const toggleTheme = useCallback(() => {
     const value: THEME = theme === 'dark' ? 'light' : 'dark'
@@ -22,7 +22,7 @@ export function useTheme() {
   }, [theme])
 
   useEffect(() => {
-    const currentTheme = (get('theme') as unknown as THEME) || 'dark'
+    const currentTheme = (get('theme') as unknown as THEME) || 'light'
     setTheme(currentTheme)
     // @ts-ignore react-hooks/exhaustive-deps
   }, [])
@@ -36,7 +36,7 @@ export default function ThemeToggleSwitch({ showLabel }: { showLabel?: boolean }
     <Button
       variant="ghost"
       size={'icon'}
-      className="gap-4 rounded-full dark:text-white"
+      className="gap-4 rounded-md dark:text-white"
       onClick={toggleTheme}
     >
       <MoonIcon className="block size-5 shrink-0 dark:hidden" />
