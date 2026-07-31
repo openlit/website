@@ -13,8 +13,8 @@ export default function Hero() {
       <section className="relative mx-auto flex w-full max-w-6xl flex-col items-center px-4 pb-10 pt-10 md:pt-14">
         <div className="relative z-10 mx-auto max-w-4xl text-center">
           <h1 className="text-balance text-3xl font-bold tracking-tight text-black dark:text-white sm:text-4xl md:text-5xl lg:text-6xl">
-            Open source <MarkedWord className="whitespace-nowrap">Agent Harness</MarkedWord> Engineering
-            Platform
+            Open source <MarkedWord className="whitespace-nowrap">Agent Harness</MarkedWord>{' '}
+            Engineering Platform
           </h1>
           <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-black dark:text-white md:text-lg">
             {HERO_DESCRIPTION}
