@@ -1,66 +1,41 @@
 'use client'
-import siteMetadata from 'data/siteMetadata'
-import { Button as MovingBorder } from '../ui/moving-borders'
-import { StarFilledIcon } from '@radix-ui/react-icons'
+
 import { Dialog, DialogContent, DialogTrigger } from '../ui/dialog'
-import Image from 'next/image'
+import { HERO_DESCRIPTION } from 'constants/hero'
+import { MarkedWord } from '@/components/common/marker-underline'
+import { HarnessCanvas, useHarnessSelection } from './harness-canvas'
 
 export default function Hero() {
+  const { activeLabel, toggle, setActiveLabel } = useHarnessSelection(null)
+
   return (
-    <div className="relative flex min-h-[100dvh] w-full items-center justify-center px-4">
-      <section className="relative mb-10 flex min-h-[100dvh] w-full flex-col items-center justify-center">
-        <div className="flex justify-center">
-          <a
-            href={siteMetadata.siteRepo}
-            target="_blank"
-            className={`z-20 m-auto flex w-max cursor-pointer items-center rounded-3xl border-[1px] border-stone-200 bg-stone-100/50 p-0.5 dark:border-stone-700 dark:bg-stone-900/70 lg:m-0`}
-          >
-            <MovingBorder
-              className="border-brandPrimary bg-gradient-to-br from-brandPrimary to-violet-900 text-white dark:border-brandPrimary"
-              containerClassName="h-18 w-32 h-auto"
-            >
-              Open source
-            </MovingBorder>
-
-            <StarFilledIcon className="mx-2 h-4 w-4 text-brandPrimary" />
-            <span className="mr-3 text-xs text-stone-950 dark:text-stone-100">
-              Star us on github
-            </span>
-          </a>
+    <div className="relative w-full bg-white dark:bg-stone-950">
+      <section className="relative mx-auto flex w-full max-w-6xl flex-col items-center px-4 pb-10 pt-10 md:pt-14">
+        <div className="relative z-10 mx-auto max-w-4xl text-center">
+          <h1 className="text-balance text-3xl font-bold tracking-tight text-black dark:text-white sm:text-4xl md:text-5xl lg:text-6xl">
+            Open source <MarkedWord className="whitespace-nowrap">Agent Harness</MarkedWord>{' '}
+            Engineering Platform
+          </h1>
+          <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-black dark:text-white md:text-lg">
+            {HERO_DESCRIPTION}
+          </p>
         </div>
-        <div className="relative z-10 mx-auto mt-6 max-w-6xl text-center text-2xl font-semibold md:text-4xl lg:text-8xl">
-          <div className="space-y-6">
-            <h1 className="text-5xl font-bold leading-tight md:text-6xl lg:text-7xl">
-              <span className="bg-gradient-to-br from-gray-900 to-gray-600 bg-clip-text text-transparent dark:from-white dark:to-gray-300">
-                Open Source Platform for
-              </span>
-              <br />
-              <span className="bg-gradient-to-r from-primary-400 via-orange-500 to-red-500 bg-clip-text text-transparent">
-                AI Engineering
-              </span>
-            </h1>
-            <p className="text-muted-foreground mx-auto max-w-3xl text-xl leading-relaxed lg:text-2xl">
-              Monitor, debug, and improve your LLM applications with comprehensive observability,
-              tracing, and evaluation tools. Built for production workloads.
-            </p>
-          </div>
-        </div>
-        <div className="relative z-10 mt-6 flex flex-wrap items-center justify-center gap-4">
-          <a
-            href="https://docs.openlit.io/latest/introduction"
-            target="_blank"
-            className={`group relative flex items-center gap-4 rounded-full border border-primary-300 bg-gradient-to-br from-primary-300 to-primary-400 px-8 py-3 text-sm text-primary-800 transition duration-200 hover:shadow-2xl hover:shadow-white/[0.1]`}
-          >
-            <div className="absolute inset-x-0 -top-px mx-auto h-px w-1/2 bg-gradient-to-r  from-transparent via-primary-800 to-transparent shadow-2xl" />
-            <b className="relative z-20">Documentation</b>
 
+        <div className="relative z-10 mt-8 flex w-full max-w-md flex-col items-stretch justify-center gap-3 sm:max-w-none sm:flex-row sm:flex-wrap sm:items-center">
+          <a
+            href="https://docs.openlit.io/latest/openlit/quickstart-ai-observability"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex h-11 items-center justify-center gap-2 rounded-md bg-brandPrimary px-6 text-sm font-medium text-white transition hover:bg-primary-700 sm:h-10"
+          >
+            Documentation
             <svg
               stroke="currentColor"
               fill="currentColor"
               strokeWidth="0"
               viewBox="0 0 24 24"
               aria-hidden="true"
-              className="text-muted dark:text-muted-dark h-3 w-3 stroke-[1px] transition-transform duration-200 group-hover:translate-x-1"
+              className="h-3 w-3"
               height="1em"
               width="1em"
               xmlns="http://www.w3.org/2000/svg"
@@ -76,17 +51,21 @@ export default function Hero() {
             <DialogTrigger asChild>
               <button
                 type="button"
-                className={`group relative flex items-center gap-4 rounded-full border border-primary-300 bg-white px-8 py-3 text-sm text-primary-800 transition duration-200 hover:shadow-2xl hover:shadow-white/[0.1] dark:bg-black`}
+                className="inline-flex h-11 items-center justify-center rounded-md border border-stone-200 bg-white px-6 text-sm font-medium text-black transition hover:border-brandPrimary/40 dark:border-stone-700 dark:bg-stone-950 dark:text-white sm:h-10"
               >
-                <div className="absolute inset-x-0 -top-px mx-auto h-px w-1/2 bg-gradient-to-r  from-transparent via-primary-800 to-transparent shadow-2xl" />
-                <b className="relative z-20">View Demo</b>
+                View Demo
               </button>
             </DialogTrigger>
             <DialogContent
-              showCloseButton={false}
-              className="flex h-auto w-auto items-center justify-center bg-white dark:bg-black [&]:max-w-full [&]:sm:max-w-full"
+              showCloseButton
+              className="flex w-[calc(100%-1.5rem)] max-w-4xl items-center justify-center overflow-hidden bg-white p-2 dark:bg-stone-950 sm:p-4"
             >
-              <video controls className="m-auto">
+              <video
+                controls
+                preload="none"
+                className="m-auto max-h-[min(70dvh,32rem)] w-full rounded-md"
+                playsInline
+              >
                 <source src="https://openlit.io/static/images/demo.mp4" type="video/mp4" />
                 <track kind="captions" label="English" default />
                 Your browser does not support the video tag.
@@ -94,30 +73,13 @@ export default function Hero() {
             </DialogContent>
           </Dialog>
         </div>
-        <div className="relative z-10 mt-6 flex flex-wrap items-center justify-center gap-8 text-2xl">
-          <a
-            href="https://www.producthunt.com/posts/openlit?embed=true&utm_source=badge-featured&utm_medium=badge&utm_souce=badge-openlit"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              src="https://api.producthunt.com/widgets/embed-image/v1/featured.svg?post_id=460690&theme=light"
-              alt="Openlit - One click observability and evals for LLMs and GPUs | Product Hunt"
-              width={250}
-              height={54}
-              unoptimized
-            />
-          </a>
-          <a href="https://fazier.com/launches/openlit-2" target="_blank" rel="noopener noreferrer">
-            <Image
-              src="https://fazier.com/api/v1/public/badges/embed_image.svg?launch_id=779&badge_type=daily"
-              alt="OpenLIT featured on Fazier"
-              width={210}
-              height={54}
-              className="rounded"
-              unoptimized
-            />
-          </a>
+
+        <div className="relative z-10 mt-10 w-full max-w-5xl">
+          <HarnessCanvas
+            activeLabel={activeLabel}
+            onToggle={toggle}
+            onDismiss={() => setActiveLabel(null)}
+          />
         </div>
       </section>
     </div>

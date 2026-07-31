@@ -83,7 +83,7 @@ export default function ListLayoutWithTags({
   }
 
   return (
-    <section className="mx-auto flex w-full max-w-6xl flex-col gap-20 px-6 pt-20 md:px-8 lg:px-12">
+    <section className="mx-auto flex w-full max-w-6xl flex-col gap-12 px-4 pt-10 sm:gap-20 sm:px-6 sm:pt-20 md:px-8 lg:px-12">
       <div className="grid gap-y-10">
         <FirstPost />
       </div>

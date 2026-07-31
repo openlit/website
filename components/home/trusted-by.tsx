@@ -7,80 +7,13 @@ type LogoEntry =
   | { kind: 'img'; name: string; src: string; width: number; height: number }
   | { kind: 'text'; name: string }
 
-const logos: LogoEntry[] = [
-  {
-    kind: 'img',
-    name: 'Grafana',
-    src: '/static/images/trusted-by/grafana.svg',
-    width: 120,
-    height: 32,
-  },
-  {
-    kind: 'img',
-    name: 'Microsoft',
-    src: '/static/images/trusted-by/microsoft.svg',
-    width: 120,
-    height: 32,
-  },
-  {
-    kind: 'img',
-    name: 'AWS',
-    src: '/static/images/trusted-by/aws.svg',
-    width: 120,
-    height: 40,
-  },
-  {
-    kind: 'img',
-    name: 'Docker',
-    src: '/static/images/trusted-by/docker.svg',
-    width: 120,
-    height: 40,
-  },
-  {
-    kind: 'img',
-    name: 'Splunk',
-    src: '/static/images/trusted-by/splunk.svg',
-    width: 120,
-    height: 32,
-  },
-  {
-    kind: 'img',
-    name: 'Elastic',
-    src: '/static/images/trusted-by/elastic.svg',
-    width: 40,
-    height: 40,
-  },
-  {
-    kind: 'img',
-    name: 'GPT4All',
-    src: '/static/images/integrations/gpt4all.svg',
-    width: 40,
-    height: 40,
-  },
-  {
-    kind: 'img',
-    name: 'Dash0',
-    src: '/static/images/trusted-by/dash0.svg',
-    width: 40,
-    height: 40,
-  },
-  {
-    kind: 'img',
-    name: 'Judgment',
-    src: '/static/images/trusted-by/judgment.webp',
-    width: 40,
-    height: 40,
-  },
-  {
-    kind: 'img',
-    name: 'Egg AI',
-    src: '/static/images/trusted-by/egg-ai.svg',
-    width: 40,
-    height: 40,
-  },
-]
-
-const LOGO_HEIGHT = 28
+const logos: LogoEntry[] = Array.from({ length: 26 }, (_, index) => ({
+  kind: 'img',
+  src: `/static/images/trusted-by/${index + 1}.png`,
+  width: 3000,
+  height: 500,
+  name: `Logo ${index + 1}`,
+}))
 
 function LogoItem({ entry }: { entry: LogoEntry }) {
   if (entry.kind === 'img') {
@@ -93,11 +26,10 @@ function LogoItem({ entry }: { entry: LogoEntry }) {
           alt={entry.name}
           width={entry.width}
           height={entry.height}
-          className="opacity-50 transition-opacity duration-300 group-hover:opacity-100"
-          style={{ height: LOGO_HEIGHT, width: 'auto' }}
+          className="h-7 w-auto opacity-50 transition-opacity duration-300 group-hover:opacity-100 sm:h-9"
         />
         {isIcon && entry.name && (
-          <span className="text-base font-semibold opacity-50 transition-opacity duration-300 group-hover:opacity-100">
+          <span className="text-sm font-semibold opacity-50 transition-opacity duration-300 group-hover:opacity-100 sm:text-base">
             {entry.name}
           </span>
         )}
@@ -106,7 +38,7 @@ function LogoItem({ entry }: { entry: LogoEntry }) {
   }
 
   return (
-    <span className="shrink-0 text-base font-semibold opacity-60 transition-opacity duration-300 hover:opacity-80">
+    <span className="shrink-0 text-sm font-semibold opacity-60 transition-opacity duration-300 hover:opacity-80 sm:text-base">
       {entry.name}
     </span>
   )
@@ -117,24 +49,24 @@ export function TrustedBy() {
   const track = [...logos, ...logos]
 
   return (
-    <section className="w-full py-12">
-      <div className="container mb-8 text-center">
-        <p className="text-sm font-medium uppercase tracking-widest opacity-60">
+    <section className="w-full py-8 sm:py-12">
+      <div className="container mb-6 text-center sm:mb-8">
+        <p className="text-xs font-medium uppercase tracking-widest opacity-60 sm:text-sm">
           Trusted &amp; used by developers and engineers at
         </p>
       </div>
 
       {/* Fade edges */}
       <div
-        className="marquee-track relative overflow-hidden"
+        className="marquee-track group relative overflow-hidden bg-white py-2 opacity-70"
         style={{
           maskImage:
-            'linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%)',
+            'linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%)',
           WebkitMaskImage:
-            'linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%)',
+            'linear-gradient(to right, transparent 0%, black 8%, black 92%, transparent 100%)',
         }}
       >
-        <div className="animate-marquee flex w-max items-center gap-16 px-8">
+        <div className="animate-marquee flex w-max items-center gap-10 px-6 sm:gap-16 sm:px-8">
           {track.map((entry, i) => (
             <LogoItem key={`${entry.name}-${i}`} entry={entry} />
           ))}

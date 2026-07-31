@@ -7,12 +7,9 @@ import { MoonIcon, SunIcon } from '@radix-ui/react-icons'
 type THEME = 'dark' | 'light'
 
 export function useTheme() {
-  const [theme, setTheme] = useState<THEME>(() => {
-    if (typeof document !== 'undefined') {
-      return document.documentElement.classList.contains('dark') ? 'dark' : 'light'
-    }
-    return 'dark'
-  })
+  // Always start with a stable SSR value; sync from cookie/DOM after mount.
+  const [theme, setTheme] = useState<THEME>('light')
+
   const toggleTheme = useCallback(() => {
     const value: THEME = theme === 'dark' ? 'light' : 'dark'
     document.documentElement.classList.remove(theme)
@@ -22,9 +19,10 @@ export function useTheme() {
   }, [theme])
 
   useEffect(() => {
-    const currentTheme = (get('theme') as unknown as THEME) || 'dark'
+    const currentTheme =
+      (get('theme') as unknown as THEME) ||
+      (document.documentElement.classList.contains('dark') ? 'dark' : 'light')
     setTheme(currentTheme)
-    // @ts-ignore react-hooks/exhaustive-deps
   }, [])
 
   return { toggleTheme, theme }
@@ -36,7 +34,7 @@ export default function ThemeToggleSwitch({ showLabel }: { showLabel?: boolean }
     <Button
       variant="ghost"
       size={'icon'}
-      className="gap-4 rounded-full dark:text-white"
+      className="gap-4 rounded-md dark:text-white"
       onClick={toggleTheme}
     >
       <MoonIcon className="block size-5 shrink-0 dark:hidden" />

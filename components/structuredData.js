@@ -10,8 +10,7 @@ export const organisationSchema = {
     width: 512,
     height: 512,
   },
-  description:
-    'OpenLIT is an open-source platform built on OpenTelemetry, providing observability for GenAI and LLM applications.',
+  description: 'OpenLIT is an open source Harness Engineering platform, built on OpenTelemetry.',
   email: 'contact@openlit.io',
   foundingDate: '2023-01-01',
   founders: [
@@ -20,12 +19,7 @@ export const organisationSchema = {
       name: 'Aman Agarwal',
     },
   ],
-  sameAs: [
-    'https://x.com/openlit_io',
-    'https://github.com/openlit/openlit',
-    'https://linkedin.com/company/openlit',
-    'https://www.youtube.com/@openlit',
-  ],
+  sameAs: ['https://github.com/openlit/openlit'],
   contactPoint: {
     '@type': 'ContactPoint',
     email: 'contact@openlit.io',
@@ -41,7 +35,7 @@ export const applicationSchema = {
   operatingSystem: 'Linux, Windows, macOS',
   applicationCategory: 'DeveloperApplication',
   description:
-    'Open-source platform for observability and application performance monitoring (APM) built on OpenTelemetry, optimized for GenAI and LLM applications.',
+    'Open source Harness Engineering platform for AI engineering. LLM tracing, LLM evaluation, prompt management, AI agent monitoring, API key management, and model comparison on OpenTelemetry.',
   offers: {
     '@type': 'Offer',
     price: '0',
@@ -54,14 +48,15 @@ export const applicationSchema = {
   license: 'https://github.com/openlit/openlit/blob/main/LICENSE',
   author: { '@id': 'https://openlit.io/#organization' },
   featureList: [
-    'Unified Traces and Metrics',
+    'Harness Engineering',
+    'LLM tracing',
     'OpenTelemetry Support',
-    'LLM Observability',
-    'Fleet Hub',
-    'Prompt Hub',
-    'Vault',
-    'OpenGround',
-    'Kubernetes Operator',
+    'LLM evaluation',
+    'Prompt management',
+    'AI agent monitoring',
+    'API key management (Vault)',
+    'Model comparison (OpenGround)',
+    'GPU monitoring',
   ],
 }
 

@@ -16,7 +16,11 @@ module.exports = {
   theme: {
     container: {
       center: true,
-      padding: '2rem',
+      padding: {
+        DEFAULT: '1rem',
+        sm: '1.5rem',
+        lg: '2rem',
+      },
       screens: {
         '2xl': '1400px',
       },
@@ -50,7 +54,7 @@ module.exports = {
         14: '3.5rem',
       },
       fontFamily: {
-        sans: ['var(--font-space-grotesk)', ...fontFamily.sans],
+        sans: ['var(--font-inter)', ...fontFamily.sans],
       },
       colors: {
         primary: {
@@ -68,6 +72,11 @@ module.exports = {
         },
         gray: colors.gray,
         brandPrimary: '#F36C06',
+        brandSecondary: '#FFF4D8',
+        surface: '#F9F9F9',
+      },
+      borderRadius: {
+        ui: '8px',
       },
       typography: ({ theme }) => ({
         DEFAULT: {

@@ -20,19 +20,19 @@ export default function PostAuthor({ authorDetails }: { authorDetails: CoreConte
           <dl className="whitespace-nowrap text-sm font-medium leading-5">
             <dt className="sr-only">Name</dt>
             <dd className="text-stone-900 dark:text-stone-100">{author.name}</dd>
-            <dt className="sr-only">Twitter</dt>
-            <dd>
-              {author.twitter && (
-                <Link
-                  href={author.twitter}
-                  className="text-primary-500 hover:text-primary-600 dark:hover:text-primary-400"
-                >
-                  {author.twitter
-                    .replace('https://twitter.com/', '@')
-                    .replace('https://x.com/', '@')}
-                </Link>
-              )}
-            </dd>
+            {author.github ? (
+              <>
+                <dt className="sr-only">GitHub</dt>
+                <dd>
+                  <Link
+                    href={author.github}
+                    className="text-primary-500 hover:text-primary-600 dark:hover:text-primary-400"
+                  >
+                    {author.github.replace('https://github.com/', '@')}
+                  </Link>
+                </dd>
+              </>
+            ) : null}
           </dl>
         </li>
       ))}

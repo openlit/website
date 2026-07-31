@@ -1,0 +1,330 @@
+---
+title: How to Detect Hallucinations in Your RAG Pipeline (with Code Examples)
+date: '2026-04-07'
+lastmod: '2026-04-07'
+tags: ['openlit', 'rag', 'hallucination', 'evaluation', 'llm', 'python']
+draft: false
+summary: Catch LLM hallucinations programmatically using OpenLIT's evaluation SDK. Includes Python code examples for hallucination, toxicity, and bias detection with OpenTelemetry export.
+authors: ['OpenLIT']
+images: ['/static/images/detect-rag-hallucinations.png']
+---
+
+# How to Detect Hallucinations in Your RAG Pipeline (with Code Examples)
+
+**TL;DR:** Hallucinations are the most common production failure in RAG systems. OpenLIT's eval SDK lets you detect them programmatically — using an LLM-as-judge approach — and export results as OpenTelemetry signals alongside your existing traces. No separate eval platform needed.
+
+---
+
+## Why RAG Systems Hallucinate
+
+You built a RAG pipeline. Your retriever pulls relevant documents. Your LLM generates answers grounded in those documents. And yet, sometimes the output contains information that exists nowhere in the retrieved context.
+
+This happens for a few reasons:
+
+**Retrieval gaps.** The retriever returned documents that are topically related but don't actually contain the answer. The LLM fills in the blanks from its training data — or makes something up entirely.
+
+**Context window overflow.** You stuffed too many documents into the context. Research shows LLMs tend to ignore information in the middle of long contexts (the "lost in the middle" problem). The model generates a plausible-sounding answer from the parts it paid attention to.
+
+**Model confidence.** LLMs don't say "I don't know" by default. They're trained to be helpful, which means they'll produce a fluent answer even when they shouldn't.
+
+The fix isn't to eliminate hallucinations (you can't, not completely). It's to detect them reliably and decide what to do — flag them, retry with different context, or fall back to a canned response.
+
+## Setting Up Hallucination Detection
+
+Install the OpenLIT SDK if you haven't already:
+
+```bash
+pip install openlit
+```
+
+Here's how to check an LLM response for hallucinations:
+
+```python
+from openlit.evals import Hallucination
+
+detector = Hallucination(
+    provider="openai",
+    api_key="sk-...",       # or set OPENAI_API_KEY env var
+    model="gpt-4o-mini",    # the judge model
+    threshold_score=0.5,
+)
+
+result = detector.measure(
+    prompt="What is the refund policy for enterprise customers?",
+    contexts=[
+        "Enterprise customers can request a refund within 30 days of purchase.",
+        "All refunds are processed within 5-7 business days.",
+    ],
+    text="Enterprise customers can request a full refund within 60 days of purchase, "
+         "and refunds are processed instantly.",
+)
+
+print(result)
+# {
+#   "score": 0.8,
+#   "verdict": "yes",
+#   "guard": "hallucination",
+#   "classification": "factual_inconsistency",
+#   "explanation": "The response states 60 days and instant processing, but the context says 30 days and 5-7 business days."
+# }
+```
+
+The `measure` method sends the prompt, retrieved contexts, and the LLM's response to a judge model. The judge evaluates whether the response is faithful to the provided context.
+
+- **`score`** — A 0-1 score. Higher means more likely to be a hallucination.
+- **`verdict`** — `"yes"` if the score exceeds `threshold_score`, `"no"` otherwise.
+- **`classification`** — The type of hallucination detected.
+- **`explanation`** — Human-readable reasoning from the judge.
+
+## Using Any LLM as Judge
+
+You're not locked into OpenAI as the judge. Use any provider that exposes an OpenAI-compatible API:
+
+```python
+# Use Anthropic
+detector = Hallucination(
+    provider="anthropic",
+    api_key="sk-ant-...",
+    model="claude-sonnet-4-20250514",
+)
+
+# Use a local model via Ollama
+detector = Hallucination(
+    provider="openai",          # Ollama exposes an OpenAI-compatible API
+    base_url="http://localhost:11434/v1",
+    model="llama3",
+    api_key="ollama",           # Ollama doesn't need a real key
+)
+
+# Use Azure OpenAI
+detector = Hallucination(
+    provider="openai",
+    base_url="https://your-resource.openai.azure.com/openai/deployments/gpt-4o",
+    api_key="your-azure-key",
+    model="gpt-4o",
+)
+```
+
+## Adding Toxicity and Bias Detection
+
+Hallucinations aren't the only thing that can go wrong. OpenLIT's eval SDK also covers toxicity and bias:
+
+### Toxicity Detection
+
+```python
+from openlit.evals import ToxicityDetector
+
+toxicity = ToxicityDetector(
+    provider="openai",
+    model="gpt-4o-mini",
+    threshold_score=0.5,
+)
+
+result = toxicity.measure(
+    text="The LLM output you want to check",
+    prompt="The original user prompt",
+    contexts=["Retrieved context documents"],
+)
+
+if result["verdict"] == "yes":
+    print(f"Toxic content detected: {result['explanation']}")
+```
+
+### Bias Detection
+
+```python
+from openlit.evals import BiasDetector
+
+bias = BiasDetector(
+    provider="openai",
+    model="gpt-4o-mini",
+    threshold_score=0.5,
+)
+
+result = bias.measure(
+    text="The LLM output you want to check",
+    prompt="The original user prompt",
+    contexts=["Retrieved context documents"],
+)
+
+if result["verdict"] == "yes":
+    print(f"Bias detected: {result['explanation']}")
+```
+
+### Run All Checks at Once
+
+If you want hallucination + toxicity + bias in a single call:
+
+```python
+from openlit.evals import All
+
+evaluator = All(
+    provider="openai",
+    model="gpt-4o-mini",
+    threshold_score=0.5,
+)
+
+results = evaluator.measure(
+    prompt="user question",
+    contexts=["context doc 1", "context doc 2"],
+    text="LLM response to evaluate",
+)
+```
+
+## Custom Evaluation Categories
+
+The default categories cover common failure modes, but you can define your own:
+
+```python
+detector = Hallucination(
+    provider="openai",
+    model="gpt-4o-mini",
+    custom_categories={
+        "medical_misinformation": "Response contains medical claims not supported by the provided clinical context",
+        "numerical_error": "Response contains numbers, dates, or quantities that differ from the source documents",
+    },
+    threshold_score=0.3,  # stricter threshold for medical use cases
+)
+```
+
+This is especially useful for domain-specific applications where generic "hallucination" isn't granular enough.
+
+## Exporting Eval Results as OpenTelemetry Signals
+
+Here's what makes OpenLIT's approach different from standalone eval tools: evaluation results are exported as OpenTelemetry signals, right alongside your traces.
+
+When you initialize OpenLIT with tracing enabled, eval results automatically get emitted as OTel Log Records:
+
+```python
+import openlit
+from openlit.evals import Hallucination
+
+openlit.init(
+    otlp_endpoint="http://localhost:4318",
+    application_name="my-rag-app",
+)
+
+detector = Hallucination(
+    provider="openai",
+    model="gpt-4o-mini",
+)
+
+result = detector.measure(
+    prompt="...",
+    contexts=["..."],
+    text="...",
+    response_id="trace-span-id-here",  # ties eval to the original trace
+)
+```
+
+The `response_id` parameter links the evaluation result to the original LLM trace span. This means you can:
+
+1. Look at a trace in your dashboard
+2. See the eval result attached to it
+3. Filter traces by eval verdict ("show me all hallucinated responses")
+
+By default, results are exported as OTel Log Records. You can also configure them to be emitted as OTel Events:
+
+```python
+openlit.init(
+    evals_logs_export=True,  # default: Log Records
+)
+```
+
+## Integrating Into Your RAG Pipeline
+
+Here's a complete example showing evals integrated into a RAG workflow:
+
+```python
+import openlit
+from openlit.evals import Hallucination
+from openai import OpenAI
+
+openlit.init(otlp_endpoint="http://localhost:4318")
+
+client = OpenAI()
+hallucination_detector = Hallucination(provider="openai", model="gpt-4o-mini")
+
+def answer_question(question: str, documents: list[str]) -> dict:
+    context = "\n\n".join(documents)
+
+    response = client.chat.completions.create(
+        model="gpt-4o",
+        messages=[
+            {"role": "system", "content": f"Answer based on this context:\n{context}"},
+            {"role": "user", "content": question},
+        ],
+    )
+
+    answer = response.choices[0].message.content
+
+    eval_result = hallucination_detector.measure(
+        prompt=question,
+        contexts=documents,
+        text=answer,
+    )
+
+    return {
+        "answer": answer,
+        "hallucination_score": eval_result["score"],
+        "is_hallucinated": eval_result["verdict"] == "yes",
+        "explanation": eval_result["explanation"],
+    }
+
+
+result = answer_question(
+    question="What's the maximum file upload size?",
+    documents=[
+        "The maximum file upload size is 50MB for free tier users.",
+        "Enterprise users can upload files up to 500MB.",
+    ],
+)
+
+if result["is_hallucinated"]:
+    print(f"Warning: Response may contain hallucinations. {result['explanation']}")
+else:
+    print(result["answer"])
+```
+
+## Setting Up Auto-Evaluation in the OpenLIT Platform
+
+If you're running the self-hosted OpenLIT platform, you can configure auto-evaluation from the settings page:
+
+1. Go to **Settings → Evaluation Config**
+2. Set your eval provider (OpenAI, Anthropic, or any compatible endpoint)
+3. Store the API key in the **Vault** (OpenLIT's built-in secrets manager)
+4. Enable auto-evaluation
+
+Once enabled, the platform automatically runs hallucination checks on incoming traces. Results show up in the dashboard alongside your traces.
+
+## When to Evaluate (and When Not To)
+
+Running an LLM judge on every response adds latency and cost. Here are practical strategies:
+
+**Sample in production:** Evaluate 10-20% of responses in production. Enough to catch systemic issues without doubling your LLM costs.
+
+**Evaluate everything in staging:** Run full evals in your staging environment before deploying prompt changes.
+
+**Use thresholds to trigger actions:** Set `threshold_score=0.3` for strict use cases (medical, legal, financial) and `0.7` for low-stakes use cases (content suggestions, summaries).
+
+**Gate on evals in CI/CD:** Run evals against a test dataset before deploying. If hallucination rate exceeds your threshold, block the deployment.
+
+---
+
+## FAQ
+
+**Can I use my own LLM as judge?**
+
+Yes. Any OpenAI-compatible API works — including local models via Ollama, vLLM, or any other server that exposes a `/v1/chat/completions` endpoint. Set the `base_url` parameter.
+
+**How do I evaluate in CI/CD?**
+
+Run your eval suite as a Python script in CI. Use a test dataset of (question, context, expected_answer) triples, measure each with the `Hallucination` class, and fail the pipeline if the hallucination rate exceeds a threshold.
+
+**What's the cost of running evals?**
+
+Each eval call is one LLM call to your judge model. With `gpt-4o-mini`, that's roughly $0.0001-0.001 per evaluation depending on context length. At 10% sampling of 10,000 requests/day, that's about $1-10/day.
+
+**Does it work with non-English text?**
+
+Yes, as long as your judge model supports the language. GPT-4o and Claude both handle multilingual evaluation well.

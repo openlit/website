@@ -10,7 +10,6 @@ import PostLayout from '@/layouts/post-layout'
 import { Metadata } from 'next'
 import siteMetadata from 'data/siteMetadata'
 import { notFound } from 'next/navigation'
-import TracingBeam from '@/components/ui/tracing-beam'
 import { createWebPageSchema } from '@/components/structuredData'
 
 export async function generateMetadata({
@@ -115,7 +114,7 @@ export default async function Page({ params }: { params: { slug: string[] } }) {
   )
 
   return (
-    <TracingBeam className="w-full px-4 md:max-w-[70%] md:pl-8 md:pr-4">
+    <div className="w-full px-4 md:mx-auto md:max-w-[70%] md:pl-8 md:pr-4">
       <section className="relative py-6">
         <script
           type="application/ld+json"
@@ -131,7 +130,7 @@ export default async function Page({ params }: { params: { slug: string[] } }) {
           <SafeMdxRenderer code={post.body.raw} components={components} />
         </PostLayout>
       </section>
-    </TracingBeam>
+    </div>
   )
 }
 
