@@ -7,7 +7,7 @@ export const HERO_KEYWORDS = [
   'Harness Engineering',
   'AI engineering',
   'AI engineering platform',
-  'open source Harness Engineering',
+  'open source Agent Harness Engineering',
   'open source AI engineering platform',
   'LLM tracing',
   'OpenTelemetry tracing',
