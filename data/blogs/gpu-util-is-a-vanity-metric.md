@@ -1,0 +1,239 @@
+---
+title: 'GPU Utilization Is a Vanity Metric. Here is the GPU SLI for Inference'
+date: '2026-08-14'
+lastmod: '2026-08-14'
+tags: ['openlit', 'gpu', 'gpu-monitoring', 'gpu-observability', 'llm', 'inference', 'opentelemetry', 'production']
+draft: false
+summary: GPU utilization from nvidia-smi, DCGM, and NVML is a vanity metric for LLM inference. SLO memory headroom, throttle-free time, allocated vs idle, CUDA health, and NVLink instead. OpenTelemetry hw.gpu metrics work with OpenLIT or any OTLP backend.
+authors: ['OpenLIT']
+images: ['/static/images/gpu-vanity-metric.jpg']
+---
+
+# GPU Utilization Is a Vanity Metric. Here's the GPU SLI for Inference.
+
+**Short answer:** GPU utilization only tells you the SM was busy. It does not tell you if LLM inference is healthy. For inference, SLO GPU memory headroom, throttle-free time, allocated vs idle, CUDA kernel health, and NVLink/PCIe errors. Then join those GPU metrics to TTFT and tokens/sec. The metrics are OpenTelemetry. The UI can be OpenLIT or anything that reads OTLP.
+
+I still open GPU dashboards where panel one is a single utilization gauge from nvidia-smi, NVML, or dcgm-exporter. That number is fine for a glance. It is a bad GPU SLI.
+
+## What GPU utilization actually is
+
+GPU utilization is the share of time the compute engines were busy in the sample window.
+
+On NVIDIA that comes from NVML (`nvmlDeviceGetUtilizationRates`). It is what nvidia-smi, DCGM (`DCGM_FI_DEV_GPU_UTIL`), dcgm-exporter, and most Prometheus GPU exporters show.
+
+In OpenTelemetry hardware semantic conventions it is:
+
+- `hw.gpu.utilization` (0.0 to 1.0)
+- `hw.gpu.task` = `general` | `encoder` | `decoder`
+
+Useful question: was the engine busy?
+
+Useless questions: can this replica take another request, is the KV cache about to OOM, is the H100 power throttled, is VRAM stuck on a dead process?
+
+## Why it lies for LLM inference
+
+Training wanted the GPU hot. Inference does not work like that.
+
+| You see | It often means |
+|---|---|
+| 90%+ GPU utilization | Prefill is compute-bound, or the card is thermally throttled doing the same work slower |
+| 40% GPU utilization | Decode is memory-bandwidth bound (normal), or the batch is starved |
+| High util + high latency | Power or thermal throttle, not "the cluster is well used" |
+| Low util + GPU OOM | Weights + KV cache filled VRAM. SMs were waiting. |
+| Allocated, util near 0 | Something holds the device. You cannot schedule onto it. |
+| Encoder/decoder util high | Media engines. Ignore this for most LLM serving. |
+
+Three concrete reasons:
+
+**Prefill vs decode.** Prefill fills tensor cores. Autoregressive decode is often HBM bound. Low SM util during decode can still be the ceiling.
+
+**KV cache is VRAM, not SM busy-time.** Context length and concurrency show up as `hw.gpu.memory.usage`, then as GPU OOM. Utilization does not fall over first.
+
+**Busy is not healthy.** NVML util stays high while clocks drop under GPU throttling. You need temperature, power, clocks, and a throttle flag.
+
+Is high GPU utilization good? For training, usually. For inference, only if TTFT, tokens/sec, memory headroom, and throttle flags are also fine.
+
+## What a GPU SLI for inference is
+
+A GPU SLI is the number you put in a GPU SLO. It is not `gpu_utilization`.
+
+Treat the GPU like a database: availability, saturation, errors, efficiency. Then protect the request SLIs (TTFT, TPOT, tokens/sec, goodput).
+
+| SLI | Question | Metrics | Starting SLO |
+|---|---|---|---|
+| Device availability | Is it up and schedulable? | `hw.gpu.up`, `hw.gpu.allocated`, `hw.gpu.idle` | `hw.gpu.up == 1` on 99.9% of scrapes per `hw.id` |
+| Memory headroom | Can we admit another sequence? | `hw.gpu.memory.usage`, `limit`, `free`, `hw.gpu.memory.utilization` | used/limit < 0.85 (tune for vLLM KV blocks) |
+| Throttle-free time | Are we getting the clocks we paid for? | `hw.gpu.throttled`, `temperature`, `power.draw`, `power.limit`, `clock.graphics`, `clock.memory` | throttled = 0 on ≥ 99% of intervals |
+| Effective work | Is work on the SMs, or just "engine busy"? | `process.gpu.sm_active`, `process.gpu.core.usage`, `process.gpu.utilization`, `gpu.kernel.launch.calls` | TTFT up and sm_active down is a scheduler problem, not "buy more GPUs" |
+| Data path | Stalled on the bus? | `hw.gpu.pcie.throughput`, `hw.gpu.interconnect.throughput` (NVLink/XGMI), `hw.errors` | page on XID, uncorrected ECC, PCIe replay, NVLink drop |
+
+Do not SLO GPU metrics by themselves. SLO the requests. Use GPU observability to explain why they burned.
+
+These are OpenTelemetry metric names. OpenLIT can chart them. So can Prometheus, Datadog, or any other OTLP consumer. The SLI does not care which UI you open.
+
+## SLI 1: up, allocated, idle
+
+Most nvidia-smi dashboards skip these:
+
+- `hw.gpu.up`: the collector reached the device this interval
+- `hw.gpu.allocated`: a compute process is on it
+- `hw.gpu.idle`: `1 - general utilization`
+
+Allocated and idle together is the zombie VRAM case. Kubernetes thinks the GPU is used. Tokens/sec is zero.
+
+Group by `hw.id`, `hw.name` (H100, A100, L40S), `hw.vendor`, `gpu.index`, plus `k8s.node.name` / pod.
+
+For Kubernetes GPU monitoring, run the agent as a DaemonSet with `hostPID: true` if you want per-process attribution, and join via kubelet PodResources.
+
+MIG: treat each slice as its own `hw.id`. 50% util on a fully packed MIG A100 is not spare capacity.
+
+## SLI 2: GPU memory (this is saturation)
+
+For vLLM, TensorRT-LLM, TGI, Ollama, SGLang, VRAM is the saturation signal.
+
+- `usage / limit`: how full is VRAM (weights + activations + KV cache)
+- `free`: headroom in bytes
+- `hw.gpu.memory.utilization`: memory controller busy-time, not "% VRAM full"
+- `process.gpu.memory.usage`: which PID holds it
+- `gpu.memory.allocations` / `gpu.memory.copies`: alloc and copy pressure if you have CUDA tracing
+
+Three different GPU metrics, three different failures:
+
+1. Compute util: SM busy
+2. Memory controller util: HBM bandwidth
+3. usage/limit: capacity (this is the OOM one)
+
+A memory SLO that works: 99% of requests with no GPU OOM, and p95 headroom ≥ 15% per replica.
+
+When headroom is gone you need more GPUs, shorter context, prefix cache, KV quant, or a different parallel layout. "Util is 55%, we're fine" is how you OOM at 2am.
+
+## SLI 3: throttle, power, temperature
+
+This is how high utilization becomes a vanity metric.
+
+Watch `hw.gpu.throttled`, throttle reasons, `hw.gpu.temperature` (`sensor=die|memory`), `power.draw` vs `power.limit`, `hw.gpu.energy.consumed`, SM and memory clocks.
+
+Thermal throttle: clocks drop, engine stays "busy", tokens/sec falls, the util panel stays green.
+
+`energy.consumed` / tokens served is joules per token. That is the efficiency number, not SM %.
+
+SLO: p99 throttle-free ≥ 99% per GPU. Alert if die temp hits slowdown or power is pegged and clocks sag.
+
+## SLI 4: CUDA kernels (NVML cannot see this)
+
+DCGM tells you device health. It does not tell you launch shape.
+
+Linux eBPF on `libcudart` (`CAP_BPF` + `CAP_PERFMON`):
+
+| Metric | Why you care |
+|---|---|
+| `gpu.kernel.launch.calls` | Launch rate falling while QPS holds: serving loop stuck on CPU/tokenizer/network |
+| `gpu.kernel.grid.size` / `block.size` | Tiny grids: SMs underfilled, util looks "ok", tokens/sec is not |
+| `gpu.kernel.shared_memory` | Launch config changed after a CUDA or vLLM bump |
+| `process.gpu.sm_active` | Fraction of the interval with a launch-to-sync span. Model estimate, not Nsight SM occupancy. |
+| `process.gpu.utilization` | Per-process sampled util. Needs `--pid=host`. |
+
+Keep both: device metrics and CUDA metrics.
+
+## SLI 5: PCIe, NVLink, ECC, XID
+
+Tensor parallel on H100/H200/B200 dies on the interconnect as often as on the SM.
+
+- `hw.gpu.pcie.throughput`
+- `hw.gpu.interconnect.throughput` (`NVLink` or `XGMI`)
+- `hw.errors` (`corrected`, `uncorrected`, `pcie_replay`)
+- NVIDIA XID
+
+Uncorrected ECC and a dead NVLink link are pages. They are not dashboard decoration.
+
+## Dashboard order
+
+Put utilization in the middle. Not on top. Same layout in OpenLIT or whatever UI you use.
+
+1. Requests: TTFT, TPOT, tokens/sec, errors, queue time
+2. Fleet: up, allocated, idle, count by `hw.name`
+3. Saturation: VRAM used/limit, memory controller util, SM util (`hw.gpu.task=general`)
+4. Health: throttled, temp, power, clocks
+5. Work: per-process memory, sm_active, kernel launches
+6. Fabric: PCIe, NVLink, errors, XID
+
+If panel one is still `DCGM_FI_DEV_GPU_UTIL`, it is a training dashboard.
+
+## DCGM vs NVML vs nvidia-smi vs OpenTelemetry
+
+| Tool | Good for | Weak for inference SLIs | Export |
+|---|---|---|---|
+| nvidia-smi | SSH | No history, no k8s join | CLI |
+| NVML | Same counters in process | You can still pick the wrong SLI | Library |
+| DCGM / dcgm-exporter | NVIDIA + Prometheus | NVIDIA only, util-first | Prometheus |
+| NVIDIA GPU exporter | Fast Prometheus scrape | Same default, weak AMD/Intel | Prometheus |
+| OpenTelemetry `hw.gpu.*` | One name set (NVIDIA, AMD, Intel), OTLP to any backend | You need an OTLP pipeline. CUDA eBPF is Linux only. | OTLP 4317/4318 |
+
+DCGM is fine if you are NVIDIA-only and already on Prometheus. Use OpenTelemetry GPU metrics if you want hardware semconv names (`hw.id`, `hw.vendor`, `hw.gpu.utilization`) that are not stuck on `DCGM_FI_*`.
+
+The collector should not care which UI you have. OTLP in, OpenLIT, Datadog, or your existing metrics stack on the other side.
+
+## Example SLO pack (vLLM on H100)
+
+Calibrate after a week of data. Do not copy blindly.
+
+```text
+availability     = avg_over_time(hw_gpu_up[5m])
+memory_headroom  = 1 - (hw_gpu_memory_usage / hw_gpu_memory_limit)
+throttle_free    = 1 - avg_over_time(hw_gpu_throttled[5m])
+idle_allocated   = hw_gpu_allocated * hw_gpu_idle
+joules_per_token = rate(hw_gpu_energy_consumed[1h]) / rate(genai_tokens_output[1h])
+```
+
+| SLO | Window |
+|---|---|
+| `hw.gpu.up` ≥ 99.9% | 30d |
+| p95 usage/limit < 0.85 | 7d |
+| throttle-free ≥ 99% | 7d |
+| p95 idle_allocated < 0.2 on serving pools | 1d |
+| p95 TTFT under target, error rate < 0.1% | 7d |
+
+Do not SLO "GPU utilization > 80%". That rewards thermal thrash and punishes healthy decode.
+
+In-process SDK stats (`gpu.utilization` style names) are a process view. Node-level `hw.gpu.*` is what you SLO.
+
+## FAQ
+
+**Is GPU utilization a good metric?**
+Diagnostic, yes. SLI, no. Keep the panel. Do not page on it.
+
+**What GPU metrics should I monitor for LLM inference?**
+`hw.gpu.up`, memory usage/limit/free, memory util, general util, temp, power, throttled, clocks, per-process memory, errors/XID, plus TTFT and tokens/sec. Add NVLink/PCIe for multi-GPU. Add CUDA kernel metrics when you debug serving regressions.
+
+**GPU monitoring vs GPU observability?**
+Monitoring is scrape-and-graph (nvidia-smi, DCGM). Observability is those GPU metrics next to traces, k8s identity, and request SLIs over OTLP.
+
+**How do I monitor NVIDIA H100/A100 in Kubernetes?**
+DaemonSet, device plugin, `K8S_NODE_NAME`, PodResources for GPU to pod, OTLP out. Chart `hw.gpu.*` in OpenLIT or any other backend you already run.
+
+**Does dcgm-exporter emit `hw.gpu.*`?**
+No. DCGM uses `DCGM_FI_*`. OpenTelemetry uses `hw.gpu.utilization` and `hw.id`. Convert in a collector, or emit OTel natively.
+
+**Why is GPU utilization low during decode?**
+Often HBM bound. Low SM util + high memory controller util + rising TPOT is expected. Low everything + high latency is batching, scheduling, or CPU.
+
+**Why is utilization high and throughput down?**
+Throttle, temp, power limit, clocks, then XID/ECC. Then KV cache (memory usage) and NVLink for TP stalls.
+
+**Idle vs allocated?**
+Allocated: a process has the device. Idle: general util is low. Both true usually means leaked capacity, not "we need more H100s".
+
+## Takeaways
+
+- GPU utilization from nvidia-smi, NVML, DCGM, and dcgm-exporter is SM busy-time. For LLM inference that is a vanity metric.
+- A GPU SLI is availability, VRAM headroom, throttle-free time, CUDA shape, and interconnect errors.
+- SLO tokens and latency. Use GPU metrics to explain the burn.
+- Prefer OpenTelemetry `hw.gpu.*` so NVIDIA, AMD, and Intel share names, independent of the UI.
+
+## How to get these metrics
+
+This post is about what to SLO, not which agent to run.
+
+nvidia-smi is for SSH. DCGM/dcgm-exporter is fine on NVIDIA-only Prometheus setups.
+
+If you want the names in this post (`hw.gpu.*` over OTLP, AMD/Intel, optional CUDA eBPF), OpenLIT's GPU collector is a reference implementation: [OpenTelemetry GPU Collector](https://github.com/openlit/openlit/tree/main/opentelemetry-gpu-collector). Set `OTEL_EXPORTER_OTLP_ENDPOINT` to any OTLP endpoint. OpenLIT can visualize it. So can whatever you already use.
