@@ -9,8 +9,6 @@ authors: ['Aman']
 images: ['/static/images/gpu-vanity-metric.jpg']
 ---
 
-# GPU Utilization Is a Vanity Metric. Here's the GPU SLI for Inference.
-
 **Short answer:** GPU utilization only tells you the SM was busy. It does not tell you if LLM inference is healthy. For inference, SLO GPU memory headroom, throttle-free time, allocated vs idle, CUDA kernel health, and NVLink/PCIe errors. Then join those GPU metrics to TTFT and tokens/sec. The metrics are OpenTelemetry. The UI can be OpenLIT or anything that reads OTLP.
 
 I still open GPU dashboards where panel one is a single utilization gauge from nvidia-smi, NVML, or dcgm-exporter. That number is fine for a glance. It is a bad GPU SLI.
