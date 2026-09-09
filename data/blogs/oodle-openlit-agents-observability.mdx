@@ -219,55 +219,25 @@ sum by (gen_ai_token_type) (rate(gen_ai_client_token_usage_sum[5m]))
 
 Note: cache*read tokens are recorded as \_span* attributes, not on the gen_ai.client.token.usage metric (the semconv allows only input/output there), so cache-hit-rate comes from spans in the Trace Explorer.
 
-## Alert Rules
+## Monitors
 
-Because Oodle's datasource is Prometheus-compatible, write these as standard alerting rules:
+Oodle provides out-of-the-box monitors which can be provisioned in a click of a button on the OpenLIT integration tile:
 
-```yaml
-groups:
-  - name: ai-health
-    interval: 30s
-    rules:
-      - alert: LLMCostRunaway
-        expr: sum by (team) (increase(gen_ai_usage_cost_sum[1h])) > 100
-        for: 5m
-        labels: { severity: critical, category: cost }
+![Out-of-the-box OpenLIT monitors in Oodle](/static/images/oodle-openlit/monitors.png)
 
-      - alert: ProviderErrorSpike
-        expr: |
-          sum by (gen_ai_provider_name) (
-            rate(gen_ai_client_operation_duration_count{error_type!=""}[5m]))
-          /
-          sum by (gen_ai_provider_name) (
-            rate(gen_ai_client_operation_duration_count[5m])) > 0.05
-        for: 5m
-        labels: { severity: warning }
-
-      - alert: AgentToolLoop
-        expr: |
-          sum by (job) (
-            rate(gen_ai_client_operation_duration_count{gen_ai_operation_name="execute_tool"}[5m])
-          ) > 100
-        for: 5m
-        labels: { severity: warning, category: agents }
-```
+Users can create any additional monitors on any of the metrics emitted by OpenLIT.
 
 ## A Note on Cardinality
 
-Oodle supports high-cardinality metric labels (conversation.id, response.id, user.id, tool.call.id) as well. These are useful for filter_by, group_by operations. If the cost of high cardinality is a concern, drop them.
+Oodle supports high-cardinality metric labels (conversation.id, response.id, user.id, tool.call.id) as well. These are useful for filter_by, group_by operations.
 
 OpenLIT keeps this information in **spans** too. Look for it in Oodle's Agent Observability traces. Metrics answer "how much / how fast across the fleet"; traces answer "what happened in this one request."
 
 ## Import the Pre-Built Dashboard
 
-OpenLIT ships a ready-made Grafana dashboard (works in Oodle's Grafana-compatible UI) covering request rates, usage costs, token consumption, model performance, and vector DB operations, broken down by application and environment.
+Oodle provides out-of the-box dashboards for OpenLIT which can be provisioned in a click of a button on the OpenLIT integration tile:
 
-1. Log into your Oodle instance.
-2. Go to **Dashboards → New → Import**.
-3. Paste the dashboard JSON from docs/snippets/destinations/oodle/conclusion.mdx.
-4. Save.
-
-![GenAI Observability dashboard in Oodle](/static/images/oodle-openlit/dashboard.png)
+![Out-of-the-box OpenLIT dashboards in Oodle](/static/images/oodle-openlit/dashboard.png)
 
 ## When to Use This Setup
 
@@ -287,4 +257,4 @@ For advanced configuration (disabling instrumentors, GPU metrics, guardrails, pr
 
 This post was originally published on the [Oodle blog](https://blog.oodle.ai/observability-for-ai-applications-using-oodle-and-openlit/).
 
-For step-by-step setup, including OTel Collector configuration, SDK instrumentation, and the pre-built Grafana dashboard JSON, see the [OpenLIT Oodle destination guide](https://docs.openlit.io/latest/sdk/destinations/oodle).
+For step-by-step setup, including OTel Collector configuration and SDK instrumentation, see the [OpenLIT Oodle destination guide](https://docs.openlit.io/latest/sdk/destinations/oodle).
