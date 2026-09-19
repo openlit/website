@@ -7,14 +7,14 @@ import { GitCompare } from 'lucide-react'
 export const metadata = genPageMetadata({
   title: 'OpenLIT vs Alternatives — LLM Observability Comparison',
   description:
-    'Compare OpenLIT against Langfuse, Helicone, LangSmith, and Datadog. Honest, feature-by-feature comparison of LLM observability and monitoring tools.',
+    'Compare OpenLIT against Langfuse, Helicone, LangSmith, Datadog, Arize Phoenix, Comet Opik, Braintrust, and OpenLLMetry. Honest, feature-by-feature comparison of LLM observability and monitoring tools.',
   canonicalUrl: 'https://openlit.io/compare',
 })
 
 const pageSchema = createWebPageSchema(
   'OpenLIT vs Alternatives — LLM Observability Comparison',
   'https://openlit.io/compare',
-  'Compare OpenLIT against Langfuse, Helicone, LangSmith, and Datadog.',
+  'Compare OpenLIT against Langfuse, Helicone, LangSmith, Datadog, Arize Phoenix, Comet Opik, Braintrust, and OpenLLMetry.',
   [
     { name: 'Home', url: 'https://openlit.io' },
     { name: 'Compare', url: 'https://openlit.io/compare' },

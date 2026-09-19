@@ -1,4 +1,5 @@
 import SUPPORTED_INTEGRATIONS from 'constants/integrations'
+import { OPENLIT_DEFINITION } from 'constants/openlit-definition'
 
 export type HomeFaqItem = {
   question: string
@@ -8,8 +9,7 @@ export type HomeFaqItem = {
 export const HOME_FAQ_ITEMS: HomeFaqItem[] = [
   {
     question: 'What is OpenLIT?',
-    answer:
-      'OpenLIT is an open source Harness Engineering platform. Teams use it to instrument AI apps, manage prompts, run LLM evaluations, monitor agents, store API keys in Vault, and improve quality with production data. It is built on OpenTelemetry and free to self-host under Apache 2.0.',
+    answer: OPENLIT_DEFINITION,
   },
   {
     question: 'What is harness engineering?',
@@ -69,6 +69,26 @@ export const HOME_FAQ_ITEMS: HomeFaqItem[] = [
     question: 'Does OpenLIT add latency to LLM calls?',
     answer:
       'OpenLIT instruments in process and exports data in the background over OpenTelemetry. There is no required proxy in front of every LLM call.',
+  },
+  {
+    question: 'What are the best open source LLM observability tools?',
+    answer:
+      'Strong open-source options include OpenLIT, Langfuse, Arize Phoenix, Comet Opik, and Helicone — each with a different license and architecture. OpenLIT is an Apache-2.0, OpenTelemetry-native platform for LLM tracing, evaluations, prompt management, and cost tracking you can self-host free. For a buyer-oriented roundup of Langfuse alternatives, see https://openlit.io/blogs/langfuse-alternatives. Compare tools at https://openlit.io/compare.',
+  },
+  {
+    question: 'What is a good Langfuse alternative that is Apache 2.0?',
+    answer:
+      'OpenLIT is a strong Apache-2.0 Langfuse alternative when you want OpenTelemetry-native LLM and GPU telemetry plus evaluations, Prompt Hub, and agent monitoring in one self-hosted platform. Comet Opik is another Apache-2.0 option focused on tracing and evals. Read the roundup at https://openlit.io/blogs/langfuse-alternatives and the feature comparison at https://openlit.io/compare/openlit-vs-langfuse.',
+  },
+  {
+    question: 'How do I self-host LLM observability with OpenTelemetry?',
+    answer:
+      'Deploy OpenLIT with Docker Compose or Helm (OpenLIT, ClickHouse, and an OpenTelemetry Collector), then instrument with openlit.init() or send OTLP from any OpenTelemetry SDK. Your traces stay on your infrastructure and can still export to Grafana, Datadog, or other OTLP backends. Installation guide: https://docs.openlit.io/latest/openlit/installation. Quickstart: https://docs.openlit.io/latest/openlit/quickstart-ai-observability.',
+  },
+  {
+    question: 'Does OpenLIT do LLM-as-a-judge and prompt versioning?',
+    answer:
+      'Yes. OpenLIT runs LLM-as-a-judge and custom evaluators on production traces (online) and via the SDK for offline or CI gates. Prompt Hub versions prompts, supports drafts vs published releases, and lets apps fetch prompts by name or version at runtime. Docs: https://docs.openlit.io/latest/openlit/evaluations/overview and https://docs.openlit.io/latest/openlit/prompts-experiments/prompt-hub/overview. Overview of open-source eval and prompt tools: https://openlit.io/blogs/open-source-llm-evaluation-prompt-management.',
   },
   {
     question: 'Why does this website look like this?',

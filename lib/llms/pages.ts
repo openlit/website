@@ -166,7 +166,7 @@ export function compareIndexMarkdown() {
 
   return `# OpenLIT vs Alternatives
 
-> Compare OpenLIT against Langfuse, Helicone, LangSmith, and Datadog. Honest, feature-by-feature comparison of LLM observability and monitoring tools.
+> Compare OpenLIT against Langfuse, Helicone, LangSmith, Datadog, Arize Phoenix, Comet Opik, Braintrust, and OpenLLMetry. Honest, feature-by-feature comparison of LLM observability and monitoring tools.
 
 - HTML: ${SITE}/compare
 - Markdown: ${SITE}/compare.md

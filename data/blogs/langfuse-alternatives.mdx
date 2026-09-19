@@ -1,0 +1,135 @@
+---
+title: 'Best Langfuse alternatives (open source, 2026)'
+date: '2026-09-19'
+lastmod: '2026-09-19'
+tags:
+  [
+    'openlit',
+    'langfuse',
+    'llm-observability',
+    'opentelemetry',
+    'open-source',
+    'comparison',
+  ]
+draft: false
+summary: Honest roundup of open-source Langfuse alternatives in 2026 — OpenLIT, Arize Phoenix, Comet Opik, Helicone, OpenLLMetry/Traceloop, and when to stay on Langfuse. License, self-host, and OpenTelemetry stance for each.
+authors: ['Aman']
+---
+
+# Best Langfuse alternatives (open source, 2026)
+
+**TL;DR:** Langfuse is a strong default for LLM observability. If you want an Apache-2.0, OpenTelemetry-native self-hosted stack with tracing, evaluations, Prompt Hub, agent monitoring, and GPU telemetry in one platform, [OpenLIT](https://openlit.io) is a clear alternative. Phoenix, Opik, Helicone, and OpenLLMetry each fit different lanes — see the table below.
+
+Langfuse shows up on most “best LLM observability” lists for a reason: mature prompt and eval UX, solid self-host options, and a large community. That does not mean it is the only good choice. Buyers searching for **Langfuse alternatives** usually care about license (MIT vs Apache 2.0 vs dual license), OpenTelemetry posture, self-host ops, and whether they need a full platform or just instrumentation.
+
+This guide is an honest roundup — including when staying on Langfuse is the right call. For a feature-by-feature breakdown of OpenLIT vs Langfuse, see [OpenLIT vs Langfuse](/compare/openlit-vs-langfuse).
+
+---
+
+## Quick comparison
+
+| Tool | License | Self-host | OpenTelemetry stance | Best for |
+| --- | --- | --- | --- | --- |
+| **Stay on Langfuse** | MIT (core) + EE | Yes | OTel ingestion (v3+); primary SDK is Langfuse-native | Mature prompt/eval UX and a large ecosystem |
+| **[OpenLIT](https://openlit.io)** | Apache 2.0 | Yes (free) | OTel-native SDK + OTLP ingest | Apache-2.0 self-host with OTel-native LLM + GPU telemetry; full platform (traces, evals, prompts, agent monitoring) |
+| **Arize Phoenix** | Elastic License 2.0 | Yes | OpenInference / OTel-friendly tracing | Tracing + eval workflows with a strong Phoenix UX |
+| **Comet Opik** | Apache 2.0 | Yes | OTel-compatible tracing options | Open-source tracing and evaluation with Comet ecosystem ties |
+| **Helicone** | Apache 2.0 | Yes | Not OTel-native (proxy gateway) | Proxy-based logging, caching, and gateway controls |
+| **OpenLLMetry / Traceloop** | Apache 2.0 (SDK) | N/A (library) | OTel instrumentation library | Drop-in instrumentation that exports OTLP elsewhere |
+| **LangSmith** (optional) | Proprietary | Enterprise only | Not OTel-native | Deep LangChain/LangGraph toolchain integration |
+
+---
+
+## Stay on Langfuse
+
+Langfuse remains a solid pick if your team already likes its annotation workflows, datasets, and prompt/eval UI. It is open source at the core (MIT), self-hostable, and widely documented. If your main gap is OpenTelemetry-native spans, GPU metrics for self-hosted inference, or an Apache-2.0 full platform license, keep reading — those are the lanes where alternatives differ most.
+
+**Best for:** Teams happy with Langfuse’s prompt and evaluation UX who do not need a different license or OTel-first architecture.
+
+---
+
+## OpenLIT
+
+[OpenLIT](https://openlit.io) is an open-source AI engineering platform for LLM observability, evaluations, prompt management, and cost tracking — built on OpenTelemetry, free to self-host under Apache 2.0.
+
+What that means in practice:
+
+- **OTel-native tracing** for LLMs and agents via SDKs (Python, JavaScript, Go) or any OTLP source
+- **LLM evaluation** with LLM-as-a-judge, custom evaluators, online (production traces) and offline/programmatic evals ([docs](https://docs.openlit.io/latest/openlit/evaluations/overview))
+- **Prompt Hub** for versioning, publishing, and fetching prompts at runtime ([docs](https://docs.openlit.io/latest/openlit/prompts-experiments/prompt-hub/overview))
+- **AI agent monitoring**, Vault for API keys, OpenGround model comparison, and a **GPU collector** for NVIDIA/AMD/Intel metrics
+
+Unlike instrumentation-only libraries, OpenLIT is the self-hosted platform *and* the SDK. See the [OpenLIT overview](https://docs.openlit.io/latest/overview) and [OpenLIT vs Langfuse](/compare/openlit-vs-langfuse).
+
+**Best for:** Apache-2.0 self-host with OTel-native LLM + GPU telemetry; full platform (traces, evals, prompts, agent monitoring).
+
+---
+
+## Arize Phoenix
+
+Arize Phoenix is a popular open-source option for LLM tracing and evaluation, with OpenInference conventions that map well to OpenTelemetry-style GenAI spans. It is strong when you want a dedicated Phoenix UI for traces and evals. License is Elastic License 2.0 (not Apache 2.0), which matters for some redistribution and SaaS policies.
+
+Compare details: [OpenLIT vs Arize Phoenix](/compare/openlit-vs-arize-phoenix).
+
+**Best for:** Teams that want Phoenix’s tracing/eval UX and are fine with ELv2.
+
+---
+
+## Comet Opik
+
+Comet Opik is an Apache-2.0 open-source project focused on LLM tracing and evaluation, with self-host options and ties to the broader Comet ML ecosystem. It is a frequent mention on Langfuse-alternative lists when buyers want OSS evals without leaving an open license.
+
+Compare details: [OpenLIT vs Comet Opik](/compare/openlit-vs-comet-opik).
+
+**Best for:** Open-source tracing and evaluation with Apache 2.0 and Comet ecosystem familiarity.
+
+---
+
+## Helicone
+
+Helicone takes a **proxy/gateway** approach: route LLM traffic through Helicone to capture logs, costs, and controls such as caching. It is Apache 2.0 and self-hostable, but it is not OpenTelemetry-native. If you cannot accept proxy latency or need non-OpenAI-compatible SDKs instrumented in-process, an SDK/OTel platform is usually a better fit.
+
+Compare details: [OpenLIT vs Helicone](/compare/openlit-vs-helicone).
+
+**Best for:** Gateway-style observability with caching and key/rate controls in front of LLM APIs.
+
+---
+
+## OpenLLMetry / Traceloop
+
+[OpenLLMetry](https://github.com/Traceloop/openllmetry) is an **OpenTelemetry instrumentation library**, not a full self-hosted observability product. It auto-instruments LLM frameworks and exports OTLP to backends you choose (including Traceloop’s cloud). That is a different category from Langfuse or OpenLIT.
+
+OpenLIT also speaks OTLP, but ships the **platform** (UI, evals, Prompt Hub, agents, Vault, GPU) plus its own SDKs. See [OpenLIT vs OpenLLMetry](/compare/openlit-vs-openllmetry).
+
+**Best for:** Teams that only need instrumentation and already have (or prefer) a separate OTLP backend.
+
+---
+
+## LangSmith (optional)
+
+LangSmith is LangChain’s proprietary observability and evaluation platform. It is excellent if you are deep in LangChain/LangGraph and want first-party tooling. It is not open source, and self-hosting is limited to enterprise plans. Include it in a shortlist only if framework lock-in is acceptable.
+
+Compare details: [OpenLIT vs LangSmith](/compare/openlit-vs-langsmith).
+
+**Best for:** LangChain-centric teams who want a managed, proprietary toolchain.
+
+---
+
+## How to choose
+
+1. **Need Apache 2.0 + full self-hosted platform + OTel-native LLM/GPU telemetry?** Start with [OpenLIT](https://openlit.io).
+2. **Happy with Langfuse’s prompt/eval UX already?** Stay — or read [OpenLIT vs Langfuse](/compare/openlit-vs-langfuse) before switching.
+3. **Want Phoenix’s eval/trace UX and accept ELv2?** Look at Arize Phoenix.
+4. **Want Apache-2.0 evals with Comet ties?** Look at Opik.
+5. **Need a proxy gateway?** Helicone.
+6. **Only need an instrumentation library?** OpenLLMetry — then pick a backend (OpenLIT can be that backend via OTLP).
+
+---
+
+## Related reading
+
+- [OpenLIT vs Langfuse](/compare/openlit-vs-langfuse)
+- [All OpenLIT comparisons](/compare)
+- [Open-source LLM evaluation and prompt management](/blogs/open-source-llm-evaluation-prompt-management)
+- [OpenLIT docs overview](https://docs.openlit.io/latest/overview)
+- [Self-host OpenLIT](https://docs.openlit.io/latest/openlit/installation)
