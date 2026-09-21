@@ -118,8 +118,8 @@ export const Blog = defineDocumentType(() => ({
             : `${siteMetadata.siteUrl}${rawImage}`
         const rt = readingTime(doc.body.raw)
         const schema: Record<string, unknown> = {
-          '@context': 'https://schema.org',
           '@type': 'BlogPosting',
+          '@id': `${siteMetadata.siteUrl}/${doc._raw.flattenedPath}#article`,
           headline: doc.title,
           datePublished: new Date(doc.date).toISOString(),
           dateModified: new Date(doc.lastmod || doc.date).toISOString(),
@@ -128,17 +128,12 @@ export const Blog = defineDocumentType(() => ({
           url: `${siteMetadata.siteUrl}/${doc._raw.flattenedPath}`,
           inLanguage: 'en-US',
           wordCount: rt.words,
+          about: { '@id': `${siteMetadata.siteUrl}/#software` },
           mainEntityOfPage: {
-            '@type': 'WebPage',
-            '@id': `${siteMetadata.siteUrl}/${doc._raw.flattenedPath}`,
+            '@id': `${siteMetadata.siteUrl}/${doc._raw.flattenedPath}#webpage`,
           },
           publisher: {
-            '@type': 'Organization',
-            name: 'OpenLIT',
-            logo: {
-              '@type': 'ImageObject',
-              url: `${siteMetadata.siteUrl}/static/images/logo.png`,
-            },
+            '@id': `${siteMetadata.siteUrl}/#organization`,
           },
         }
         if (doc.tags && Array.isArray(doc.tags) && doc.tags.length > 0) {

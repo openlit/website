@@ -1,17 +1,35 @@
 import { genPageMetadata } from 'app/seo'
+import { createJsonLdGraph, createWebPageSchema } from '@/components/structuredData'
+import JsonLd from '@/components/json-ld'
 
 export const metadata = genPageMetadata({
   title: 'Terms of Service',
   description:
-    'OpenLIT Terms of Service — the terms governing your use of the OpenLIT website and open-source software.',
+    'OpenLIT Terms of Service: the terms governing your use of the OpenLIT website and Apache 2.0 open-source Agent Harness Engineering software.',
   canonicalUrl: 'https://openlit.io/terms',
 })
+
+const pageSchema = createWebPageSchema(
+  'Terms of Service',
+  'https://openlit.io/terms',
+  'Terms governing use of the OpenLIT website and open-source software.',
+  [
+    { name: 'Home', url: 'https://openlit.io' },
+    { name: 'Terms of Service', url: 'https://openlit.io/terms' },
+  ],
+  {
+    fields: {
+      dateModified: '2025-03-09',
+    },
+  }
+)
 
 export const runtime = 'edge'
 
 export default function TermsPage() {
   return (
     <div className="mx-auto max-w-4xl px-4 py-20">
+      <JsonLd data={createJsonLdGraph([pageSchema])} />
       <h1 className="mb-8 text-4xl font-bold">Terms of Service</h1>
       <p className="mb-4 text-stone-500 dark:text-stone-400">Last updated: March 9, 2025</p>
 
@@ -61,8 +79,8 @@ export default function TermsPage() {
       <section className="mb-8">
         <h2 className="mb-4 text-2xl font-semibold">4. Intellectual Property</h2>
         <p className="mb-4">
-          All content on this Site — including text, graphics, logos, and documentation — is owned
-          by or licensed to OpenLIT. The OpenLIT name and logo are trademarks of OpenLIT. Nothing on
+          All content on this Site, including text, graphics, logos, and documentation, is owned by
+          or licensed to OpenLIT. The OpenLIT name and logo are trademarks of OpenLIT. Nothing on
           this Site grants you a license to use our trademarks.
         </p>
       </section>

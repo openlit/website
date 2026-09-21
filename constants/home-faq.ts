@@ -73,7 +73,7 @@ export const HOME_FAQ_ITEMS: HomeFaqItem[] = [
   {
     question: 'What are the best open source LLM observability tools?',
     answer:
-      'Strong open-source options include OpenLIT, Langfuse, Arize Phoenix, Comet Opik, and Helicone — each with a different license and architecture. OpenLIT is an Apache-2.0, OpenTelemetry-native platform for LLM tracing, evaluations, prompt management, and cost tracking you can self-host free. For a buyer-oriented roundup of Langfuse alternatives, see https://openlit.io/blogs/langfuse-alternatives. Compare tools at https://openlit.io/compare.',
+      'Strong open-source options include OpenLIT, Langfuse, Arize Phoenix, Comet Opik, and Helicone, each with a different license and architecture. OpenLIT is an Apache-2.0, OpenTelemetry-native platform for LLM tracing, evaluations, prompt management, and cost tracking you can self-host free. For a buyer-oriented roundup of Langfuse alternatives, see https://openlit.io/blogs/langfuse-alternatives. Compare tools at https://openlit.io/compare.',
   },
   {
     question: 'What is a good Langfuse alternative that is Apache 2.0?',
@@ -102,10 +102,10 @@ export const HOME_FAQ_ITEMS: HomeFaqItem[] = [
   },
 ]
 
-export function createFaqPageSchema(items: HomeFaqItem[]) {
+export function createFaqPageSchema(items: HomeFaqItem[], url?: string) {
   return {
-    '@context': 'https://schema.org',
     '@type': 'FAQPage',
+    ...(url ? { '@id': `${url}#faq` } : {}),
     mainEntity: items.map((item) => ({
       '@type': 'Question',
       name: item.question,

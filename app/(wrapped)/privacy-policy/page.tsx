@@ -1,16 +1,35 @@
 import { genPageMetadata } from 'app/seo'
+import { createJsonLdGraph, createWebPageSchema } from '@/components/structuredData'
+import JsonLd from '@/components/json-ld'
 
 export const metadata = genPageMetadata({
   title: 'Privacy Policy',
-  description: 'OpenLIT Privacy Policy — how we collect, use, and protect your information.',
+  description:
+    'OpenLIT Privacy Policy: how we collect, use, and protect information on the OpenLIT website. Self-hosted OpenLIT does not send telemetry to us.',
   canonicalUrl: 'https://openlit.io/privacy-policy',
 })
+
+const pageSchema = createWebPageSchema(
+  'Privacy Policy',
+  'https://openlit.io/privacy-policy',
+  'How OpenLIT collects, uses, and protects information on openlit.io.',
+  [
+    { name: 'Home', url: 'https://openlit.io' },
+    { name: 'Privacy Policy', url: 'https://openlit.io/privacy-policy' },
+  ],
+  {
+    fields: {
+      dateModified: '2025-03-09',
+    },
+  }
+)
 
 export const runtime = 'edge'
 
 export default function PrivacyPolicyPage() {
   return (
     <div className="mx-auto max-w-4xl px-4 py-20">
+      <JsonLd data={createJsonLdGraph([pageSchema])} />
       <h1 className="mb-8 text-4xl font-bold">Privacy Policy</h1>
       <p className="mb-4 text-stone-500 dark:text-stone-400">Last updated: March 9, 2025</p>
 
@@ -66,10 +85,10 @@ export default function PrivacyPolicyPage() {
         </p>
         <ul className="mb-4 list-disc pl-6">
           <li>
-            <strong>Google Analytics (GA4)</strong> — anonymous usage analytics
+            <strong>Google Analytics (GA4)</strong>: anonymous usage analytics
           </li>
           <li>
-            <strong>GitHub</strong> — we display public repository statistics via the GitHub API
+            <strong>GitHub</strong>: we display public repository statistics via the GitHub API
           </li>
         </ul>
       </section>

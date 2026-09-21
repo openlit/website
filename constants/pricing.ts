@@ -19,7 +19,7 @@ export type PricingFaqItem = {
 export const PRICING_SEO = {
   title: 'OpenLIT Pricing: Free Open Source Self-Host and Cloud',
   description:
-    'OpenLIT pricing is simple. Self-host the open source Harness Engineering platform free under Apache 2.0 with unlimited usage. OpenLIT Cloud is coming soon for fully hosted teams.',
+    'OpenLIT pricing is simple. Self-host the open-source Agent Harness Engineering platform free under Apache 2.0 with unlimited usage. OpenLIT Cloud is coming soon for fully hosted teams.',
   keywords: [
     'OpenLIT pricing',
     'open source Harness Engineering',
@@ -82,7 +82,8 @@ export const PRICING_PLANS = {
   oss: {
     name: 'OSS',
     badge: 'Available now',
-    summary: 'Self-host the open source Harness Engineering platform on your own infra with Helm or Docker.',
+    summary:
+      'Self-host the open source Harness Engineering platform on your own infra with Helm or Docker.',
     priceLabel: 'Free',
     priceHint: 'Apache 2.0. Unlimited self-hosted usage.',
     ctaLabel: 'Deploy from GitHub',
@@ -121,23 +122,17 @@ export const OSS_FEATURE_ROWS: PricingCategory[] = [
   {
     category: 'Zero-code instrumentation',
     blurb: 'eBPF and SDK auto-instrumentation across Kubernetes, Docker, and Linux.',
-    features: [
-      { name: 'Controller binary and deployment options', included: true },
-    ],
+    features: [{ name: 'Controller binary and deployment options', included: true }],
   },
   {
     category: 'Coding agent observability',
     blurb: 'Session, cost, and code-impact tracking for coding agents.',
-    features: [
-      { name: 'Session, cost, token, and repo activity tracking', included: true },
-    ],
+    features: [{ name: 'Session, cost, token, and repo activity tracking', included: true }],
   },
   {
     category: 'Fleet Hub',
     blurb: 'OpenTelemetry collector monitoring and config via OpAMP.',
-    features: [
-      { name: 'Single-cluster collector monitoring', included: true },
-    ],
+    features: [{ name: 'Single-cluster collector monitoring', included: true }],
   },
   {
     category: 'Prompt Hub',
@@ -161,9 +156,7 @@ export const OSS_FEATURE_ROWS: PricingCategory[] = [
   {
     category: 'OpenGround',
     blurb: 'Side-by-side LLM comparison for latency, tokens, and cost.',
-    features: [
-      { name: 'BYOK model comparison', included: true },
-    ],
+    features: [{ name: 'BYOK model comparison', included: true }],
   },
   {
     category: 'Custom dashboards',
@@ -185,16 +178,12 @@ export const OSS_FEATURE_ROWS: PricingCategory[] = [
   {
     category: 'Guardrails',
     blurb: 'Prompt-injection, jailbreak, and sensitive-topic detection.',
-    features: [
-      { name: 'Built-in guards in SDK (LLM and regex)', included: true },
-    ],
+    features: [{ name: 'Built-in guards in SDK (LLM and regex)', included: true }],
   },
   {
     category: 'GPU monitoring',
     blurb: 'GPU utilization, memory, temperature, and power visibility.',
-    features: [
-      { name: 'Collector and dashboards', included: true },
-    ],
+    features: [{ name: 'Collector and dashboards', included: true }],
   },
   {
     category: 'Usage and limits',
@@ -207,14 +196,10 @@ export const OSS_FEATURE_ROWS: PricingCategory[] = [
   },
   {
     category: 'Support',
-    features: [
-      { name: 'Community support (GitHub)', included: true },
-    ],
+    features: [{ name: 'Community support (GitHub)', included: true }],
   },
   {
     category: 'Security and compliance',
-    features: [
-      { name: 'Sign in with Google, Azure AD, GitHub', included: true },
-    ],
+    features: [{ name: 'Sign in with Google, Azure AD, GitHub', included: true }],
   },
 ]

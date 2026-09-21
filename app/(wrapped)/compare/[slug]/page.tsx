@@ -2,7 +2,8 @@ import { notFound } from 'next/navigation'
 import { genPageMetadata } from 'app/seo'
 import ComparisonPage from 'components/compare/comparison-page'
 import competitors, { getCompetitor } from '@/data/comparisons'
-import { createWebPageSchema } from '@/components/structuredData'
+import { createComparisonPageSchema, createJsonLdGraph } from '@/components/structuredData'
+import JsonLd from '@/components/json-ld'
 import FeaturePageHeader from '@/components/shell/feature-page-header'
 import { GitCompare } from 'lucide-react'
 
@@ -15,9 +16,17 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   if (!competitor) return {}
 
   return genPageMetadata({
-    title: `${competitor.tagline} — LLM Observability Comparison`,
+    title: `${competitor.tagline}: LLM Observability Comparison`,
     description: competitor.description,
+    keywords: [
+      competitor.tagline,
+      `${competitor.name} alternative`,
+      `OpenLIT vs ${competitor.name}`,
+      'LLM observability comparison',
+      'open source Agent Harness Engineering',
+    ],
     canonicalUrl: `https://openlit.io/compare/${params.slug}`,
+    markdownUrl: `https://openlit.io/compare/${params.slug}.md`,
   })
 }
 
@@ -25,23 +34,21 @@ export default function CompareSlugPage({ params }: { params: { slug: string } }
   const competitor = getCompetitor(params.slug)
   if (!competitor) notFound()
 
-  const pageSchema = createWebPageSchema(
-    `${competitor.tagline} — LLM Observability Comparison`,
-    `https://openlit.io/compare/${params.slug}`,
-    competitor.description,
-    [
+  const pageSchema = createComparisonPageSchema({
+    name: `${competitor.tagline}: LLM Observability Comparison`,
+    url: `https://openlit.io/compare/${params.slug}`,
+    description: competitor.description,
+    competitorName: competitor.name,
+    breadcrumbs: [
       { name: 'Home', url: 'https://openlit.io' },
       { name: 'Compare', url: 'https://openlit.io/compare' },
       { name: competitor.tagline, url: `https://openlit.io/compare/${params.slug}` },
-    ]
-  )
+    ],
+  })
 
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(pageSchema) }}
-      />
+      <JsonLd data={createJsonLdGraph([pageSchema])} />
       <FeaturePageHeader
         eyebrow="Compare"
         title={`OpenLIT vs ${competitor.name}`}

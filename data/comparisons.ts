@@ -122,7 +122,7 @@ const competitors: Competitor[] = [
       'Compare OpenLIT and Helicone for LLM observability. OpenLIT is SDK-based with no proxy latency, OpenTelemetry-native, and fully self-hostable.',
     heroHeadline: 'OpenLIT vs Helicone',
     heroSubheadline:
-      'Helicone routes traffic through a proxy to capture telemetry. OpenLIT instruments your existing SDK calls directly — no proxy, no added latency, fully OpenTelemetry-native.',
+      'Helicone routes traffic through a proxy to capture telemetry. OpenLIT instruments your existing SDK calls directly: no proxy, no added latency, fully OpenTelemetry-native.',
     openSourceUrl: 'https://github.com/Helicone/helicone',
     features: [
       {
@@ -409,7 +409,11 @@ const competitors: Competitor[] = [
           { name: 'Open Source', openlit: 'Apache 2.0', competitor: 'Elastic License 2.0' },
           { name: 'Self-hostable', openlit: true, competitor: true },
           { name: 'Cloud-managed option', openlit: 'Coming soon', competitor: true },
-          { name: 'Vendor-neutral OTLP export', openlit: true, competitor: 'Via OTel / export paths' },
+          {
+            name: 'Vendor-neutral OTLP export',
+            openlit: true,
+            competitor: 'Via OTel / export paths',
+          },
         ],
       },
       {
@@ -437,7 +441,11 @@ const competitors: Competitor[] = [
       {
         category: 'Developer Tools',
         features: [
-          { name: 'Prompt Hub (versioning)', openlit: true, competitor: 'Eval / playground oriented' },
+          {
+            name: 'Prompt Hub (versioning)',
+            openlit: true,
+            competitor: 'Eval / playground oriented',
+          },
           { name: 'Evaluations (LLM-as-a-judge)', openlit: true, competitor: true },
           { name: 'Secrets Vault', openlit: true, competitor: false },
           { name: 'Fleet Hub (multi-deployment)', openlit: true, competitor: false },
@@ -484,7 +492,11 @@ const competitors: Competitor[] = [
           { name: 'Open Source', openlit: 'Apache 2.0', competitor: 'Apache 2.0' },
           { name: 'Self-hostable', openlit: true, competitor: true },
           { name: 'Cloud-managed option', openlit: 'Coming soon', competitor: true },
-          { name: 'Vendor-neutral OTLP export', openlit: true, competitor: 'Partial / via integrations' },
+          {
+            name: 'Vendor-neutral OTLP export',
+            openlit: true,
+            competitor: 'Partial / via integrations',
+          },
         ],
       },
       {
@@ -631,7 +643,7 @@ const competitors: Competitor[] = [
       'Compare OpenLIT and OpenLLMetry. OpenLLMetry is an OpenTelemetry instrumentation library. OpenLIT is a full self-hosted AI engineering platform plus SDKs that also speak OTLP.',
     heroHeadline: 'OpenLIT vs OpenLLMetry',
     heroSubheadline:
-      'OpenLLMetry (by Traceloop) is an instrumentation library that emits OpenTelemetry spans for LLM apps. OpenLIT is a full self-hosted platform — UI, evaluations, Prompt Hub, agents, Vault, GPU — with its own SDKs that also ingest and export OTLP.',
+      'OpenLLMetry (by Traceloop) is an instrumentation library that emits OpenTelemetry spans for LLM apps. OpenLIT is a full self-hosted platform (UI, evaluations, Prompt Hub, agents, Vault, GPU) with its own SDKs that also ingest and export OTLP.',
     openSourceUrl: 'https://github.com/Traceloop/openllmetry',
     features: [
       {
@@ -693,7 +705,7 @@ const competitors: Competitor[] = [
     ],
     summary: {
       chooseOpenlit: [
-        'You want a self-hosted UI for traces, evals, prompts, agents, and costs — not only an SDK',
+        'You want a self-hosted UI for traces, evals, prompts, agents, and costs, not only an SDK',
         'You need Prompt Hub, LLM-as-a-judge, Vault, or GPU monitoring out of the box',
         'You prefer one Apache-2.0 platform that includes instrumentation and the backend',
         'You want to accept OTLP from OpenLLMetry or other OTel sources into OpenLIT',

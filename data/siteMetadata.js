@@ -4,8 +4,8 @@ module.exports = {
   author: 'OpenLIT',
   headerTitle: 'OpenLIT',
   description:
-    'OpenLIT is an open-source AI engineering platform for LLM observability, evaluations, prompt management, and cost tracking — built on OpenTelemetry, free to self-host under Apache 2.0.',
-  about: `OpenLIT is an open-source AI engineering platform for LLM observability, evaluations, prompt management, and cost tracking — built on OpenTelemetry, free to self-host under Apache 2.0. Instrument AI apps with OpenTelemetry-native SDKs, manage prompts in Prompt Hub, run LLM evaluations, monitor agents, store API keys in Vault, and improve quality with production data.`,
+    'OpenLIT is an open-source Agent Harness Engineering platform for LLM tracing, evaluations, prompt management, and cost tracking, built on OpenTelemetry and free to self-host under Apache 2.0.',
+  about: `OpenLIT is an open-source Agent Harness Engineering platform for LLM tracing, evaluations, prompt management, and cost tracking, built on OpenTelemetry and free to self-host under Apache 2.0. Instrument AI apps with OpenTelemetry-native SDKs, manage prompts in Prompt Hub, run LLM evaluations, monitor agents, store API keys in Vault, and improve quality with production data.`,
   language: 'en-us',
   theme: 'dark',
   siteUrl: 'https://openlit.io',

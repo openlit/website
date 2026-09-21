@@ -1,6 +1,11 @@
 import { cn } from 'lib/utils'
 import { MarkedWord } from '@/components/common/marker-underline'
 
+const mockPanel =
+  'rounded-md border border-stone-200 bg-white dark:border-stone-700 dark:bg-stone-950'
+const mockChip =
+  'rounded bg-stone-200/80 px-1.5 py-0.5 text-[9px] font-medium text-stone-600 dark:bg-stone-800 dark:text-stone-300'
+
 type Feature = {
   title: string
   description: string
@@ -63,31 +68,29 @@ const FEATURES: Feature[] = [
 function ObserveVisual() {
   return (
     <div className="space-y-1.5">
-      <div className="rounded border border-stone-200/80 bg-stone-950 px-2.5 py-1.5 shadow-sm">
-        <p className="font-mono text-[10px] text-stone-100">
-          <span className="text-stone-500">$</span> pip install openlit
-        </p>
-        <p className="mt-0.5 font-mono text-[9px] text-stone-400">import openlit; openlit.init()</p>
+      <div className="truncate rounded-md bg-stone-900 px-2.5 py-1.5 font-mono text-[10px] text-stone-200 dark:bg-black">
+        <span className="text-stone-500">$</span> pip install openlit
+        <span className="text-stone-600"> · </span>
+        <span className="text-stone-400">openlit.init()</span>
       </div>
-      {['chat.completion', 'tool.retrieve', 'agent.step', 'response.stream'].map((label, i) => (
-        <div
-          key={label}
-          className="flex items-center gap-2 rounded border border-stone-200/80 bg-white/90 px-2 py-1.5 shadow-sm"
-          style={{ transform: `translateX(${i * 4}px)` }}
-        >
-          <span className="h-1.5 w-1.5 rounded-full bg-brandPrimary/70" />
-          <span className="truncate text-[10px] font-medium text-stone-600">{label}</span>
-          <span className="ml-auto text-[9px] tabular-nums text-stone-400">
-            {(18.2 - i * 3.4).toFixed(2)}s
+      {[
+        { label: 'chat.completion', duration: '1.82s' },
+        { label: 'tool.retrieve', duration: '0.64s' },
+        { label: 'agent.step', duration: '0.41s' },
+      ].map((row) => (
+        <div key={row.label} className={cn('flex items-center gap-2 px-2 py-1.5', mockPanel)}>
+          <span className="h-1.5 w-1.5 shrink-0 rounded-full bg-brandPrimary" />
+          <span className="min-w-0 truncate text-[10px] font-medium text-stone-700 dark:text-stone-200">
+            {row.label}
+          </span>
+          <span className="ml-auto shrink-0 text-[9px] tabular-nums text-stone-400">
+            {row.duration}
           </span>
         </div>
       ))}
-      <div className="flex gap-1.5 pt-0.5">
+      <div className="flex flex-wrap gap-1">
         {['$0.012', '1.2k tok', 'ok'].map((chip) => (
-          <span
-            key={chip}
-            className="rounded bg-stone-100 px-1.5 py-0.5 text-[9px] font-medium text-stone-500"
-          >
+          <span key={chip} className={mockChip}>
             {chip}
           </span>
         ))}
@@ -99,12 +102,17 @@ function ObserveVisual() {
 function EvalsVisual() {
   return (
     <div className="space-y-1.5">
-      <div className="rounded border border-stone-200/80 bg-white/90 px-2 py-1.5 text-center text-[10px] font-medium text-stone-600 shadow-sm">
+      <div
+        className={cn(
+          mockPanel,
+          'px-2 py-1.5 text-center text-[10px] font-medium text-stone-600 dark:text-stone-300'
+        )}
+      >
         LLM execution
       </div>
-      <div className="mx-auto h-3 w-px bg-stone-300" />
-      <div className="rounded border border-stone-200/80 bg-white/90 p-2 shadow-sm">
-        <p className="mb-1.5 text-[9px] font-semibold uppercase tracking-wide text-stone-500">
+      <div className="mx-auto h-3 w-px bg-stone-300 dark:bg-stone-600" />
+      <div className={cn(mockPanel, 'p-2')}>
+        <p className="mb-1.5 text-[9px] font-semibold uppercase tracking-wide text-stone-500 dark:text-stone-400">
           Evaluators
         </p>
         <div className="space-y-1.5">
@@ -114,11 +122,11 @@ function EvalsVisual() {
             { label: 'Safety', value: 'pass', width: '100%' },
           ].map((row) => (
             <div key={row.label}>
-              <div className="mb-0.5 flex items-center justify-between text-[9px] text-stone-600">
+              <div className="mb-0.5 flex items-center justify-between text-[9px] text-stone-600 dark:text-stone-300">
                 <span>{row.label}</span>
                 <span className="font-medium">{row.value}</span>
               </div>
-              <div className="h-1 rounded-full bg-stone-100">
+              <div className="h-1 rounded-full bg-stone-100 dark:bg-stone-800">
                 <div className="h-1 rounded-full bg-brandPrimary/50" style={{ width: row.width }} />
               </div>
             </div>
@@ -127,7 +135,7 @@ function EvalsVisual() {
       </div>
       <div className="flex flex-wrap gap-1">
         {['Latency · 412ms', 'Cost · $0.004'].map((tag) => (
-          <span key={tag} className="rounded bg-stone-100 px-1.5 py-0.5 text-[9px] text-stone-600">
+          <span key={tag} className={mockChip}>
             {tag}
           </span>
         ))}
@@ -139,32 +147,38 @@ function EvalsVisual() {
 function PromptsVisual() {
   return (
     <div className="space-y-1.5">
-      <div className="rounded border border-brandPrimary/30 bg-white/95 p-2 shadow-sm ring-1 ring-brandPrimary/15">
+      <div className="rounded-md border border-brandPrimary/30 bg-white p-2 ring-1 ring-brandPrimary/15 dark:bg-stone-950">
         <div className="mb-1 flex items-center justify-between gap-2">
-          <p className="text-[9px] font-semibold uppercase tracking-wide text-stone-500">
+          <p className="text-[9px] font-semibold uppercase tracking-wide text-stone-500 dark:text-stone-400">
             support-agent
           </p>
           <span className="rounded bg-brandPrimary/10 px-1.5 py-0.5 text-[8px] font-medium text-brandPrimary">
             v3 · prod
           </span>
         </div>
-        <p className="font-mono text-[9px] leading-relaxed text-stone-600">
+        <p className="font-mono text-[9px] leading-relaxed text-stone-600 dark:text-stone-300">
           You are a helpful support agent. Answer using the docs context:{' '}
           <span className="text-brandPrimary">{'{{context}}'}</span>
         </p>
-        <p className="mt-1 font-mono text-[9px] leading-relaxed text-stone-500">
+        <p className="mt-1 font-mono text-[9px] leading-relaxed text-stone-500 dark:text-stone-400">
           Keep answers under 120 words. Cite sources when possible.
         </p>
       </div>
       <div className="grid grid-cols-2 gap-1.5">
-        <div className="rounded border border-stone-200/80 bg-white/90 px-2 py-1.5 shadow-sm">
+        <div className={cn(mockPanel, 'px-2 py-1.5')}>
           <p className="text-[8px] uppercase tracking-wide text-stone-400">Variables</p>
-          <p className="mt-0.5 font-mono text-[9px] text-stone-600">{'{{context}}'}</p>
-          <p className="font-mono text-[9px] text-stone-600">{'{{user_name}}'}</p>
+          <p className="mt-0.5 font-mono text-[9px] text-stone-600 dark:text-stone-300">
+            {'{{context}}'}
+          </p>
+          <p className="font-mono text-[9px] text-stone-600 dark:text-stone-300">
+            {'{{user_name}}'}
+          </p>
         </div>
-        <div className="rounded border border-stone-200/80 bg-white/90 px-2 py-1.5 shadow-sm">
+        <div className={cn(mockPanel, 'px-2 py-1.5')}>
           <p className="text-[8px] uppercase tracking-wide text-stone-400">Deploy</p>
-          <p className="mt-0.5 text-[9px] font-medium text-stone-600">prod · staging</p>
+          <p className="mt-0.5 text-[9px] font-medium text-stone-600 dark:text-stone-300">
+            prod · staging
+          </p>
           <p className="text-[9px] text-stone-400">rollback ready</p>
         </div>
       </div>
@@ -172,12 +186,9 @@ function PromptsVisual() {
         {['v1', 'v2', 'v3'].map((v, i) => (
           <div
             key={v}
-            className={cn(
-              'rounded border border-stone-200/80 bg-white/90 px-2 py-1 text-center shadow-sm',
-              i === 2 && 'border-brandPrimary/40'
-            )}
+            className={cn(mockPanel, 'px-2 py-1 text-center', i === 2 && 'border-brandPrimary/40')}
           >
-            <p className="text-[9px] font-semibold text-stone-700">{v}</p>
+            <p className="text-[9px] font-semibold text-stone-700 dark:text-stone-200">{v}</p>
           </div>
         ))}
       </div>
@@ -188,7 +199,7 @@ function PromptsVisual() {
 function OpengroundVisual() {
   return (
     <div className="space-y-1.5">
-      <div className="rounded border border-stone-200/80 bg-stone-50 px-2 py-1 text-[9px] text-stone-500">
+      <div className="rounded-md border border-stone-200 bg-stone-100 px-2 py-1 text-[9px] text-stone-500 dark:border-stone-700 dark:bg-stone-800 dark:text-stone-400">
         Prompt: Summarize this support ticket…
       </div>
       <div className="grid grid-cols-2 gap-2">
@@ -196,15 +207,14 @@ function OpengroundVisual() {
           { model: 'fable', latency: '1.1s', cost: '$0.003' },
           { model: 'Sol', latency: '0.8s', cost: '$0.002' },
         ].map((item) => (
-          <div
-            key={item.model}
-            className="rounded border border-stone-200/80 bg-white/90 p-2 shadow-sm"
-          >
-            <p className="mb-1.5 text-[10px] font-semibold text-stone-700">{item.model}</p>
+          <div key={item.model} className={cn(mockPanel, 'p-2')}>
+            <p className="mb-1.5 text-[10px] font-semibold text-stone-700 dark:text-stone-200">
+              {item.model}
+            </p>
             <div className="space-y-1">
-              <div className="h-1 rounded bg-stone-200" />
-              <div className="h-1 w-4/5 rounded bg-stone-200" />
-              <div className="h-1 w-3/5 rounded bg-stone-100" />
+              <div className="h-1 rounded bg-stone-200 dark:bg-stone-700" />
+              <div className="h-1 w-4/5 rounded bg-stone-200 dark:bg-stone-700" />
+              <div className="h-1 w-3/5 rounded bg-stone-100 dark:bg-stone-800" />
             </div>
             <div className="mt-2 flex justify-between text-[8px] text-stone-400">
               <span>{item.latency}</span>
@@ -221,23 +231,17 @@ function AgentsVisual() {
   return (
     <div className="space-y-1.5">
       {['planner', 'tool.call', 'writer'].map((step, i) => (
-        <div
-          key={step}
-          className="flex items-center gap-2 rounded border border-stone-200/80 bg-white/90 px-2 py-1.5 shadow-sm"
-        >
-          <span className="flex h-4 w-4 items-center justify-center rounded bg-stone-100 text-[8px] font-bold text-stone-500">
+        <div key={step} className={cn('flex items-center gap-2 px-2 py-1.5', mockPanel)}>
+          <span className="flex h-4 w-4 items-center justify-center rounded bg-stone-100 text-[8px] font-bold text-stone-500 dark:bg-stone-800 dark:text-stone-300">
             {i + 1}
           </span>
-          <span className="text-[10px] font-medium text-stone-600">{step}</span>
+          <span className="text-[10px] font-medium text-stone-600 dark:text-stone-300">{step}</span>
           <span className="ml-auto h-1.5 w-8 rounded-full bg-brandPrimary/25" />
         </div>
       ))}
       <div className="flex gap-1.5">
         {['$0.18', '3 tools'].map((chip) => (
-          <span
-            key={chip}
-            className="rounded bg-stone-100 px-1.5 py-0.5 text-[9px] font-medium text-stone-500"
-          >
+          <span key={chip} className={mockChip}>
             {chip}
           </span>
         ))}
@@ -250,21 +254,17 @@ function VaultVisual() {
   return (
     <div className="space-y-1.5">
       {['OPENAI_API_KEY', 'ANTHROPIC_KEY', 'DB_URL'].map((key) => (
-        <div
-          key={key}
-          className="flex items-center gap-2 rounded border border-stone-200/80 bg-white/90 px-2 py-1.5 shadow-sm"
-        >
-          <span className="h-3 w-3 rounded border border-stone-300 bg-stone-50" />
-          <span className="truncate font-mono text-[9px] text-stone-600">{key}</span>
+        <div key={key} className={cn('flex items-center gap-2 px-2 py-1.5', mockPanel)}>
+          <span className="h-3 w-3 rounded border border-stone-300 bg-stone-50 dark:border-stone-600 dark:bg-stone-800" />
+          <span className="truncate font-mono text-[9px] text-stone-600 dark:text-stone-300">
+            {key}
+          </span>
           <span className="ml-auto font-mono text-[9px] tracking-widest text-stone-400">••••</span>
         </div>
       ))}
       <div className="flex gap-1.5">
         {['AES-256', 'rotated 2d ago'].map((chip) => (
-          <span
-            key={chip}
-            className="rounded bg-stone-100 px-1.5 py-0.5 text-[9px] font-medium text-stone-500"
-          >
+          <span key={chip} className={mockChip}>
             {chip}
           </span>
         ))}
@@ -276,7 +276,7 @@ function VaultVisual() {
 function CostVisual() {
   return (
     <div className="space-y-1.5">
-      <div className="relative min-h-[5rem] rounded border border-stone-200/80 bg-white/90 p-2 shadow-sm">
+      <div className={cn(mockPanel, 'relative min-h-[5rem] p-2')}>
         <svg viewBox="0 0 160 64" className="h-16 w-full" aria-hidden>
           <path
             d="M0 48 C20 46, 30 40, 45 36 C60 32, 70 44, 85 28 C100 12, 115 18, 130 22 C145 26, 155 20, 160 16 L160 64 L0 64 Z"
@@ -289,8 +289,8 @@ function CostVisual() {
             strokeWidth="1.5"
           />
         </svg>
-        <div className="absolute right-2 top-2 rounded border border-stone-200 bg-white/95 px-1.5 py-1 shadow-sm">
-          <p className="text-[9px] font-semibold text-stone-700">218 traces</p>
+        <div className="absolute right-2 top-2 rounded-md border border-stone-200 bg-white px-1.5 py-1 dark:border-stone-700 dark:bg-stone-950">
+          <p className="text-[9px] font-semibold text-stone-700 dark:text-stone-200">218 traces</p>
           <p className="text-[8px] text-stone-400">$12.40</p>
         </div>
       </div>
@@ -299,12 +299,11 @@ function CostVisual() {
           { label: 'p95 latency', value: '842ms' },
           { label: 'avg cost', value: '$0.057' },
         ].map((stat) => (
-          <div
-            key={stat.label}
-            className="rounded border border-stone-200/80 bg-white/90 px-2 py-1.5 shadow-sm"
-          >
+          <div key={stat.label} className={cn(mockPanel, 'px-2 py-1.5')}>
             <p className="text-[8px] uppercase tracking-wide text-stone-400">{stat.label}</p>
-            <p className="text-[10px] font-semibold text-stone-700">{stat.value}</p>
+            <p className="text-[10px] font-semibold text-stone-700 dark:text-stone-200">
+              {stat.value}
+            </p>
           </div>
         ))}
       </div>
@@ -340,7 +339,7 @@ export default function PlatformFeatures() {
             All the tools, one <MarkedWord>harness</MarkedWord> platform.
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-stone-600 dark:text-stone-300 md:text-lg">
-            AI engineering tools for LLM tracing, prompt management, LLM evaluation, and model
+            Agent Harness tools for LLM tracing, prompt management, LLM evaluation, and model
             comparison from prototype to production.
           </p>
         </div>
@@ -353,7 +352,7 @@ export default function PlatformFeatures() {
               target="_blank"
               rel="noopener noreferrer"
               className={cn(
-                'group relative flex h-full min-h-[16rem] flex-col overflow-hidden rounded-xl border border-stone-200 bg-white p-4 transition hover:border-brandPrimary/40 hover:shadow-[0_8px_24px_-16px_rgba(28,25,23,0.35)] dark:border-stone-800 dark:bg-stone-950 dark:hover:border-orange-400/40 sm:min-h-[18.5rem] sm:p-5',
+                'group relative flex h-full flex-col gap-4 overflow-hidden rounded-xl border border-stone-200 bg-white p-4 transition hover:border-brandPrimary/40 hover:shadow-[0_8px_24px_-16px_rgba(28,25,23,0.35)] dark:border-stone-800 dark:bg-stone-950 dark:hover:border-orange-400/40 sm:p-5',
                 index < 3 ? 'lg:col-span-4' : 'lg:col-span-3'
               )}
             >
@@ -368,10 +367,10 @@ export default function PlatformFeatures() {
                   ↗
                 </span>
               </div>
-              <p className="mt-2 text-sm leading-relaxed text-stone-600 dark:text-stone-300">
+              <p className="line-clamp-3 text-sm leading-relaxed text-stone-600 dark:text-stone-300">
                 {feature.description}
               </p>
-              <div className="pointer-events-none mt-auto pt-4 opacity-80">
+              <div className="pointer-events-none mt-auto overflow-hidden rounded-lg border border-stone-100 bg-stone-50 p-3 dark:border-stone-800 dark:bg-stone-900">
                 <FeatureVisual kind={feature.visual} />
               </div>
             </a>

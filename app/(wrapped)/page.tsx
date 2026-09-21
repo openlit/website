@@ -6,7 +6,8 @@ import OpenPlatform from '@/components/home/open-platform'
 import WhyOpenlit from '@/components/home/why-openlit'
 import HomeFaq from '@/components/home/home-faq'
 import { genPageMetadata } from 'app/seo'
-import { createWebPageSchema } from '@/components/structuredData'
+import { createJsonLdGraph, createWebPageSchema, SCHEMA_IDS } from '@/components/structuredData'
+import JsonLd from '@/components/json-ld'
 import { HERO_DESCRIPTION, HERO_KEYWORDS, HERO_TITLE } from 'constants/hero'
 import { createFaqPageSchema, HOME_FAQ_ITEMS } from 'constants/home-faq'
 
@@ -15,28 +16,27 @@ export const metadata = genPageMetadata({
   description: HERO_DESCRIPTION,
   keywords: HERO_KEYWORDS,
   canonicalUrl: 'https://openlit.io',
+  markdownUrl: 'https://openlit.io/index.md',
 })
 
 const homepageSchema = createWebPageSchema(
   `OpenLIT - ${HERO_TITLE}`,
   'https://openlit.io',
   HERO_DESCRIPTION,
-  [{ name: 'Home', url: 'https://openlit.io' }]
+  [{ name: 'Home', url: 'https://openlit.io' }],
+  {
+    fields: {
+      mainEntity: { '@id': SCHEMA_IDS.software },
+    },
+  }
 )
 
-const faqSchema = createFaqPageSchema(HOME_FAQ_ITEMS)
+const faqSchema = createFaqPageSchema(HOME_FAQ_ITEMS, 'https://openlit.io')
 
 export default function Page() {
   return (
     <main className="mb-auto overflow-hidden">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(homepageSchema) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
-      />
+      <JsonLd data={createJsonLdGraph([homepageSchema, faqSchema])} />
       <div className="mx-auto flex min-h-screen w-full flex-col items-center justify-between">
         <Hero />
         <TrustedBy />

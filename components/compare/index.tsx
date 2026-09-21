@@ -6,9 +6,9 @@ import { MarkedWord } from '@/components/common/marker-underline'
 import { OPENLIT_DEFINITION } from 'constants/openlit-definition'
 
 const openlitStrengths = [
-  'OpenTelemetry-native — vendor-neutral, portable telemetry data',
+  'OpenTelemetry-native: vendor-neutral, portable telemetry data',
   'GPU monitoring for NVIDIA GPUs out of the box',
-  'Self-hostable with Apache 2.0 license — free forever',
+  'Self-hostable with Apache 2.0 license, free forever',
   'Vector DB monitoring alongside LLM tracing',
   '60+ integrations across LLMs, frameworks, Vector DBs, and GPUs',
   'Prompt Hub, Vault, and Fleet Hub included',

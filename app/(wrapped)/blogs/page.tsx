@@ -2,37 +2,64 @@ import ListLayout from '@/layouts/post-list'
 import { allCoreContent, sortPosts } from 'pliny/utils/contentlayer'
 import { allBlogs } from 'contentlayer/generated'
 import { genPageMetadata } from 'app/seo'
-import { createWebPageSchema } from '@/components/structuredData'
+import {
+  createItemListSchema,
+  createJsonLdGraph,
+  createWebPageSchema,
+} from '@/components/structuredData'
+import JsonLd from '@/components/json-ld'
 import FeaturePageHeader from '@/components/shell/feature-page-header'
 import { Newspaper } from 'lucide-react'
+import siteMetadata from 'data/siteMetadata'
+
+const BLOG_DESCRIPTION =
+  'Guides on Agent Harness Engineering: LLM observability, OpenTelemetry tracing, LLM evaluation, prompt management, and open-source Langfuse alternatives.'
 
 export const metadata = genPageMetadata({
-  title: 'Blog',
-  description:
-    'In-depth articles, tutorials, and best practices for AI observability, LLM monitoring, OpenTelemetry instrumentation, and building production-grade AI applications.',
+  title: 'OpenLIT Blog: LLM Observability and Agent Harness Engineering',
+  description: BLOG_DESCRIPTION,
+  keywords: [
+    'LLM observability blog',
+    'Langfuse alternatives',
+    'open source LLM evaluation',
+    'prompt management',
+    'OpenTelemetry LLM tracing',
+    'Agent Harness Engineering',
+  ],
   canonicalUrl: 'https://openlit.io/blogs',
 })
 
-const pageSchema = createWebPageSchema(
-  'Blog — OpenLIT',
-  'https://openlit.io/blogs',
-  'In-depth articles, tutorials, and best practices for AI observability and LLM monitoring.',
-  [
-    { name: 'Home', url: 'https://openlit.io' },
-    { name: 'Blog', url: 'https://openlit.io/blogs' },
-  ]
-)
-
 export default function BlogPage() {
-  const posts = allCoreContent(sortPosts(allBlogs))
-  const initialDisplayPosts = posts
+  const posts = allCoreContent(sortPosts(allBlogs.filter((post) => !post.draft)))
+  const published = posts.filter((post) => !post.draft)
+
+  const pageSchema = createWebPageSchema(
+    'OpenLIT Blog: LLM Observability and Agent Harness Engineering',
+    'https://openlit.io/blogs',
+    BLOG_DESCRIPTION,
+    [
+      { name: 'Home', url: 'https://openlit.io' },
+      { name: 'Blog', url: 'https://openlit.io/blogs' },
+    ],
+    {
+      pageType: 'Blog',
+    }
+  )
+
+  const listSchema = createItemListSchema({
+    name: 'OpenLIT blog posts',
+    url: 'https://openlit.io/blogs',
+    description: BLOG_DESCRIPTION,
+    items: published.slice(0, 30).map((post) => ({
+      name: post.title,
+      url: `${siteMetadata.siteUrl}/${post.path}`,
+      description: post.summary,
+    })),
+  })
 
   return (
     <div className="w-full">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(pageSchema) }}
-      />
+      <JsonLd data={createJsonLdGraph([pageSchema, listSchema])} />
       <FeaturePageHeader
         eyebrow="Resources"
         title="Blogs"
@@ -40,7 +67,7 @@ export default function BlogPage() {
         tone="border-violet-200 bg-violet-50 text-violet-700 dark:border-violet-900/70 dark:bg-violet-950/40 dark:text-violet-300"
       />
       <div className="mx-auto max-w-6xl">
-        <ListLayout posts={posts} initialDisplayPosts={initialDisplayPosts} title="Blogs" />
+        <ListLayout posts={posts} initialDisplayPosts={posts} title="Blogs" />
       </div>
     </div>
   )

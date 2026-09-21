@@ -27,11 +27,10 @@ export default function AboutUsContent() {
 
       <article className="mt-6 space-y-6 text-base leading-relaxed text-stone-700 prose-headings:font-semibold prose-p:text-stone-600 dark:text-stone-300 dark:prose-p:text-stone-300">
         <p className="text-lg text-stone-900 dark:text-stone-50">
-          OpenLIT is an open-source AI engineering platform for LLM observability, evaluations,
-          prompt management, and cost tracking — built on OpenTelemetry, free to self-host under
-          Apache 2.0. We are building the open source{' '}
-          <span className="font-semibold">Harness Engineering</span> platform to help teams
-          instrument, develop, manage, observe, and improve production AI systems faster.
+          OpenLIT is an open-source Agent Harness Engineering platform for LLM tracing, evaluations,
+          prompt management, and cost tracking, built on OpenTelemetry and free to self-host under
+          Apache 2.0. We help teams instrument, develop, manage, observe, and improve production AI
+          systems faster.
         </p>
 
         <p>
