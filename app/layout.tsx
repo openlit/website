@@ -4,7 +4,8 @@ import { Inter } from 'next/font/google'
 import siteMetadata from 'data/siteMetadata'
 import { Metadata, Viewport } from 'next'
 import Script from 'next/script'
-import { organisationSchema, applicationSchema, websiteSchema } from '@/components/structuredData'
+import { siteGraph, softwareApplicationJsonLd } from '@/components/structuredData'
+import JsonLd from '@/components/json-ld'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -88,18 +89,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="alternate" type="text/plain" href="/llms.txt" title="llms.txt" />
         <link rel="alternate" type="text/plain" href="/llms-full.txt" title="llms-full.txt" />
         <link rel="alternate" type="text/markdown" href="/index.md" title="Home (Markdown)" />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(organisationSchema) }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(applicationSchema) }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
-        />
+        <JsonLd data={softwareApplicationJsonLd} />
+        <JsonLd data={siteGraph} />
       </head>
       <body
         className={`${inter.className} bg-stone-50 text-black antialiased dark:bg-stone-950 dark:text-white`}

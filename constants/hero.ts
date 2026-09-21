@@ -1,7 +1,9 @@
-export const HERO_TITLE = 'Open source Harness Engineering Platform'
+import { OPENLIT_DEFINITION } from 'constants/openlit-definition'
 
-export const HERO_DESCRIPTION =
-  'Trace LLMs and AI agents with OpenTelemetry, run LLM evaluations, manage prompts, compare models, store API keys in Vault, and self-host free under Apache 2.0.'
+export const HERO_TITLE = 'Open source Agent Harness Engineering Platform'
+
+/** Above-the-fold / SEO description — keep aligned with OPENLIT_DEFINITION. */
+export const HERO_DESCRIPTION = OPENLIT_DEFINITION
 
 export const HERO_KEYWORDS = [
   'Harness Engineering',
@@ -9,6 +11,8 @@ export const HERO_KEYWORDS = [
   'AI engineering platform',
   'open source Agent Harness Engineering',
   'open source AI engineering platform',
+  'Langfuse alternative',
+  'LLM observability',
   'LLM tracing',
   'OpenTelemetry tracing',
   'LLM evaluation',

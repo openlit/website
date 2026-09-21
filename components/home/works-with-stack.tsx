@@ -270,7 +270,7 @@ function IntegrationPill({ item }: { item: Logo }) {
       href={item.href}
       target="_blank"
       rel="noopener noreferrer"
-      className="inline-flex shrink-0 items-center gap-2 rounded-md border border-stone-200 bg-white px-2.5 py-1.5 shadow-sm transition hover:border-brandPrimary/40 dark:border-stone-700 dark:bg-stone-950"
+      className="inline-flex shrink-0 items-center gap-2 rounded-md border border-stone-200 bg-white px-2.5 py-1.5 shadow-sm transition hover:border-brandPrimary/40 dark:border-stone-200 dark:bg-white dark:hover:bg-stone-50"
     >
       {item.icon ? (
         <Image src={item.icon} alt="" width={16} height={16} className="h-4 w-4 object-contain" />
@@ -279,9 +279,7 @@ function IntegrationPill({ item }: { item: Logo }) {
           {item.name.slice(0, 1)}
         </span>
       )}
-      <span className="whitespace-nowrap text-sm text-stone-800 dark:text-stone-100">
-        {item.name}
-      </span>
+      <span className="whitespace-nowrap text-sm text-stone-800">{item.name}</span>
     </a>
   )
 }

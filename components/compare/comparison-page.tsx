@@ -1,6 +1,6 @@
 import { Check, X, Minus, ArrowRight, Github } from 'lucide-react'
 import { Fragment } from 'react'
-import type { Competitor, ComparisonFeature } from '@/data/comparisons'
+import competitors, { type Competitor, type ComparisonFeature } from '@/data/comparisons'
 import siteMetadata from '@/data/siteMetadata'
 import ReadyToGetStarted from '../common/ready-to-get-started'
 import Link from 'next/link'
@@ -137,12 +137,7 @@ export default function ComparisonPage({ competitor }: { competitor: Competitor 
       <div className="mb-16">
         <h2 className="mb-4 text-lg font-bold">More Comparisons</h2>
         <div className="flex flex-wrap gap-3">
-          {[
-            { slug: 'openlit-vs-langfuse', name: 'Langfuse' },
-            { slug: 'openlit-vs-helicone', name: 'Helicone' },
-            { slug: 'openlit-vs-langsmith', name: 'LangSmith' },
-            { slug: 'openlit-vs-datadog', name: 'Datadog' },
-          ]
+          {competitors
             .filter((c) => c.slug !== competitor.slug)
             .map((c) => (
               <Link

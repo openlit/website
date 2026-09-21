@@ -1,33 +1,60 @@
 import { genPageMetadata } from 'app/seo'
 import CompareIndex from 'components/compare/index'
-import { createWebPageSchema } from '@/components/structuredData'
+import {
+  createItemListSchema,
+  createJsonLdGraph,
+  createWebPageSchema,
+} from '@/components/structuredData'
+import JsonLd from '@/components/json-ld'
 import FeaturePageHeader from '@/components/shell/feature-page-header'
 import { GitCompare } from 'lucide-react'
+import competitors from '@/data/comparisons'
+
+const COMPARE_DESCRIPTION =
+  'Compare OpenLIT against Langfuse, Helicone, LangSmith, Datadog, Arize Phoenix, Comet Opik, Braintrust, and OpenLLMetry. Honest, feature-by-feature comparison of LLM observability and monitoring tools.'
 
 export const metadata = genPageMetadata({
-  title: 'OpenLIT vs Alternatives — LLM Observability Comparison',
-  description:
-    'Compare OpenLIT against Langfuse, Helicone, LangSmith, and Datadog. Honest, feature-by-feature comparison of LLM observability and monitoring tools.',
+  title: 'OpenLIT vs Alternatives: LLM Observability Comparison',
+  description: COMPARE_DESCRIPTION,
+  keywords: [
+    'OpenLIT vs Langfuse',
+    'Langfuse alternatives',
+    'open source LLM observability',
+    'OpenLIT vs Phoenix',
+    'OpenLIT vs Opik',
+    'OpenLIT vs Braintrust',
+    'OpenLIT vs OpenLLMetry',
+    'Apache 2.0 LLM observability',
+  ],
   canonicalUrl: 'https://openlit.io/compare',
+  markdownUrl: 'https://openlit.io/compare.md',
 })
 
 const pageSchema = createWebPageSchema(
-  'OpenLIT vs Alternatives — LLM Observability Comparison',
+  'OpenLIT vs Alternatives: LLM Observability Comparison',
   'https://openlit.io/compare',
-  'Compare OpenLIT against Langfuse, Helicone, LangSmith, and Datadog.',
+  COMPARE_DESCRIPTION,
   [
     { name: 'Home', url: 'https://openlit.io' },
     { name: 'Compare', url: 'https://openlit.io/compare' },
   ]
 )
 
+const listSchema = createItemListSchema({
+  name: 'OpenLIT vs LLM observability alternatives',
+  url: 'https://openlit.io/compare',
+  description: COMPARE_DESCRIPTION,
+  items: competitors.map((c) => ({
+    name: c.tagline,
+    url: `https://openlit.io/compare/${c.slug}`,
+    description: c.description,
+  })),
+})
+
 export default function ComparePage() {
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(pageSchema) }}
-      />
+      <JsonLd data={createJsonLdGraph([pageSchema, listSchema])} />
       <FeaturePageHeader
         eyebrow="Product"
         title="Compare"

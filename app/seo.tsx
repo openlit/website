@@ -16,6 +16,7 @@ export function genPageMetadata({
   image,
   canonicalUrl,
   keywords,
+  markdownUrl,
   ...rest
 }: PageSEOProps): Metadata {
   const desc = description || siteMetadata.description
@@ -25,6 +26,13 @@ export function genPageMetadata({
     keywords,
     alternates: {
       canonical: canonicalUrl || siteMetadata.siteUrl,
+      ...(markdownUrl
+        ? {
+            types: {
+              'text/markdown': markdownUrl,
+            },
+          }
+        : {}),
     },
     openGraph: {
       title: `${title} | ${siteMetadata.title}`,

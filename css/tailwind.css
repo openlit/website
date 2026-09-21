@@ -68,6 +68,12 @@ input:-webkit-autofill:focus {
   animation-play-state: paused;
 }
 
+@media (prefers-reduced-motion: reduce) {
+  .animate-marquee {
+    animation: none;
+  }
+}
+
 /* ─── High Contrast Mode fallback for gradient text ────────────────────── */
 @media (forced-colors: active) {
   .bg-clip-text {

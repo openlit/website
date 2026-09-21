@@ -1,41 +1,46 @@
 import { genPageMetadata } from 'app/seo'
 import AboutUsContent from 'components/about-us-content'
-import { createWebPageSchema } from '@/components/structuredData'
+import { createJsonLdGraph, createWebPageSchema, SCHEMA_IDS } from '@/components/structuredData'
+import JsonLd from '@/components/json-ld'
 import FeaturePageHeader from '@/components/shell/feature-page-header'
 import { Info } from 'lucide-react'
 
 export const metadata = genPageMetadata({
   title: 'About OpenLIT',
   description:
-    'Learn about OpenLIT, the open source Harness Engineering platform. Meet contributors from GitHub and see how we help teams build production AI systems.',
+    'OpenLIT is an open-source Agent Harness Engineering platform. Meet contributors from GitHub and see how we help teams instrument, evaluate, and improve production AI systems.',
   keywords: [
     'About OpenLIT',
     'OpenLIT team',
-    'Harness Engineering',
+    'Agent Harness Engineering',
     'open source AI engineering platform',
     'OpenLIT contributors',
     'OpenTelemetry AI platform',
   ],
   canonicalUrl: 'https://openlit.io/about-us',
+  markdownUrl: 'https://openlit.io/about-us.md',
 })
 
 const pageSchema = createWebPageSchema(
   'About OpenLIT',
   'https://openlit.io/about-us',
-  'Learn about OpenLIT, the open source Harness Engineering platform.',
+  'OpenLIT is an open-source Agent Harness Engineering platform built on OpenTelemetry.',
   [
     { name: 'Home', url: 'https://openlit.io' },
     { name: 'About', url: 'https://openlit.io/about-us' },
-  ]
+  ],
+  {
+    pageType: 'AboutPage',
+    fields: {
+      mainEntity: [{ '@id': SCHEMA_IDS.org }, { '@id': SCHEMA_IDS.founder }],
+    },
+  }
 )
 
 export default function AboutUsPage() {
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(pageSchema) }}
-      />
+      <JsonLd data={createJsonLdGraph([pageSchema])} />
       <FeaturePageHeader
         eyebrow="Company"
         title="About"

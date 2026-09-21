@@ -1,6 +1,7 @@
 import { genPageMetadata } from 'app/seo'
 import PricingContent from 'components/pricing-content'
-import { createWebPageSchema } from '@/components/structuredData'
+import { createPricingGraph, createWebPageSchema, SCHEMA_IDS } from '@/components/structuredData'
+import JsonLd from '@/components/json-ld'
 import FeaturePageHeader from '@/components/shell/feature-page-header'
 import { createFaqPageSchema } from 'constants/home-faq'
 import { PRICING_FAQ_ITEMS, PRICING_SEO } from 'constants/pricing'
@@ -11,6 +12,7 @@ export const metadata = genPageMetadata({
   description: PRICING_SEO.description,
   keywords: [...PRICING_SEO.keywords],
   canonicalUrl: 'https://openlit.io/pricing',
+  markdownUrl: 'https://openlit.io/pricing.md',
 })
 
 const pageSchema = createWebPageSchema(
@@ -20,55 +22,20 @@ const pageSchema = createWebPageSchema(
   [
     { name: 'Home', url: 'https://openlit.io' },
     { name: 'Pricing', url: 'https://openlit.io/pricing' },
-  ]
+  ],
+  {
+    fields: {
+      mainEntity: { '@id': SCHEMA_IDS.product },
+    },
+  }
 )
 
-const faqSchema = createFaqPageSchema(PRICING_FAQ_ITEMS)
-
-const offerSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'SoftwareApplication',
-  name: 'OpenLIT',
-  applicationCategory: 'DeveloperApplication',
-  operatingSystem: 'Linux, Windows, macOS',
-  url: 'https://openlit.io/pricing',
-  description: PRICING_SEO.description,
-  offers: [
-    {
-      '@type': 'Offer',
-      name: 'OpenLIT OSS',
-      price: '0',
-      priceCurrency: 'USD',
-      availability: 'https://schema.org/InStock',
-      description:
-        'Free open source Harness Engineering platform. Self-host under Apache 2.0 with unlimited usage.',
-      url: 'https://github.com/openlit/openlit',
-    },
-    {
-      '@type': 'Offer',
-      name: 'OpenLIT Cloud',
-      availability: 'https://schema.org/PreOrder',
-      description: 'Fully hosted OpenLIT coming soon. Feature set and pricing shared at launch.',
-      url: 'https://openlit.io/pricing',
-    },
-  ],
-}
+const faqSchema = createFaqPageSchema(PRICING_FAQ_ITEMS, 'https://openlit.io/pricing')
 
 export default function PricingPage() {
   return (
     <>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(pageSchema) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
-      />
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(offerSchema) }}
-      />
+      <JsonLd data={createPricingGraph({ webpage: pageSchema, faq: faqSchema })} />
       <FeaturePageHeader
         eyebrow="Product"
         title="Pricing"

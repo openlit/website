@@ -53,7 +53,7 @@ export function homeMarkdown() {
 
 ## What OpenLIT is
 
-OpenLIT is an open source Harness Engineering platform and an open source AI engineering platform. Teams use it to instrument AI apps, manage prompts, run LLM evaluations, monitor agents, store API keys in Vault, and improve quality with production data. It is built on OpenTelemetry and free to self-host under Apache 2.0.
+OpenLIT is an open-source Agent Harness Engineering platform. Teams use it to instrument AI apps, manage prompts, run LLM evaluations, monitor agents, store API keys in Vault, and improve quality with production data. It is built on OpenTelemetry and free to self-host under Apache 2.0.
 
 ## Instrumentation paths
 
@@ -133,7 +133,7 @@ ${faqMarkdown(PRICING_FAQ_ITEMS)}
 export function aboutMarkdown() {
   return `# About OpenLIT
 
-> OpenLIT is building the open source Harness Engineering platform to help teams instrument, develop, manage, observe, and improve production AI systems faster.
+> ${siteMetadata.description}
 
 - HTML: ${SITE}/about-us
 - Markdown: ${SITE}/about-us.md
@@ -144,7 +144,7 @@ export function aboutMarkdown() {
 
 We are excited about the potential of LLMs and generative AI, and the impact they will have on how software gets built. Doing our part to accelerate that shift is our mission.
 
-OpenLIT started from the pain of shipping LLM apps without clear traces, cost, quality, or agent visibility. The answer was an OpenTelemetry-native AI engineering platform you can self-host free under Apache 2.0: LLM tracing, evaluations, Prompt Hub, Vault, OpenGround, coding agent monitoring, and GPU metrics in one place.
+OpenLIT started from the pain of shipping LLM apps without clear traces, cost, quality, or agent visibility. The answer was an OpenTelemetry-native Agent Harness Engineering platform you can self-host free under Apache 2.0: LLM tracing, evaluations, Prompt Hub, Vault, OpenGround, coding agent monitoring, and GPU metrics in one place.
 
 Today OpenLIT is used by developers worldwide. The project is open, community-driven, and built in public on GitHub.
 
@@ -166,7 +166,7 @@ export function compareIndexMarkdown() {
 
   return `# OpenLIT vs Alternatives
 
-> Compare OpenLIT against Langfuse, Helicone, LangSmith, and Datadog. Honest, feature-by-feature comparison of LLM observability and monitoring tools.
+> Compare OpenLIT against Langfuse, Helicone, LangSmith, Datadog, Arize Phoenix, Comet Opik, Braintrust, and OpenLLMetry. Honest, feature-by-feature comparison of LLM observability and monitoring tools.
 
 - HTML: ${SITE}/compare
 - Markdown: ${SITE}/compare.md
@@ -239,8 +239,7 @@ export const LLM_PAGES: LlmPage[] = [
     mdPath: '/about-us.md',
     htmlPath: '/about-us',
     title: 'About OpenLIT',
-    summary:
-      'OpenLIT is building the open source Harness Engineering platform for production AI systems.',
+    summary: HERO_DESCRIPTION,
     body: aboutMarkdown,
   },
   {
@@ -248,7 +247,7 @@ export const LLM_PAGES: LlmPage[] = [
     htmlPath: '/compare',
     title: 'OpenLIT vs Alternatives',
     summary:
-      'Compare OpenLIT against Langfuse, Helicone, LangSmith, and Datadog for LLM observability.',
+      'Compare OpenLIT against Langfuse, Helicone, LangSmith, Datadog, Arize Phoenix, Comet Opik, Braintrust, and OpenLLMetry for LLM observability.',
     body: compareIndexMarkdown,
   },
   ...competitors.map((competitor) => ({
@@ -267,20 +266,47 @@ export function getMarkdownBySlug(slug: string[] | undefined): string | null {
   return page ? page.body() : null
 }
 
+const FEATURED_BLOGS = [
+  {
+    title: 'Best Langfuse alternatives (open source, 2026)',
+    path: '/blogs/langfuse-alternatives',
+    summary:
+      'Honest roundup of open-source Langfuse alternatives: OpenLIT, Phoenix, Opik, Helicone, and OpenLLMetry, with license, self-host, and OpenTelemetry stance.',
+  },
+  {
+    title: 'Best open-source tools for LLM evaluation and prompt management (2026)',
+    path: '/blogs/open-source-llm-evaluation-prompt-management',
+    summary:
+      'Roundup of open-source LLM evaluation and prompt management tools, including OpenLIT Prompt Hub, Langfuse, Phoenix, Opik, Braintrust, and Promptfoo.',
+  },
+]
+
 export function buildLlmsTxt() {
   const marketing = LLM_PAGES.map(
     (page) => `- [${page.title}](${SITE}${page.mdPath}): ${page.summary}`
+  ).join('\n')
+
+  const blogs = FEATURED_BLOGS.map(
+    (post) => `- [${post.title}](${SITE}${post.path}): ${post.summary}`
   ).join('\n')
 
   return `# OpenLIT
 
 > ${siteMetadata.description}
 
-OpenLIT is an open source Harness Engineering platform. This file helps agents find clean Markdown versions of key marketing pages. Product documentation has its own index at ${DOCS_LLMS}.
+This file helps agents find clean Markdown versions of key marketing pages and high-intent blog posts. Product documentation has its own index at ${DOCS_LLMS}.
+
+## What OpenLIT is
+
+${siteMetadata.description}
 
 ## Marketing site (Markdown)
 
 ${marketing}
+
+## Buyer guides (HTML)
+
+${blogs}
 
 ## HTML pages
 
@@ -299,6 +325,8 @@ ${marketing}
 - Docs llms.txt: ${DOCS_LLMS}
 - Docs overview: https://docs.openlit.io/latest/overview
 - Quickstart: https://docs.openlit.io/latest/openlit/quickstart-ai-observability
+- Evaluations: https://docs.openlit.io/latest/openlit/evaluations/overview
+- Prompt Hub: https://docs.openlit.io/latest/openlit/prompts-experiments/prompt-hub/overview
 
 ## Project
 

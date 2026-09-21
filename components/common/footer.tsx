@@ -1,4 +1,5 @@
 import siteMetadata from 'data/siteMetadata'
+import competitors from '@/data/comparisons'
 
 import Image from 'next/image'
 import { Github, Mail } from '../social-icons/icons'
@@ -53,10 +54,7 @@ const linkGroups = [
   {
     heading: 'Comparisons',
     links: [
-      { text: 'vs Langfuse', link: '/compare/openlit-vs-langfuse' },
-      { text: 'vs Helicone', link: '/compare/openlit-vs-helicone' },
-      { text: 'vs LangSmith', link: '/compare/openlit-vs-langsmith' },
-      { text: 'vs Datadog', link: '/compare/openlit-vs-datadog' },
+      ...competitors.map((c) => ({ text: `vs ${c.name}`, link: `/compare/${c.slug}` })),
       { text: 'All Comparisons', link: '/compare' },
     ],
   },

@@ -10,7 +10,14 @@ import PostLayout from '@/layouts/post-layout'
 import { Metadata } from 'next'
 import siteMetadata from 'data/siteMetadata'
 import { notFound } from 'next/navigation'
-import { createWebPageSchema } from '@/components/structuredData'
+import {
+  createAuthorPersonSchema,
+  createJsonLdGraph,
+  createWebPageSchema,
+  personIdForAuthor,
+  SCHEMA_IDS,
+} from '@/components/structuredData'
+import JsonLd from '@/components/json-ld'
 
 export async function generateMetadata({
   params,
@@ -95,12 +102,20 @@ export default async function Page({ params }: { params: { slug: string[] } }) {
   })
   const mainContent = coreContent(post)
   const jsonLd = post.structuredData
-  jsonLd['author'] = authorDetails.map((author) => {
-    return {
-      '@type': 'Person',
-      name: author.name,
-    }
-  })
+  jsonLd['@id'] = `${siteMetadata.siteUrl}/${post._raw.flattenedPath}#article`
+  jsonLd['author'] = authorDetails.map((author) => ({
+    '@id': personIdForAuthor(author.slug, author.name),
+  }))
+  jsonLd['publisher'] = { '@id': SCHEMA_IDS.org }
+  jsonLd['isPartOf'] = { '@id': SCHEMA_IDS.website }
+  jsonLd['about'] = { '@id': SCHEMA_IDS.software }
+  jsonLd['mainEntityOfPage'] = {
+    '@id': `${siteMetadata.siteUrl}/${post._raw.flattenedPath}#webpage`,
+  }
+
+  const authorNodes = authorDetails
+    .filter((author) => personIdForAuthor(author.slug, author.name) !== SCHEMA_IDS.founder)
+    .map(createAuthorPersonSchema)
 
   const breadcrumbSchema = createWebPageSchema(
     post.title,
@@ -110,20 +125,18 @@ export default async function Page({ params }: { params: { slug: string[] } }) {
       { name: 'Home', url: 'https://openlit.io' },
       { name: 'Blog', url: 'https://openlit.io/blogs' },
       { name: post.title, url: `${siteMetadata.siteUrl}/${post._raw.flattenedPath}` },
-    ]
+    ],
+    {
+      fields: {
+        mainEntity: { '@id': `${siteMetadata.siteUrl}/${post._raw.flattenedPath}#article` },
+      },
+    }
   )
 
   return (
     <div className="w-full px-4 md:mx-auto md:max-w-[70%] md:pl-8 md:pr-4">
       <section className="relative py-6">
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-        />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
-        />
+        <JsonLd data={createJsonLdGraph([jsonLd, ...authorNodes, breadcrumbSchema])} />
         <PostLayout content={mainContent} authorDetails={authorDetails} next={next} prev={prev}>
           {null}
           {/* <MDXLayoutRenderer components={components} toc={post.toc} code={post.body.code} /> */}
