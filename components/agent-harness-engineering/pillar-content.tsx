@@ -6,24 +6,22 @@ import { PILLAR_FAQ } from 'constants/pillar-faq'
 
 export default function AgentHarnessEngineeringContent() {
   return (
-    <div className="container py-10 md:py-12">
-      <div className="mb-10 max-w-3xl">
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brandPrimary">
-          Concepts
-        </p>
-        <h1 className="mt-3 text-3xl font-bold tracking-tight text-stone-950 dark:text-stone-50 md:text-4xl md:leading-tight">
-          What is agent <MarkedWord>harness engineering</MarkedWord>?
-        </h1>
-        <p className="mt-4 text-lg leading-relaxed text-stone-800 dark:text-stone-100">
-          Agent harness engineering is the discipline of designing, measuring, and improving
-          everything around the model in an AI agent so the agent is reliable in production.
-        </p>
-        <p className="mt-3 text-base leading-relaxed text-stone-600 dark:text-stone-300">
-          {OPENLIT_POSITIONING}
-        </p>
-      </div>
+    <div className="mx-auto w-full max-w-3xl px-4 py-10 md:px-6 md:py-14">
+      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brandPrimary">
+        Concepts
+      </p>
+      <h1 className="mt-3 text-3xl font-bold tracking-tight text-stone-950 dark:text-stone-50 md:text-4xl md:leading-tight">
+        What is agent <MarkedWord>harness engineering</MarkedWord>?
+      </h1>
+      <p className="mt-4 text-lg leading-relaxed text-stone-800 dark:text-stone-100">
+        Agent harness engineering is the discipline of designing, measuring, and improving
+        everything around the model in an AI agent so the agent is reliable in production.
+      </p>
+      <p className="mt-3 text-base leading-relaxed text-stone-600 dark:text-stone-300">
+        {OPENLIT_POSITIONING}
+      </p>
 
-      <article className="max-w-3xl space-y-10 text-base leading-relaxed text-stone-600 dark:text-stone-300">
+      <article className="mt-10 space-y-10 text-base leading-relaxed text-stone-600 dark:text-stone-300">
         <section>
           <h2 className="text-xl font-semibold text-stone-950 dark:text-stone-50">
             What is agent harness engineering?
@@ -242,7 +240,7 @@ export default function AgentHarnessEngineeringContent() {
       </article>
 
       <div className="mt-16">
-        <ReadyToGetStarted />
+        <ReadyToGetStarted className="px-0" />
       </div>
     </div>
   )

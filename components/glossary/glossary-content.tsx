@@ -4,20 +4,20 @@ import { GLOSSARY_TERMS, getGlossaryTerm } from 'data/glossary'
 import { MarkedWord } from '@/components/common/marker-underline'
 import ReadyToGetStarted from '@/components/common/ready-to-get-started'
 
+const PAGE_SHELL = 'mx-auto w-full max-w-3xl px-4 py-10 md:px-6 md:py-14'
+
 export function GlossaryIndexContent() {
   return (
-    <div className="container py-10 md:py-12">
-      <div className="mb-10 max-w-3xl">
-        <h1 className="text-3xl font-bold tracking-tight text-stone-950 dark:text-stone-50 md:text-4xl">
-          Agent harness <MarkedWord>glossary</MarkedWord>
-        </h1>
-        <p className="mt-3 text-base leading-relaxed text-stone-600 dark:text-stone-300">
-          Short definitions for agent harness engineering terms: agent harness, harness engineering,
-          agent observability, agent evals, guardrails, and trajectory evaluation.
-        </p>
-      </div>
+    <div className={PAGE_SHELL}>
+      <h1 className="text-3xl font-bold tracking-tight text-stone-950 dark:text-stone-50 md:text-4xl">
+        Agent harness <MarkedWord>glossary</MarkedWord>
+      </h1>
+      <p className="mt-3 text-base leading-relaxed text-stone-600 dark:text-stone-300">
+        Short definitions for agent harness engineering terms: agent harness, harness engineering,
+        agent observability, agent evals, guardrails, and trajectory evaluation.
+      </p>
 
-      <ul className="divide-y divide-stone-200 border-t border-stone-200 dark:divide-stone-800 dark:border-stone-800">
+      <ul className="mt-10 divide-y divide-stone-200 border-t border-stone-200 dark:divide-stone-800 dark:border-stone-800">
         {GLOSSARY_TERMS.map((term) => (
           <li key={term.slug} className="py-5">
             <Link
@@ -50,20 +50,18 @@ export function GlossaryTermContent({ term }: { term: GlossaryTerm }) {
     .filter(Boolean) as GlossaryTerm[]
 
   return (
-    <div className="container py-10 md:py-12">
-      <div className="mb-10 max-w-3xl">
-        <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brandPrimary">
-          Glossary
-        </p>
-        <h1 className="mt-3 text-3xl font-bold tracking-tight text-stone-950 dark:text-stone-50 md:text-4xl">
-          What is <MarkedWord>{term.name.toLowerCase()}</MarkedWord>?
-        </h1>
-        <p className="mt-4 text-lg leading-relaxed text-stone-800 dark:text-stone-100">
-          {term.definition}
-        </p>
-      </div>
+    <div className={PAGE_SHELL}>
+      <p className="text-xs font-semibold uppercase tracking-[0.18em] text-brandPrimary">
+        Glossary
+      </p>
+      <h1 className="mt-3 text-3xl font-bold tracking-tight text-stone-950 dark:text-stone-50 md:text-4xl">
+        What is <MarkedWord>{term.name.toLowerCase()}</MarkedWord>?
+      </h1>
+      <p className="mt-4 text-lg leading-relaxed text-stone-800 dark:text-stone-100">
+        {term.definition}
+      </p>
 
-      <article className="prose prose-stone max-w-3xl dark:prose-invert">
+      <article className="mt-8 space-y-4">
         {term.body.map((paragraph) => (
           <p
             key={paragraph.slice(0, 40)}
@@ -75,7 +73,7 @@ export function GlossaryTermContent({ term }: { term: GlossaryTerm }) {
       </article>
 
       {term.faq && term.faq.length > 0 ? (
-        <section className="mt-12 max-w-3xl">
+        <section className="mt-12">
           <h2 className="text-xl font-semibold text-stone-950 dark:text-stone-50">FAQ</h2>
           <div className="mt-4 divide-y divide-stone-200 border-t border-stone-200 dark:divide-stone-800 dark:border-stone-800">
             {term.faq.map((item) => (
@@ -93,7 +91,7 @@ export function GlossaryTermContent({ term }: { term: GlossaryTerm }) {
       ) : null}
 
       {related.length > 0 ? (
-        <section className="mt-12 max-w-3xl">
+        <section className="mt-12">
           <h2 className="mb-4 text-lg font-semibold text-stone-950 dark:text-stone-50">
             Related terms
           </h2>
@@ -124,7 +122,7 @@ export function GlossaryTermContent({ term }: { term: GlossaryTerm }) {
       ) : null}
 
       <div className="mt-16">
-        <ReadyToGetStarted />
+        <ReadyToGetStarted className="px-0" />
       </div>
     </div>
   )
