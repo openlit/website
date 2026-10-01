@@ -2,9 +2,11 @@ import { MetadataRoute } from 'next'
 import { allBlogs } from 'contentlayer/generated'
 import siteMetadata from 'data/siteMetadata'
 import competitors from 'data/comparisons'
-import { LLM_PAGES } from 'lib/llms/pages'
+import GLOSSARY_TERMS from 'data/glossary'
 
 const SITE = siteMetadata.siteUrl.replace(/\/$/, '')
+/** Stable content date for evergreen marketing pages (avoid build-time "today"). */
+const CONTENT_UPDATED = '2026-10-01'
 
 function toDate(value: string | Date | undefined) {
   if (!value) return undefined
@@ -26,7 +28,7 @@ function entry({
 }): MetadataRoute.Sitemap[number] {
   return {
     url: path ? `${SITE}/${path.replace(/^\//, '')}` : SITE,
-    lastModified: toDate(lastModified) || toDate(new Date()) || undefined,
+    lastModified: toDate(lastModified) || CONTENT_UPDATED,
     changeFrequency,
     priority,
   }
@@ -39,71 +41,79 @@ export default function sitemap(): MetadataRoute.Sitemap {
     if (!date) return latest
     return !latest || date > latest ? date : latest
   }, undefined)
-  const updated = toDate(new Date()) || latestPostDate || '2026-09-21'
 
   const routes: MetadataRoute.Sitemap = [
     entry({
       path: '',
-      lastModified: updated,
+      lastModified: CONTENT_UPDATED,
       changeFrequency: 'weekly',
       priority: 1,
     }),
     entry({
       path: 'pricing',
-      lastModified: updated,
+      lastModified: CONTENT_UPDATED,
       changeFrequency: 'weekly',
       priority: 0.9,
     }),
     entry({
       path: 'compare',
-      lastModified: updated,
+      lastModified: CONTENT_UPDATED,
       changeFrequency: 'weekly',
       priority: 0.9,
     }),
     entry({
+      path: 'agent-harness-engineering',
+      lastModified: CONTENT_UPDATED,
+      changeFrequency: 'monthly',
+      priority: 0.9,
+    }),
+    entry({
+      path: 'glossary',
+      lastModified: CONTENT_UPDATED,
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    }),
+    entry({
       path: 'blogs',
-      lastModified: latestPostDate || updated,
+      lastModified: latestPostDate || CONTENT_UPDATED,
       changeFrequency: 'weekly',
       priority: 0.8,
     }),
     entry({
       path: 'about-us',
-      lastModified: updated,
+      lastModified: CONTENT_UPDATED,
       changeFrequency: 'monthly',
       priority: 0.6,
     }),
     entry({
       path: 'privacy-policy',
-      lastModified: updated,
+      lastModified: CONTENT_UPDATED,
       changeFrequency: 'yearly',
       priority: 0.3,
     }),
     entry({
       path: 'terms',
-      lastModified: updated,
+      lastModified: CONTENT_UPDATED,
       changeFrequency: 'yearly',
       priority: 0.3,
-    }),
-    entry({
-      path: 'llms.txt',
-      lastModified: updated,
-      changeFrequency: 'weekly',
-      priority: 0.5,
-    }),
-    entry({
-      path: 'llms-full.txt',
-      lastModified: updated,
-      changeFrequency: 'weekly',
-      priority: 0.5,
     }),
   ]
 
   const compareRoutes = competitors.map((competitor) =>
     entry({
       path: `compare/${competitor.slug}`,
-      lastModified: updated,
+      lastModified: CONTENT_UPDATED,
       changeFrequency: 'monthly',
       priority: 0.8,
+    })
+  )
+
+  const glossaryRoutes = GLOSSARY_TERMS.map((term) =>
+    entry({
+      path: `glossary/${term.slug}`,
+      lastModified: CONTENT_UPDATED,
+      changeFrequency: 'monthly',
+      priority: 0.7,
     })
   )
 
@@ -116,16 +126,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     })
   )
 
-  const markdownRoutes = LLM_PAGES.map((page) =>
-    entry({
-      path: page.mdPath.replace(/^\//, ''),
-      lastModified: updated,
-      changeFrequency: 'weekly',
-      priority: 0.4,
-    })
-  )
-
-  return [...routes, ...compareRoutes, ...blogRoutes, ...markdownRoutes]
+  return [...routes, ...compareRoutes, ...glossaryRoutes, ...blogRoutes]
 }
 
 // Must stay static (no edge). Contentlayer in an edge sitemap breaks the

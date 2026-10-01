@@ -1,6 +1,7 @@
+import { OPENLIT_DEFINITION } from 'constants/openlit-definition'
+
 const SITE = 'https://openlit.io'
-const DEFINITION =
-  'OpenLIT is an open-source Agent Harness Engineering platform for LLM tracing, evaluations, prompt management, and cost tracking, built on OpenTelemetry and free to self-host under Apache 2.0.'
+const DEFINITION = OPENLIT_DEFINITION
 const LOGO = `${SITE}/static/images/logo.png`
 const SHARE_IMAGE = `${SITE}/static/images/twitter-card.png`
 const GITHUB_REPO = 'https://github.com/openlit/openlit'
@@ -22,12 +23,15 @@ export const SCHEMA_IDS = {
 }
 
 const KNOWS_ABOUT = [
-  'Agent Harness Engineering',
+  'Agent harness',
+  'Agent harness engineering',
+  'Agent observability',
+  'Agent evaluation',
+  'OpenTelemetry GenAI semantic conventions',
   'LLM observability',
-  'OpenTelemetry',
   'LLM evaluation',
   'Prompt management',
-  'AI agent monitoring',
+  'LLM guardrails',
   'GPU monitoring',
 ]
 
@@ -63,7 +67,8 @@ export const organisationSchema = {
   image: SHARE_IMAGE,
   description: DEFINITION,
   email: 'contact@openlit.io',
-  foundingDate: '2023-01-01',
+  // Public GitHub org activity begins early 2024; precise founding month not independently verified.
+  foundingDate: '2024',
   founders: { '@id': SCHEMA_IDS.founder },
   employee: { '@id': SCHEMA_IDS.founder },
   sameAs: [
@@ -73,6 +78,9 @@ export const organisationSchema = {
     'https://www.linkedin.com/company/openlit/',
     'https://www.youtube.com/@openlit',
     'https://discord.com/invite/RbNPvG54',
+    'https://pypi.org/project/openlit/',
+    'https://www.npmjs.com/package/openlit',
+    'https://docs.openlit.io/latest/overview',
   ],
   contactPoint: {
     '@type': 'ContactPoint',
@@ -96,7 +104,7 @@ const ossOffer = {
   availability: 'https://schema.org/InStock',
   url: `${SITE}/pricing`,
   description:
-    'Free open-source Agent Harness Engineering platform. Self-host under Apache 2.0 with unlimited usage.',
+    'Free open-source agent harness engineering platform. Self-host under Apache 2.0 with unlimited usage.',
   seller: { '@id': SCHEMA_IDS.org },
   itemOffered: { '@id': SCHEMA_IDS.software },
 }
@@ -122,7 +130,7 @@ export const applicationSchema = {
   screenshot: SHARE_IMAGE,
   operatingSystem: 'Linux, Windows, macOS',
   applicationCategory: 'DeveloperApplication',
-  applicationSubCategory: 'LLM observability',
+  applicationSubCategory: 'Agent harness engineering platform',
   description: DEFINITION,
   isAccessibleForFree: true,
   license: 'https://www.apache.org/licenses/LICENSE-2.0',
@@ -144,13 +152,20 @@ export const applicationSchema = {
   publisher: { '@id': SCHEMA_IDS.org },
   creator: { '@id': SCHEMA_IDS.org },
   isBasedOn: { '@id': SCHEMA_IDS.source },
-  sameAs: [GITHUB_REPO],
+  sameAs: [
+    GITHUB_REPO,
+    'https://pypi.org/project/openlit/',
+    'https://www.npmjs.com/package/openlit',
+  ],
   featureList: [
-    'Agent Harness Engineering',
+    'Agent harness engineering',
     'OpenTelemetry-native LLM tracing',
-    'LLM evaluation and LLM-as-a-judge',
+    'Agent observability',
+    'Agent evals and LLM-as-a-judge',
+    'Guardrails',
+    'Coding agent observability (Claude Code, Codex, Cursor)',
+    'MCP observability',
     'Prompt Hub prompt management',
-    'AI agent monitoring',
     'API key management (Vault)',
     'Model comparison (OpenGround)',
     'GPU monitoring',
@@ -204,12 +219,14 @@ export const productSchema = {
   offers: ossOffer,
 }
 
-export function createJsonLdGraph(entities) {
+export function createJsonLdGraph(entities: unknown[]) {
   return {
     '@context': 'https://schema.org',
     '@graph': entities.filter(Boolean).map((entity) => {
       if (!entity || typeof entity !== 'object') return entity
-      const { '@context': _context, ...rest } = entity
+      const { '@context': _context, ...rest } = entity as Record<string, unknown> & {
+        '@context'?: unknown
+      }
       return rest
     }),
   }
@@ -227,7 +244,7 @@ export const siteGraph = createJsonLdGraph([
   websiteSchema,
 ])
 
-function breadcrumbList(url, breadcrumbItems) {
+function breadcrumbList(url: string, breadcrumbItems?: { name: string; url: string }[]) {
   if (!breadcrumbItems || breadcrumbItems.length === 0) return undefined
   return {
     '@type': 'BreadcrumbList',
@@ -241,8 +258,18 @@ function breadcrumbList(url, breadcrumbItems) {
   }
 }
 
-export function createWebPageSchema(name, url, description, breadcrumbItems, extra = {}) {
-  const schema = {
+export function createWebPageSchema(
+  name: string,
+  url: string,
+  description: string,
+  breadcrumbItems?: { name: string; url: string }[],
+  extra: {
+    pageType?: string
+    about?: Record<string, unknown>
+    fields?: Record<string, unknown>
+  } = {}
+) {
+  const schema: Record<string, unknown> = {
     '@type': extra.pageType || 'WebPage',
     '@id': `${url}#webpage`,
     name,
@@ -259,7 +286,17 @@ export function createWebPageSchema(name, url, description, breadcrumbItems, ext
   return schema
 }
 
-export function createItemListSchema({ name, url, description, items }) {
+export function createItemListSchema({
+  name,
+  url,
+  description,
+  items,
+}: {
+  name: string
+  url: string
+  description: string
+  items: { name: string; url: string; description?: string }[]
+}) {
   return {
     '@type': 'ItemList',
     '@id': `${url}#itemlist`,
@@ -288,6 +325,12 @@ export function createComparisonPageSchema({
   description,
   competitorName,
   breadcrumbs,
+}: {
+  name: string
+  url: string
+  description: string
+  competitorName: string
+  breadcrumbs?: { name: string; url: string }[]
 }) {
   return createWebPageSchema(name, url, description, breadcrumbs, {
     fields: {
@@ -297,12 +340,101 @@ export function createComparisonPageSchema({
         name: competitorName,
         applicationCategory: 'DeveloperApplication',
       },
-      keywords: `OpenLIT vs ${competitorName}, ${competitorName} alternative, LLM observability comparison`,
+      keywords: `OpenLIT vs ${competitorName}, ${competitorName} alternative open source, agent observability, agent evals, LLM observability comparison`,
     },
   })
 }
 
-export function createPricingGraph({ webpage, faq }) {
+export function createDefinedTermSchema({
+  name,
+  description,
+  url,
+  inDefinedTermSet,
+}: {
+  name: string
+  description: string
+  url: string
+  inDefinedTermSet?: { '@type': string; name: string; url: string }
+}) {
+  return {
+    '@type': 'DefinedTerm',
+    '@id': `${url}#term`,
+    name,
+    description,
+    url,
+    inDefinedTermSet: inDefinedTermSet || {
+      '@type': 'DefinedTermSet',
+      name: 'OpenLIT Agent Harness Glossary',
+      url: `${SITE}/glossary`,
+    },
+  }
+}
+
+export function createDefinedTermSetSchema({
+  name,
+  url,
+  description,
+  terms,
+}: {
+  name: string
+  url: string
+  description: string
+  terms: { slug: string; name: string; definition: string }[]
+}) {
+  return {
+    '@type': 'DefinedTermSet',
+    '@id': `${url}#termset`,
+    name,
+    url,
+    description,
+    hasDefinedTerm: terms.map((term) => ({
+      '@type': 'DefinedTerm',
+      '@id': `${SITE}/glossary/${term.slug}#term`,
+      name: term.name,
+      description: term.definition,
+      url: `${SITE}/glossary/${term.slug}`,
+    })),
+  }
+}
+
+export function createTechArticleSchema({
+  name,
+  url,
+  description,
+  datePublished,
+  dateModified,
+  breadcrumbs,
+}: {
+  name: string
+  url: string
+  description: string
+  datePublished: string
+  dateModified?: string
+  breadcrumbs?: { name: string; url: string }[]
+}) {
+  return createWebPageSchema(name, url, description, breadcrumbs, {
+    pageType: 'TechArticle',
+    about: {
+      '@type': 'DefinedTerm',
+      name: 'Agent harness engineering',
+      url: `${SITE}/glossary/harness-engineering`,
+    },
+    fields: {
+      author: { '@id': SCHEMA_IDS.founder },
+      datePublished,
+      dateModified: dateModified || datePublished,
+      headline: name,
+    },
+  })
+}
+
+export function createPricingGraph({
+  webpage,
+  faq,
+}: {
+  webpage: Record<string, unknown>
+  faq: Record<string, unknown>
+}) {
   return createJsonLdGraph([
     webpage,
     {
@@ -335,7 +467,7 @@ export function createPricingGraph({ webpage, faq }) {
       '@type': 'Service',
       '@id': SCHEMA_IDS.serviceOss,
       name: 'OpenLIT self-hosted OSS',
-      serviceType: 'Self-hosted Agent Harness Engineering',
+      serviceType: 'Self-hosted agent harness engineering',
       description:
         'Self-host OpenLIT under Apache 2.0 with unlimited usage. Deploy with Docker Compose or Helm.',
       provider: { '@id': SCHEMA_IDS.org },
@@ -351,7 +483,7 @@ export function createPricingGraph({ webpage, faq }) {
       '@type': 'Service',
       '@id': SCHEMA_IDS.serviceCloud,
       name: 'OpenLIT Cloud',
-      serviceType: 'Hosted Agent Harness Engineering',
+      serviceType: 'Hosted agent harness engineering',
       description: 'Fully hosted OpenLIT for teams that want managed operations. Coming soon.',
       provider: { '@id': SCHEMA_IDS.org },
       audience: {
@@ -365,7 +497,7 @@ export function createPricingGraph({ webpage, faq }) {
   ])
 }
 
-export function personIdForAuthor(slug, name) {
+export function personIdForAuthor(slug: string | undefined, name: string | undefined) {
   if (slug === 'Aman' || name === 'Aman Agarwal') return SCHEMA_IDS.founder
   const key = String(slug || name || 'author')
     .toLowerCase()
@@ -374,9 +506,18 @@ export function personIdForAuthor(slug, name) {
   return `${SITE}/#person-${key}`
 }
 
-export function createAuthorPersonSchema(author) {
+export function createAuthorPersonSchema(author: {
+  slug?: string
+  name: string
+  occupation?: string
+  company?: string
+  avatar?: string
+  github?: string
+  twitter?: string
+  linkedin?: string
+}) {
   const sameAs = [author.github, author.twitter, author.linkedin].filter(Boolean)
-  const person = {
+  const person: Record<string, unknown> = {
     '@type': 'Person',
     '@id': personIdForAuthor(author.slug, author.name),
     name: author.name,

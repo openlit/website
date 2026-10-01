@@ -28,10 +28,10 @@ const competitors: Competitor[] = [
     name: 'Langfuse',
     tagline: 'OpenLIT vs Langfuse',
     description:
-      'Compare OpenLIT and Langfuse for LLM observability. See how OpenTelemetry-native monitoring, GPU tracking, and self-hosted deployment stack up.',
-    heroHeadline: 'OpenLIT vs Langfuse',
+      'OpenLIT vs Langfuse: OpenLIT is an Apache-2.0, OpenTelemetry-native Langfuse alternative with GPU monitoring, guardrails and Vault. Features and when to pick each.',
+    heroHeadline: 'OpenLIT vs Langfuse: an Apache-2.0, OpenTelemetry-native Langfuse alternative',
     heroSubheadline:
-      'Both are open-source LLM observability tools. OpenLIT is built natively on OpenTelemetry standards with GPU monitoring and broader infrastructure coverage. Here is a detailed comparison.',
+      'Both are open-source agent observability and evals tools. OpenLIT is built natively on OpenTelemetry with GPU monitoring, guardrails, and Vault. Here is a detailed comparison.',
     openSourceUrl: 'https://github.com/langfuse/langfuse',
     features: [
       {
@@ -119,8 +119,8 @@ const competitors: Competitor[] = [
     name: 'Helicone',
     tagline: 'OpenLIT vs Helicone',
     description:
-      'Compare OpenLIT and Helicone for LLM observability. OpenLIT is SDK-based with no proxy latency, OpenTelemetry-native, and fully self-hostable.',
-    heroHeadline: 'OpenLIT vs Helicone',
+      'OpenLIT vs Helicone: an open-source Helicone alternative for agent observability and evals. SDK-based, OpenTelemetry-native, self-hostable with no proxy required.',
+    heroHeadline: 'OpenLIT vs Helicone: an open-source Helicone alternative',
     heroSubheadline:
       'Helicone routes traffic through a proxy to capture telemetry. OpenLIT instruments your existing SDK calls directly: no proxy, no added latency, fully OpenTelemetry-native.',
     openSourceUrl: 'https://github.com/Helicone/helicone',
@@ -200,8 +200,8 @@ const competitors: Competitor[] = [
     name: 'LangSmith',
     tagline: 'OpenLIT vs LangSmith',
     description:
-      'Compare OpenLIT and LangSmith for LLM monitoring. OpenLIT is open-source, self-hostable, and framework-agnostic. LangSmith is a proprietary cloud platform optimised for LangChain.',
-    heroHeadline: 'OpenLIT vs LangSmith',
+      'Self-hosted, Apache-2.0 LangSmith alternative. Compare tracing, agent evals, prompt management, OpenTelemetry support, pricing and lock-in.',
+    heroHeadline: 'OpenLIT vs LangSmith: an open-source LangSmith alternative',
     heroSubheadline:
       "LangSmith is LangChain's proprietary observability platform. OpenLIT is framework-agnostic, fully open-source (Apache 2.0), and works with any LLM provider or orchestration framework.",
     features: [
@@ -292,8 +292,8 @@ const competitors: Competitor[] = [
     name: 'Datadog LLM Observability',
     tagline: 'OpenLIT vs Datadog LLM Observability',
     description:
-      'Compare OpenLIT and Datadog for LLM observability. OpenLIT is purpose-built, open-source, and free to self-host. Datadog is a general-purpose platform with LLM monitoring as a paid add-on.',
-    heroHeadline: 'OpenLIT vs Datadog LLM Observability',
+      'OpenLIT vs Datadog: an open-source Datadog LLM Observability alternative for agent observability, evals and guardrails. Self-host free under Apache 2.0.',
+    heroHeadline: 'OpenLIT vs Datadog: an open-source Datadog LLM Observability alternative',
     heroSubheadline:
       'Datadog is a powerful general-purpose observability platform, but LLM monitoring is a paid add-on requiring existing Datadog infrastructure. OpenLIT is purpose-built for AI engineering, open-source, and free to self-host.',
     features: [
@@ -392,8 +392,8 @@ const competitors: Competitor[] = [
     name: 'Arize Phoenix',
     tagline: 'OpenLIT vs Arize Phoenix',
     description:
-      'Compare OpenLIT and Arize Phoenix for LLM observability. OpenLIT is Apache 2.0 with a full self-hosted platform (traces, evals, Prompt Hub, GPU). Phoenix is Elastic License 2.0 with strong tracing and eval UX.',
-    heroHeadline: 'OpenLIT vs Arize Phoenix',
+      'OpenLIT vs Arize Phoenix: an Apache-2.0 Phoenix alternative with self-hosted traces, agent evals, Prompt Hub, guardrails and GPU monitoring.',
+    heroHeadline: 'OpenLIT vs Arize Phoenix: an open-source Phoenix alternative',
     heroSubheadline:
       'Both are open-source options for LLM tracing and evaluation. OpenLIT is Apache 2.0 and OpenTelemetry-native with Prompt Hub, agent monitoring, Vault, and GPU telemetry in one self-hosted platform. Phoenix centres on OpenInference tracing and eval workflows under Elastic License 2.0.',
     openSourceUrl: 'https://github.com/Arize-ai/phoenix',
@@ -479,8 +479,8 @@ const competitors: Competitor[] = [
     name: 'Comet Opik',
     tagline: 'OpenLIT vs Comet Opik',
     description:
-      'Compare OpenLIT and Comet Opik for LLM observability. Both are Apache 2.0 and self-hostable. OpenLIT adds OTel-native GPU telemetry, Prompt Hub, Vault, and a full AI engineering platform around traces and evals.',
-    heroHeadline: 'OpenLIT vs Comet Opik',
+      'OpenLIT vs Comet Opik: compare two Apache-2.0 agent observability platforms. OpenLIT adds OTel-native GPU telemetry, Prompt Hub, Vault and guardrails.',
+    heroHeadline: 'OpenLIT vs Comet Opik: an open-source Opik alternative',
     heroSubheadline:
       'Opik is an Apache-2.0 open-source project for LLM tracing and evaluation with Comet ecosystem ties. OpenLIT is also Apache 2.0 and self-hostable, with OpenTelemetry-native instrumentation, Prompt Hub, agent monitoring, Vault, and GPU collectors in one platform.',
     openSourceUrl: 'https://github.com/comet-ml/opik',
@@ -558,8 +558,8 @@ const competitors: Competitor[] = [
     name: 'Braintrust',
     tagline: 'OpenLIT vs Braintrust',
     description:
-      'Compare OpenLIT and Braintrust for LLM evaluation and prompt management. OpenLIT is Apache 2.0 and free to self-host with OTel-native tracing. Braintrust is a commercial, cloud-first platform strong on experiments and eval UX.',
-    heroHeadline: 'OpenLIT vs Braintrust',
+      'OpenLIT vs Braintrust: an open-source Braintrust alternative for agent evals and observability. Apache 2.0, self-host free, OpenTelemetry-native.',
+    heroHeadline: 'OpenLIT vs Braintrust: an open-source Braintrust alternative',
     heroSubheadline:
       'Braintrust is widely used for prompt management, datasets, and evaluation experiments as a managed product. OpenLIT is an open-source Apache-2.0 platform you self-host for LLM observability, LLM-as-a-judge, Prompt Hub, and cost tracking on OpenTelemetry.',
     features: [
@@ -640,8 +640,8 @@ const competitors: Competitor[] = [
     name: 'OpenLLMetry',
     tagline: 'OpenLIT vs OpenLLMetry',
     description:
-      'Compare OpenLIT and OpenLLMetry. OpenLLMetry is an OpenTelemetry instrumentation library. OpenLIT is a full self-hosted AI engineering platform plus SDKs that also speak OTLP.',
-    heroHeadline: 'OpenLIT vs OpenLLMetry',
+      'OpenLIT vs OpenLLMetry: OpenLLMetry is an OTel instrumentation library; OpenLIT is a full self-hosted agent harness platform with tracing, evals and guardrails.',
+    heroHeadline: 'OpenLIT vs OpenLLMetry: an open-source OpenLLMetry alternative platform',
     heroSubheadline:
       'OpenLLMetry (by Traceloop) is an instrumentation library that emits OpenTelemetry spans for LLM apps. OpenLIT is a full self-hosted platform (UI, evaluations, Prompt Hub, agents, Vault, GPU) with its own SDKs that also ingest and export OTLP.',
     openSourceUrl: 'https://github.com/Traceloop/openllmetry',

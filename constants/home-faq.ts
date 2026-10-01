@@ -4,6 +4,8 @@ import { OPENLIT_DEFINITION } from 'constants/openlit-definition'
 export type HomeFaqItem = {
   question: string
   answer: string
+  /** When true, keep visible on the page but omit from FAQPage JSON-LD. */
+  excludeFromSchema?: boolean
 }
 
 export const HOME_FAQ_ITEMS: HomeFaqItem[] = [
@@ -12,9 +14,34 @@ export const HOME_FAQ_ITEMS: HomeFaqItem[] = [
     answer: OPENLIT_DEFINITION,
   },
   {
+    question: 'What is an agent harness?',
+    answer:
+      'An agent harness is everything in an AI agent except the model. It runs the model–tool loop, manages context and state, and enforces permissions and guardrails. Claude Code, Codex, and frameworks such as LangGraph or deepagents are harnesses; OpenLIT observes, evaluates, and improves any of them via OpenTelemetry.',
+  },
+  {
     question: 'What is harness engineering?',
     answer:
-      'Harness engineering is the loop of instrument, develop, manage, observe, and improve AI systems. OpenLIT is the open source Harness Engineering platform for that loop, and also an open source AI engineering platform for tracing, prompts, evaluations, and secrets.',
+      'Harness engineering (or agent harness engineering) is the discipline of designing, measuring, and improving everything around the model in an AI agent (tools, context, prompts, memory, hooks, guardrails, and feedback loops) so the agent is reliable in production. Teams observe failures in traces, evaluate them, fix the harness, and verify the fix. OpenLIT is the open-source platform for that loop.',
+  },
+  {
+    question: 'How is an agent harness different from an agent framework?',
+    answer:
+      'An agent framework (LangGraph, CrewAI, OpenAI Agents SDK) helps you build the harness. The harness is the running system around the model. OpenLIT is neither: it instruments and improves whatever harness you already use through OpenTelemetry, without replacing your runtime.',
+  },
+  {
+    question: 'Does OpenLIT work with Claude Code, Codex, and deepagents?',
+    answer:
+      'Yes. OpenLIT observes coding agents such as Claude Code, Codex, Cursor, and Windsurf via the openlit CLI (no SDK required), and instruments agent frameworks including LangGraph, CrewAI, OpenAI Agents SDK, and deepagents with OpenTelemetry-native SDKs.',
+  },
+  {
+    question: 'How do I evaluate an agent harness with OpenLIT?',
+    answer:
+      'Run LLM-as-a-judge and programmatic evals on production traces online, or offline through the SDK as CI gates. Score quality, safety, and cost, then fix prompts, tools, rules, or guardrails and verify the change with regression evals.',
+  },
+  {
+    question: 'What is the difference between agent observability and LLM observability?',
+    answer:
+      'LLM observability focuses on individual model calls (tokens, latency, cost, prompts). Agent observability covers the full harness: LLM calls, tool calls, MCP requests, retrieval, multi-step trajectories, and outcomes. OpenLIT does both on OpenTelemetry.',
   },
   {
     question: 'Does OpenLIT support LLM tracing and OpenTelemetry?',
@@ -53,7 +80,7 @@ export const HOME_FAQ_ITEMS: HomeFaqItem[] = [
   },
   {
     question: `Is OpenLIT a good open source AI engineering platform?`,
-    answer: `Yes. OpenLIT is an open source Harness Engineering platform and an open source AI engineering platform under Apache 2.0, with native SDKs for Python, JavaScript, and Go, plus ${SUPPORTED_INTEGRATIONS.length}+ integrations. You can self-host with Docker or Kubernetes, keep data in your own ClickHouse, and export OTLP to tools like Grafana or Datadog.`,
+    answer: `Yes. OpenLIT is an open-source agent harness engineering platform under Apache 2.0, with native SDKs for Python, JavaScript, and Go, plus ${SUPPORTED_INTEGRATIONS.length}+ integrations. You can self-host with Docker or Kubernetes, keep data in your own ClickHouse, and export OTLP to tools like Grafana or Datadog.`,
   },
   {
     question: 'How do I deploy OpenLIT?',
@@ -73,12 +100,12 @@ export const HOME_FAQ_ITEMS: HomeFaqItem[] = [
   {
     question: 'What are the best open source LLM observability tools?',
     answer:
-      'Strong open-source options include OpenLIT, Langfuse, Arize Phoenix, Comet Opik, and Helicone, each with a different license and architecture. OpenLIT is an Apache-2.0, OpenTelemetry-native platform for LLM tracing, evaluations, prompt management, and cost tracking you can self-host free. For a buyer-oriented roundup of Langfuse alternatives, see https://openlit.io/blogs/langfuse-alternatives. Compare tools at https://openlit.io/compare.',
+      'Strong open-source options include OpenLIT, Langfuse, Arize Phoenix, Comet Opik, and Helicone, each with a different license and architecture. OpenLIT is an Apache-2.0, OpenTelemetry-native platform for agent observability, evals, guardrails, and prompt management you can self-host free. For a buyer-oriented roundup of Langfuse alternatives, see https://openlit.io/blogs/langfuse-alternatives. Compare tools at https://openlit.io/compare.',
   },
   {
     question: 'What is a good Langfuse alternative that is Apache 2.0?',
     answer:
-      'OpenLIT is a strong Apache-2.0 Langfuse alternative when you want OpenTelemetry-native LLM and GPU telemetry plus evaluations, Prompt Hub, and agent monitoring in one self-hosted platform. Comet Opik is another Apache-2.0 option focused on tracing and evals. Read the roundup at https://openlit.io/blogs/langfuse-alternatives and the feature comparison at https://openlit.io/compare/openlit-vs-langfuse.',
+      'OpenLIT is a strong Apache-2.0 Langfuse alternative when you want OpenTelemetry-native agent and GPU telemetry plus evaluations, Prompt Hub, and coding-agent monitoring in one self-hosted platform. Comet Opik is another Apache-2.0 option focused on tracing and evals. Read the roundup at https://openlit.io/blogs/langfuse-alternatives and the feature comparison at https://openlit.io/compare/openlit-vs-langfuse.',
   },
   {
     question: 'How do I self-host LLM observability with OpenTelemetry?',
@@ -94,6 +121,7 @@ export const HOME_FAQ_ITEMS: HomeFaqItem[] = [
     question: 'Why does this website look like this?',
     answer:
       'Because our product looks like this. We liked the UI so much we let it escape the dashboard and take over the marketing site. Same sidebar energy, same Otter vibes, fewer traces (for now).',
+    excludeFromSchema: true,
   },
   {
     question: 'How do I get started with OpenLIT?',
@@ -103,10 +131,11 @@ export const HOME_FAQ_ITEMS: HomeFaqItem[] = [
 ]
 
 export function createFaqPageSchema(items: HomeFaqItem[], url?: string) {
+  const schemaItems = items.filter((item) => !item.excludeFromSchema)
   return {
     '@type': 'FAQPage',
     ...(url ? { '@id': `${url}#faq` } : {}),
-    mainEntity: items.map((item) => ({
+    mainEntity: schemaItems.map((item) => ({
       '@type': 'Question',
       name: item.question,
       acceptedAnswer: {

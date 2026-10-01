@@ -18,14 +18,16 @@ export default function CompareIndex() {
   return (
     <div className="container py-10 md:py-12">
       <div className="mb-10 max-w-3xl">
-        <h2 className="text-3xl font-bold tracking-tight text-stone-950 dark:text-stone-50 md:text-4xl">
-          <MarkedWord>Compare</MarkedWord>
-        </h2>
+        <h1 className="text-3xl font-bold tracking-tight text-stone-950 dark:text-stone-50 md:text-4xl">
+          OpenLIT vs Alternatives: Agent Observability &amp; <MarkedWord>Evals</MarkedWord> Tools
+          Compared
+        </h1>
         <p className="mt-3 text-base leading-relaxed text-stone-600 dark:text-stone-300">
           {OPENLIT_DEFINITION}
         </p>
         <p className="mt-3 text-base leading-relaxed text-stone-600 dark:text-stone-300">
-          See how OpenLIT compares with other AI engineering and LLM observability tools.
+          See how OpenLIT compares with other agent observability, agent evals, and LLM
+          observability tools.
         </p>
       </div>
 

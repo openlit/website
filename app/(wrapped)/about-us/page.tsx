@@ -6,13 +6,13 @@ import FeaturePageHeader from '@/components/shell/feature-page-header'
 import { Info } from 'lucide-react'
 
 export const metadata = genPageMetadata({
-  title: 'About OpenLIT',
+  title: 'About OpenLIT: The Open-Source Agent Harness Engineering Platform',
   description:
-    'OpenLIT is an open-source Agent Harness Engineering platform. Meet contributors from GitHub and see how we help teams instrument, evaluate, and improve production AI systems.',
+    'OpenLIT is an open-source agent harness engineering platform. Meet contributors from GitHub and see how we help teams trace, evaluate, guard, and improve production AI agents.',
   keywords: [
     'About OpenLIT',
     'OpenLIT team',
-    'Agent Harness Engineering',
+    'agent harness engineering',
     'open source AI engineering platform',
     'OpenLIT contributors',
     'OpenTelemetry AI platform',
@@ -22,9 +22,9 @@ export const metadata = genPageMetadata({
 })
 
 const pageSchema = createWebPageSchema(
-  'About OpenLIT',
+  'About OpenLIT: The Open-Source Agent Harness Engineering Platform',
   'https://openlit.io/about-us',
-  'OpenLIT is an open-source Agent Harness Engineering platform built on OpenTelemetry.',
+  'OpenLIT is an open-source agent harness engineering platform built on OpenTelemetry.',
   [
     { name: 'Home', url: 'https://openlit.io' },
     { name: 'About', url: 'https://openlit.io/about-us' },

@@ -73,11 +73,22 @@ export default function HomeFaq() {
       <div className="mx-auto max-w-6xl">
         <div className="max-w-3xl">
           <h2 className="text-balance text-3xl font-bold tracking-tight text-stone-900 dark:text-stone-50 md:text-4xl">
-            <MarkedWord>FAQ</MarkedWord>
+            Agent harness engineering <MarkedWord>FAQ</MarkedWord>
           </h2>
           <p className="mt-4 text-base leading-relaxed text-stone-600 dark:text-stone-300 md:text-lg">
-            Common questions about OpenLIT, LLM tracing, evaluations, prompt management, and
-            self-hosting.
+            Common questions about agent harnesses, agent observability, evals, guardrails, and
+            self-hosting OpenLIT. See also the{' '}
+            <a
+              href="/agent-harness-engineering"
+              className="font-medium text-brandPrimary underline"
+            >
+              harness engineering guide
+            </a>{' '}
+            and{' '}
+            <a href="/glossary" className="font-medium text-brandPrimary underline">
+              glossary
+            </a>
+            .
           </p>
         </div>
 

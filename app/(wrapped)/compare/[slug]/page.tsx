@@ -16,14 +16,17 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   if (!competitor) return {}
 
   return genPageMetadata({
-    title: `${competitor.tagline}: LLM Observability Comparison`,
+    title: `OpenLIT vs ${competitor.name} (2026): Open-Source ${competitor.name} Alternative`,
     description: competitor.description,
     keywords: [
       competitor.tagline,
       `${competitor.name} alternative`,
+      `${competitor.name} alternative open source`,
       `OpenLIT vs ${competitor.name}`,
+      'agent observability',
+      'agent evals',
       'LLM observability comparison',
-      'open source Agent Harness Engineering',
+      'open source agent harness engineering',
     ],
     canonicalUrl: `https://openlit.io/compare/${params.slug}`,
     markdownUrl: `https://openlit.io/compare/${params.slug}.md`,
@@ -35,7 +38,7 @@ export default function CompareSlugPage({ params }: { params: { slug: string } }
   if (!competitor) notFound()
 
   const pageSchema = createComparisonPageSchema({
-    name: `${competitor.tagline}: LLM Observability Comparison`,
+    name: `OpenLIT vs ${competitor.name} (2026): Open-Source ${competitor.name} Alternative`,
     url: `https://openlit.io/compare/${params.slug}`,
     description: competitor.description,
     competitorName: competitor.name,

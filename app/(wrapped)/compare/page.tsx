@@ -11,15 +11,17 @@ import { GitCompare } from 'lucide-react'
 import competitors from '@/data/comparisons'
 
 const COMPARE_DESCRIPTION =
-  'Compare OpenLIT against Langfuse, Helicone, LangSmith, Datadog, Arize Phoenix, Comet Opik, Braintrust, and OpenLLMetry. Honest, feature-by-feature comparison of LLM observability and monitoring tools.'
+  'Compare OpenLIT with Langfuse, LangSmith, Arize Phoenix, Braintrust, Opik, Helicone, Datadog, OpenLLMetry and more for agent observability, evals and guardrails.'
 
 export const metadata = genPageMetadata({
-  title: 'OpenLIT vs Alternatives: LLM Observability Comparison',
+  title: 'OpenLIT vs Alternatives: Agent Observability & Evals Tools Compared',
   description: COMPARE_DESCRIPTION,
   keywords: [
     'OpenLIT vs Langfuse',
     'Langfuse alternatives',
-    'open source LLM observability',
+    'LangSmith alternative open source',
+    'open source agent observability',
+    'agent evals',
     'OpenLIT vs Phoenix',
     'OpenLIT vs Opik',
     'OpenLIT vs Braintrust',
@@ -31,7 +33,7 @@ export const metadata = genPageMetadata({
 })
 
 const pageSchema = createWebPageSchema(
-  'OpenLIT vs Alternatives: LLM Observability Comparison',
+  'OpenLIT vs Alternatives: Agent Observability & Evals Tools Compared',
   'https://openlit.io/compare',
   COMPARE_DESCRIPTION,
   [
@@ -41,7 +43,7 @@ const pageSchema = createWebPageSchema(
 )
 
 const listSchema = createItemListSchema({
-  name: 'OpenLIT vs LLM observability alternatives',
+  name: 'OpenLIT vs agent observability and evals alternatives',
   url: 'https://openlit.io/compare',
   description: COMPARE_DESCRIPTION,
   items: competitors.map((c) => ({

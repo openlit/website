@@ -36,9 +36,9 @@ export default function FeaturePageHeader({
               <p className="text-[11px] uppercase tracking-wide text-stone-500 dark:text-stone-400">
                 {eyebrow}
               </p>
-              <h1 className="truncate text-sm font-semibold leading-tight text-stone-950 dark:text-stone-50">
+              <p className="truncate text-sm font-semibold leading-tight text-stone-950 dark:text-stone-50">
                 {title}
-              </h1>
+              </p>
             </div>
           </div>
         </div>

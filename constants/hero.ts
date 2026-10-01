@@ -1,24 +1,26 @@
-import { OPENLIT_DEFINITION } from 'constants/openlit-definition'
+import { OPENLIT_DEFINITION, OPENLIT_DEFINITION_SHORT } from 'constants/openlit-definition'
 
 export const HERO_TITLE = 'Open source Agent Harness Engineering Platform'
 
-/** Above-the-fold / SEO description — keep aligned with OPENLIT_DEFINITION. */
-export const HERO_DESCRIPTION = OPENLIT_DEFINITION
+/** Visible hero paragraph — keep aligned with OPENLIT_DEFINITION. */
+export const HERO_LEAD = OPENLIT_DEFINITION
+
+/** Meta / SERP description (≤160 chars). */
+export const HERO_DESCRIPTION = OPENLIT_DEFINITION_SHORT
 
 export const HERO_KEYWORDS = [
-  'Harness Engineering',
-  'AI engineering',
-  'AI engineering platform',
-  'open source Agent Harness Engineering',
-  'open source AI engineering platform',
+  'agent harness engineering',
+  'agent harness engineering platform',
+  'open source agent harness engineering',
+  'agent observability',
+  'agent evals',
+  'LLM guardrails',
+  'OpenTelemetry',
   'Langfuse alternative',
   'LLM observability',
   'LLM tracing',
-  'OpenTelemetry tracing',
-  'LLM evaluation',
   'prompt management',
   'AI agent monitoring',
-  'API key management',
-  'model comparison LLM',
+  'coding agent observability',
   'GPU monitoring',
 ]

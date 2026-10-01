@@ -325,7 +325,8 @@ export default function WorksWithStack() {
               Instrument once
             </p>
             <h2 className="mt-3 text-3xl font-bold tracking-tight text-stone-900 dark:text-stone-50 md:text-4xl">
-              Your way in. Every <MarkedWord>stack</MarkedWord> covered.
+              <MarkedWord>OpenTelemetry</MarkedWord>-native: works with any model, framework, or
+              harness
             </h2>
           </div>
           <p className="max-w-xl text-base leading-relaxed text-stone-600 dark:text-stone-300 md:text-lg lg:justify-self-end">

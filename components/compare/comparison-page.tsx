@@ -74,9 +74,9 @@ export default function ComparisonPage({ competitor }: { competitor: Competitor 
   return (
     <div className="container py-10 md:py-12">
       <div className="mb-10 max-w-3xl">
-        <h2 className="text-balance text-3xl font-bold tracking-tight text-stone-950 dark:text-stone-50 md:text-4xl">
+        <h1 className="text-balance text-3xl font-bold tracking-tight text-stone-950 dark:text-stone-50 md:text-4xl">
           OpenLIT vs <MarkedWord className="whitespace-nowrap">{competitor.name}</MarkedWord>
-        </h2>
+        </h1>
         <p className="mt-3 text-base leading-relaxed text-stone-600 dark:text-stone-300">
           {competitor.heroSubheadline}
         </p>

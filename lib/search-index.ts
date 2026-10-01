@@ -1,4 +1,5 @@
 import competitors from 'data/comparisons'
+import GLOSSARY_TERMS from 'data/glossary'
 import { HERO_TITLE } from 'constants/hero'
 
 export type SearchItem = {
@@ -18,7 +19,7 @@ export const STATIC_SEARCH_ITEMS: SearchItem[] = [
     description: HERO_TITLE,
     href: '/',
     category: 'Page',
-    keywords: 'openlit landing hero',
+    keywords: 'openlit landing hero agent harness engineering',
   },
   {
     id: 'page-pricing',
@@ -31,15 +32,31 @@ export const STATIC_SEARCH_ITEMS: SearchItem[] = [
   {
     id: 'page-compare',
     title: 'Compare',
-    description: 'Compare OpenLIT with other LLM observability tools',
+    description: 'Compare OpenLIT with other agent observability and evals tools',
     href: '/compare',
     category: 'Page',
-    keywords: 'vs competitors alternatives',
+    keywords: 'vs competitors alternatives agent observability',
+  },
+  {
+    id: 'page-harness',
+    title: 'What is agent harness engineering?',
+    description: 'Definition, layers, and tools for agent harness engineering',
+    href: '/agent-harness-engineering',
+    category: 'Page',
+    keywords: 'agent harness harness engineering pillar',
+  },
+  {
+    id: 'page-glossary',
+    title: 'Agent harness glossary',
+    description: 'Definitions for harness, observability, evals, and guardrails',
+    href: '/glossary',
+    category: 'Page',
+    keywords: 'glossary definitions agent harness',
   },
   {
     id: 'page-blogs',
     title: 'Blogs',
-    description: 'Guides and articles about LLM observability',
+    description: 'Guides on agent harness engineering and observability',
     href: '/blogs',
     category: 'Page',
     keywords: 'posts articles news',
@@ -92,11 +109,19 @@ export const STATIC_SEARCH_ITEMS: SearchItem[] = [
   },
   ...competitors.map((competitor) => ({
     id: `compare-${competitor.slug}`,
-    title: competitor.tagline,
+    title: `OpenLIT vs ${competitor.name}`,
     description: competitor.description,
     href: `/compare/${competitor.slug}`,
     category: 'Compare' as const,
-    keywords: `${competitor.name} vs openlit comparison`,
+    keywords: `${competitor.name} vs openlit alternative comparison`,
+  })),
+  ...GLOSSARY_TERMS.map((term) => ({
+    id: `glossary-${term.slug}`,
+    title: term.name,
+    description: term.definition,
+    href: `/glossary/${term.slug}`,
+    category: 'Page' as const,
+    keywords: `glossary ${term.name} definition`,
   })),
 ]
 
