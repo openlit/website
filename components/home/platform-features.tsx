@@ -336,11 +336,12 @@ export default function PlatformFeatures() {
       <div className="mx-auto max-w-6xl">
         <div className="mx-auto max-w-3xl text-center">
           <h2 className="text-3xl font-bold tracking-tight text-stone-900 dark:text-stone-50 md:text-4xl">
-            All the tools, one <MarkedWord>harness</MarkedWord> platform.
+            Agent <MarkedWord>observability</MarkedWord> for every LLM call, tool call, and agent
+            step
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-stone-600 dark:text-stone-300 md:text-lg">
-            Agent Harness tools for LLM tracing, prompt management, LLM evaluation, and model
-            comparison from prototype to production.
+            Trace, evaluate, and improve the harness around your agents: LLM tracing, agent evals,
+            prompt management, and model comparison from prototype to production.
           </p>
         </div>
 

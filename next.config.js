@@ -105,6 +105,12 @@ module.exports = () => {
         { source: '/about-us.md', destination: '/markdown/about-us' },
         { source: '/compare.md', destination: '/markdown/compare' },
         { source: '/compare/:slug.md', destination: '/markdown/compare/:slug' },
+        {
+          source: '/agent-harness-engineering.md',
+          destination: '/markdown/agent-harness-engineering',
+        },
+        { source: '/glossary.md', destination: '/markdown/glossary' },
+        { source: '/glossary/:slug.md', destination: '/markdown/glossary/:slug' },
       ]
     },
     async headers() {

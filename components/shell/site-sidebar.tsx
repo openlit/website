@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useEffect, useRef, useState, type ReactNode } from 'react'
 import {
+  BookOpen,
   BookText,
   ChevronsUpDown,
   GitCompare,
@@ -38,6 +39,13 @@ const NAV_ITEMS = [
     href: '/compare',
     icon: GitCompare,
     match: (path: string) => path.startsWith('/compare'),
+  },
+  {
+    label: 'Harness',
+    href: '/agent-harness-engineering',
+    icon: BookOpen,
+    match: (path: string) =>
+      path.startsWith('/agent-harness-engineering') || path.startsWith('/glossary'),
   },
   {
     label: 'Blogs',

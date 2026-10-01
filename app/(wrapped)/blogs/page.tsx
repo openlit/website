@@ -13,18 +13,18 @@ import { Newspaper } from 'lucide-react'
 import siteMetadata from 'data/siteMetadata'
 
 const BLOG_DESCRIPTION =
-  'Guides on Agent Harness Engineering: LLM observability, OpenTelemetry tracing, LLM evaluation, prompt management, and open-source Langfuse alternatives.'
+  'Guides on agent harness engineering: agent observability, OpenTelemetry tracing, agent evals, guardrails, prompt management and open-source alternatives.'
 
 export const metadata = genPageMetadata({
-  title: 'OpenLIT Blog: LLM Observability and Agent Harness Engineering',
+  title: 'OpenLIT Blog: Agent Harness Engineering & Observability',
   description: BLOG_DESCRIPTION,
   keywords: [
-    'LLM observability blog',
+    'agent harness engineering',
+    'agent observability blog',
     'Langfuse alternatives',
-    'open source LLM evaluation',
+    'open source agent evals',
     'prompt management',
     'OpenTelemetry LLM tracing',
-    'Agent Harness Engineering',
   ],
   canonicalUrl: 'https://openlit.io/blogs',
 })
@@ -34,7 +34,7 @@ export default function BlogPage() {
   const published = posts.filter((post) => !post.draft)
 
   const pageSchema = createWebPageSchema(
-    'OpenLIT Blog: LLM Observability and Agent Harness Engineering',
+    'OpenLIT Blog: Agent Harness Engineering & Observability',
     'https://openlit.io/blogs',
     BLOG_DESCRIPTION,
     [
@@ -66,6 +66,14 @@ export default function BlogPage() {
         icon={<Newspaper className="h-4 w-4" />}
         tone="border-violet-200 bg-violet-50 text-violet-700 dark:border-violet-900/70 dark:bg-violet-950/40 dark:text-violet-300"
       />
+      <div className="mx-auto max-w-6xl px-4 pt-10 sm:px-6 md:px-8">
+        <h1 className="text-3xl font-bold tracking-tight text-stone-950 dark:text-stone-50 md:text-4xl">
+          OpenLIT Blog
+        </h1>
+        <p className="mt-3 max-w-3xl text-base leading-relaxed text-stone-600 dark:text-stone-300">
+          {BLOG_DESCRIPTION}
+        </p>
+      </div>
       <div className="mx-auto max-w-6xl">
         <ListLayout posts={posts} initialDisplayPosts={posts} title="Blogs" />
       </div>

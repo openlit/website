@@ -1,7 +1,7 @@
 'use client'
 
 import { Dialog, DialogContent, DialogTrigger } from '../ui/dialog'
-import { HERO_DESCRIPTION } from 'constants/hero'
+import { HERO_LEAD } from 'constants/hero'
 import { MarkedWord } from '@/components/common/marker-underline'
 import { HarnessCanvas, useHarnessSelection } from './harness-canvas'
 
@@ -17,7 +17,7 @@ export default function Hero() {
             Engineering Platform
           </h1>
           <p className="mx-auto mt-5 max-w-2xl text-base leading-relaxed text-black dark:text-white md:text-lg">
-            {HERO_DESCRIPTION}
+            {HERO_LEAD}
           </p>
         </div>
 

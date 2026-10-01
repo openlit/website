@@ -34,12 +34,12 @@ export default function WhyOpenlit() {
     {
       title: 'The full harness loop',
       description:
-        'Instrument, develop, manage, observe, and improve AI systems in one Harness Engineering platform from prototype to production.',
+        'Observe, evaluate, guard, and fix everything around the model—tools, prompts, context, rules, and feedback—so agents stay reliable in production.',
     },
     {
       title: 'Unified platform',
       description:
-        'LLM tracing, LLM evaluation, prompt management, Vault, OpenGround, and Otter work alone or together on the same production data.',
+        'Agent observability, agent evals, guardrails, prompt management, Vault, OpenGround, and Otter work alone or together on the same production data.',
     },
     {
       title: 'Open source (Apache 2.0)',
@@ -96,12 +96,12 @@ export default function WhyOpenlit() {
       <div className="mx-auto max-w-6xl">
         <div className="max-w-3xl">
           <h2 className="text-balance text-3xl font-bold tracking-tight text-stone-900 dark:text-stone-50 md:text-4xl">
-            <MarkedWord>Why use OpenLIT?</MarkedWord>
+            Why teams engineer their agent <MarkedWord>harness</MarkedWord> with OpenLIT
           </h2>
           <p className="mt-4 text-base leading-relaxed text-stone-600 dark:text-stone-300 md:text-lg">
-            OpenLIT is an OpenTelemetry-native Harness Engineering platform. Trace, evaluate, and
-            improve AI systems with production data, without locking telemetry into a proprietary
-            format.
+            OpenLIT is an OpenTelemetry-native agent harness engineering platform. Trace, evaluate,
+            guard, and improve AI agents with production data, without locking telemetry into a
+            proprietary format.
           </p>
         </div>
 

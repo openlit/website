@@ -21,16 +21,16 @@ export default function AboutUsContent() {
 
   return (
     <div className="mx-auto w-full max-w-3xl px-4 py-10 md:px-6 md:py-14">
-      <h2 className="text-3xl font-bold tracking-tight text-stone-950 dark:text-stone-50 md:text-4xl">
+      <h1 className="text-3xl font-bold tracking-tight text-stone-950 dark:text-stone-50 md:text-4xl">
         <MarkedWord>About</MarkedWord> us
-      </h2>
+      </h1>
 
       <article className="mt-6 space-y-6 text-base leading-relaxed text-stone-700 prose-headings:font-semibold prose-p:text-stone-600 dark:text-stone-300 dark:prose-p:text-stone-300">
         <p className="text-lg text-stone-900 dark:text-stone-50">
-          OpenLIT is an open-source Agent Harness Engineering platform for LLM tracing, evaluations,
-          prompt management, and cost tracking, built on OpenTelemetry and free to self-host under
-          Apache 2.0. We help teams instrument, develop, manage, observe, and improve production AI
-          systems faster.
+          OpenLIT is an open-source agent harness engineering platform: OpenTelemetry-native agent
+          observability, evals, guardrails, prompt management, and cost and GPU monitoring for AI
+          agents and coding agents. Free to self-host under Apache 2.0. We help teams trace,
+          evaluate, guard, and improve everything around the model in production.
         </p>
 
         <p>

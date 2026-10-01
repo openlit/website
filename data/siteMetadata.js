@@ -4,8 +4,8 @@ module.exports = {
   author: 'OpenLIT',
   headerTitle: 'OpenLIT',
   description:
-    'OpenLIT is an open-source Agent Harness Engineering platform for LLM tracing, evaluations, prompt management, and cost tracking, built on OpenTelemetry and free to self-host under Apache 2.0.',
-  about: `OpenLIT is an open-source Agent Harness Engineering platform for LLM tracing, evaluations, prompt management, and cost tracking, built on OpenTelemetry and free to self-host under Apache 2.0. Instrument AI apps with OpenTelemetry-native SDKs, manage prompts in Prompt Hub, run LLM evaluations, monitor agents, store API keys in Vault, and improve quality with production data.`,
+    'OpenLIT is an open-source agent harness engineering platform: OpenTelemetry-native agent observability, evals, guardrails, prompt management, and cost and GPU monitoring for AI agents and coding agents. Free to self-host under Apache 2.0.',
+  about: `OpenLIT is an open-source agent harness engineering platform: OpenTelemetry-native agent observability, evals, guardrails, prompt management, and cost and GPU monitoring for AI agents and coding agents. Free to self-host under Apache 2.0. Instrument AI apps with OpenTelemetry-native SDKs, manage prompts in Prompt Hub, run agent evals, monitor coding agents, store API keys in Vault, and improve quality with production data.`,
   language: 'en-us',
   theme: 'dark',
   siteUrl: 'https://openlit.io',
@@ -18,7 +18,7 @@ module.exports = {
   discord: 'https://discord.com/invite/RbNPvG54',
   linkedin: 'https://www.linkedin.com/company/openlit/',
   youtube: 'https://www.youtube.com/@openlit',
-  slack: 'https://join.slack.com/t/dokulabs/shared_invite/zt-2etnfttwg-TjP_7BZXfYg84oAukY8QRQ',
+  slack: 'https://join.slack.com/t/openlit/shared_invite/zt-2etnfttwg-TjP_7BZXfYg84oAukY8QRQ',
   locale: 'en-US',
   // feedbackLink: 'https://app.formbricks.com/IiFk9GnqOF',
   analytics: {

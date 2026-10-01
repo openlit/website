@@ -1,7 +1,9 @@
 import competitors, { type Competitor } from 'data/comparisons'
+import GLOSSARY_TERMS, { type GlossaryTerm } from 'data/glossary'
 import siteMetadata from 'data/siteMetadata'
 import { HERO_DESCRIPTION, HERO_TITLE } from 'constants/hero'
 import { HOME_FAQ_ITEMS } from 'constants/home-faq'
+import { OPENLIT_DEFINITION, OPENLIT_POSITIONING } from 'constants/openlit-definition'
 import {
   OSS_FEATURE_ROWS,
   PRICING_FAQ_ITEMS,
@@ -10,6 +12,7 @@ import {
   type PlanValue,
 } from 'constants/pricing'
 import SUPPORTED_INTEGRATIONS from 'constants/integrations'
+import { PILLAR_FAQ } from 'constants/pillar-faq'
 
 const SITE = siteMetadata.siteUrl.replace(/\/$/, '')
 const DOCS_LLMS = 'https://docs.openlit.io/llms.txt'
@@ -53,7 +56,9 @@ export function homeMarkdown() {
 
 ## What OpenLIT is
 
-OpenLIT is an open-source Agent Harness Engineering platform. Teams use it to instrument AI apps, manage prompts, run LLM evaluations, monitor agents, store API keys in Vault, and improve quality with production data. It is built on OpenTelemetry and free to self-host under Apache 2.0.
+${OPENLIT_DEFINITION}
+
+${OPENLIT_POSITIONING}
 
 ## Instrumentation paths
 
@@ -66,10 +71,12 @@ OpenLIT has ${SUPPORTED_INTEGRATIONS.length}+ integrations across LLMs, agent fr
 
 ## FAQ
 
-${faqMarkdown(HOME_FAQ_ITEMS)}
+${faqMarkdown(HOME_FAQ_ITEMS.filter((item) => !item.excludeFromSchema))}
 
 ## Related
 
+- Agent harness engineering: ${SITE}/agent-harness-engineering.md
+- Glossary: ${SITE}/glossary.md
 - Pricing: ${SITE}/pricing.md
 - About: ${SITE}/about-us.md
 - Compare: ${SITE}/compare.md
@@ -144,7 +151,7 @@ export function aboutMarkdown() {
 
 We are excited about the potential of LLMs and generative AI, and the impact they will have on how software gets built. Doing our part to accelerate that shift is our mission.
 
-OpenLIT started from the pain of shipping LLM apps without clear traces, cost, quality, or agent visibility. The answer was an OpenTelemetry-native Agent Harness Engineering platform you can self-host free under Apache 2.0: LLM tracing, evaluations, Prompt Hub, Vault, OpenGround, coding agent monitoring, and GPU metrics in one place.
+OpenLIT started from the pain of shipping LLM apps without clear traces, cost, quality, or agent visibility. The answer was an OpenTelemetry-native agent harness engineering platform you can self-host free under Apache 2.0: agent observability, evals, Prompt Hub, Vault, OpenGround, coding agent monitoring, and GPU metrics in one place.
 
 Today OpenLIT is used by developers worldwide. The project is open, community-driven, and built in public on GitHub.
 
@@ -164,9 +171,9 @@ export function compareIndexMarkdown() {
     .map((c) => `- [${c.tagline}](${SITE}/compare/${c.slug}.md): ${c.description}`)
     .join('\n')
 
-  return `# OpenLIT vs Alternatives
+  return `# OpenLIT vs Alternatives: Agent Observability & Evals Tools Compared
 
-> Compare OpenLIT against Langfuse, Helicone, LangSmith, Datadog, Arize Phoenix, Comet Opik, Braintrust, and OpenLLMetry. Honest, feature-by-feature comparison of LLM observability and monitoring tools.
+> Compare OpenLIT with Langfuse, LangSmith, Arize Phoenix, Braintrust, Opik, Helicone, Datadog, OpenLLMetry and more for agent observability, evals and guardrails.
 
 - HTML: ${SITE}/compare
 - Markdown: ${SITE}/compare.md
@@ -191,7 +198,7 @@ export function comparePageMarkdown(competitor: Competitor) {
     })
     .join('\n\n')
 
-  return `# ${competitor.heroHeadline}
+  return `# OpenLIT vs ${competitor.name} (2026): Open-Source ${competitor.name} Alternative
 
 > ${competitor.heroSubheadline}
 
@@ -220,6 +227,82 @@ ${competitor.summary.chooseCompetitor.map((item) => `- ${item}`).join('\n')}
 `
 }
 
+export function pillarMarkdown() {
+  return `# What is agent harness engineering?
+
+> Agent harness engineering is the discipline of designing, measuring and improving everything around the model in an AI agent. Definition, layers, and tools.
+
+- HTML: ${SITE}/agent-harness-engineering
+- Markdown: ${SITE}/agent-harness-engineering.md
+
+${OPENLIT_POSITIONING}
+
+## What is agent harness engineering?
+
+An AI agent is a model plus a harness. The harness is everything except the model: tools, context, prompts, memory, hooks, guardrails, and feedback loops. Harness engineering treats every repeated agent failure as a harness defect to observe, classify, fix, and verify.
+
+## The harness engineering loop
+
+Run → observe → evaluate → fix the harness → verify → repeat.
+
+## FAQ
+
+${faqMarkdown(PILLAR_FAQ)}
+
+## Related
+
+- Glossary: ${SITE}/glossary.md
+- Compare: ${SITE}/compare.md
+- Home: ${SITE}/index.md
+`
+}
+
+export function glossaryIndexMarkdown() {
+  const links = GLOSSARY_TERMS.map(
+    (term) => `- [${term.name}](${SITE}/glossary/${term.slug}.md): ${term.definition}`
+  ).join('\n')
+
+  return `# Agent Harness Glossary
+
+> Definitions for agent harness, harness engineering, agent observability, agent evals, guardrails, and trajectory evaluation.
+
+- HTML: ${SITE}/glossary
+- Markdown: ${SITE}/glossary.md
+
+## Terms
+
+${links}
+
+## Related
+
+- Pillar: ${SITE}/agent-harness-engineering.md
+`
+}
+
+export function glossaryTermMarkdown(term: GlossaryTerm) {
+  const related = (term.relatedSlugs || [])
+    .map((slug) => GLOSSARY_TERMS.find((entry) => entry.slug === slug))
+    .filter(Boolean)
+    .map((entry) => `- [${entry!.name}](${SITE}/glossary/${entry!.slug}.md)`)
+    .join('\n')
+
+  return `# What is ${term.name.toLowerCase()}?
+
+> ${term.definition}
+
+- HTML: ${SITE}/glossary/${term.slug}
+- Markdown: ${SITE}/glossary/${term.slug}.md
+
+${term.body.map((paragraph) => paragraph).join('\n\n')}
+
+${term.faq ? `## FAQ\n\n${faqMarkdown(term.faq)}\n` : ''}
+## Related
+
+${related || `- Glossary index: ${SITE}/glossary.md`}
+- Pillar: ${SITE}/agent-harness-engineering.md
+`
+}
+
 export const LLM_PAGES: LlmPage[] = [
   {
     mdPath: '/index.md',
@@ -245,17 +328,40 @@ export const LLM_PAGES: LlmPage[] = [
   {
     mdPath: '/compare.md',
     htmlPath: '/compare',
-    title: 'OpenLIT vs Alternatives',
+    title: 'OpenLIT vs Alternatives: Agent Observability & Evals Tools Compared',
     summary:
-      'Compare OpenLIT against Langfuse, Helicone, LangSmith, Datadog, Arize Phoenix, Comet Opik, Braintrust, and OpenLLMetry for LLM observability.',
+      'Compare OpenLIT with Langfuse, LangSmith, Arize Phoenix, Braintrust, Opik, Helicone, Datadog and OpenLLMetry for agent observability, evals and guardrails.',
     body: compareIndexMarkdown,
+  },
+  {
+    mdPath: '/agent-harness-engineering.md',
+    htmlPath: '/agent-harness-engineering',
+    title: 'What Is Agent Harness Engineering?',
+    summary:
+      'Agent harness engineering is the discipline of designing, measuring and improving everything around the model in an AI agent.',
+    body: pillarMarkdown,
+  },
+  {
+    mdPath: '/glossary.md',
+    htmlPath: '/glossary',
+    title: 'Agent Harness Glossary',
+    summary:
+      'Definitions for agent harness, harness engineering, agent observability, agent evals, guardrails, and trajectory evaluation.',
+    body: glossaryIndexMarkdown,
   },
   ...competitors.map((competitor) => ({
     mdPath: `/compare/${competitor.slug}.md`,
     htmlPath: `/compare/${competitor.slug}`,
-    title: competitor.tagline,
+    title: `OpenLIT vs ${competitor.name} (2026): Open-Source ${competitor.name} Alternative`,
     summary: competitor.description,
     body: () => comparePageMarkdown(competitor),
+  })),
+  ...GLOSSARY_TERMS.map((term) => ({
+    mdPath: `/glossary/${term.slug}.md`,
+    htmlPath: `/glossary/${term.slug}`,
+    title: term.title,
+    summary: term.description,
+    body: () => glossaryTermMarkdown(term),
   })),
 ]
 
@@ -298,7 +404,15 @@ This file helps agents find clean Markdown versions of key marketing pages and h
 
 ## What OpenLIT is
 
-${siteMetadata.description}
+${OPENLIT_DEFINITION}
+
+${OPENLIT_POSITIONING}
+
+## Key concepts
+
+- **Agent harness**: everything in an AI agent except the model (tools, context, prompts, memory, hooks, guardrails, feedback loops). See ${SITE}/glossary/agent-harness.md
+- **Agent harness engineering**: designing, measuring, and improving that harness so agents are reliable in production. See ${SITE}/agent-harness-engineering.md
+- **OpenLIT's role**: open-source platform to trace, evaluate, guard, and improve any harness on OpenTelemetry—not a runtime harness itself.
 
 ## Marketing site (Markdown)
 
@@ -311,6 +425,8 @@ ${blogs}
 ## HTML pages
 
 - Home: ${SITE}/
+- Agent harness engineering: ${SITE}/agent-harness-engineering
+- Glossary: ${SITE}/glossary
 - Pricing: ${SITE}/pricing
 - About: ${SITE}/about-us
 - Compare: ${SITE}/compare

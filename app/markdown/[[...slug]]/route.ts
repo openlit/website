@@ -12,5 +12,11 @@ export function GET(_request: Request, { params }: Params) {
   if (!markdown) {
     return new Response('Not Found', { status: 404 })
   }
-  return textResponse(markdown, 'text/markdown')
+
+  const slug = params.slug
+  const htmlPath = !slug || slug.length === 0 ? '/' : `/${slug.join('/')}`.replace(/\.md$/, '')
+  const canonicalUrl =
+    htmlPath === '/' ? 'https://openlit.io/' : `https://openlit.io${htmlPath.replace(/\.md$/, '')}`
+
+  return textResponse(markdown, 'text/markdown', { canonicalUrl })
 }

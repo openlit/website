@@ -118,9 +118,9 @@ export default function PricingContent() {
   return (
     <div className="mx-auto w-full max-w-6xl px-4 py-10 md:px-6 md:py-12">
       <div className="mb-10 max-w-3xl">
-        <h2 className="text-3xl font-bold tracking-tight text-stone-950 dark:text-stone-50 md:text-4xl">
+        <h1 className="text-3xl font-bold tracking-tight text-stone-950 dark:text-stone-50 md:text-4xl">
           <MarkedWord>Plans</MarkedWord>
-        </h2>
+        </h1>
         <p className="mt-3 text-base leading-relaxed text-stone-600 dark:text-stone-300">
           Self-host OpenLIT free under Apache 2.0 for unlimited LLM tracing, evaluations, prompt
           management, and agent monitoring. OpenLIT Cloud is coming soon for teams that want a fully

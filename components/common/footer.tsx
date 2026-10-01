@@ -48,6 +48,8 @@ const linkGroups = [
       { text: 'About Us', link: '/about-us' },
       { text: 'Blog', link: '/blogs' },
       { text: 'Pricing', link: '/pricing' },
+      { text: 'Agent harness engineering', link: '/agent-harness-engineering' },
+      { text: 'Glossary', link: '/glossary' },
       { text: 'GitHub', link: 'https://github.com/openlit/openlit' },
     ],
   },
@@ -100,7 +102,7 @@ export default function Footer() {
               {siteMetadata.headerTitle}
             </a>
             <p className="text-sm leading-relaxed opacity-60">
-              Open-source Harness Engineering platform built on OpenTelemetry.
+              Open-source agent harness engineering platform built on OpenTelemetry.
             </p>
             <div className="flex gap-3">
               {socialLinks.map(({ href, icon: Icon, label }) => (

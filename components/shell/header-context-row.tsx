@@ -16,6 +16,8 @@ const MOBILE_LINKS = [
   { label: 'Home', href: '/' },
   { label: 'Pricing', href: '/pricing' },
   { label: 'Compare', href: '/compare' },
+  { label: 'Harness', href: '/agent-harness-engineering' },
+  { label: 'Glossary', href: '/glossary' },
   { label: 'Blogs', href: '/blogs' },
   { label: 'About', href: '/about-us' },
   { label: 'Docs', href: 'https://docs.openlit.io/latest/overview', external: true },
@@ -65,6 +67,8 @@ function pageLabel(pathname: string) {
   if (pathname === '/') return 'Home'
   if (pathname.startsWith('/pricing')) return 'Pricing'
   if (pathname.startsWith('/compare')) return 'Compare'
+  if (pathname.startsWith('/agent-harness-engineering')) return 'Agent harness engineering'
+  if (pathname.startsWith('/glossary')) return 'Glossary'
   if (pathname.startsWith('/blogs')) return 'Blogs'
   if (pathname.startsWith('/about-us')) return 'About Us'
   if (pathname.startsWith('/privacy-policy')) return 'Privacy Policy'
