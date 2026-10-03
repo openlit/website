@@ -75,10 +75,7 @@ export default function YoutubeFacade({
 
   return (
     <div
-      className={cn(
-        'relative aspect-video w-full overflow-hidden rounded-lg bg-black',
-        className
-      )}
+      className={cn('relative aspect-video w-full overflow-hidden rounded-lg bg-black', className)}
     >
       <iframe
         ref={iframeRef}

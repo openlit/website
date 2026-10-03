@@ -132,8 +132,7 @@ export async function fetchYoutubeViaApi(): Promise<YoutubeVideo[]> {
   return ids.map((id) => {
     const detail = details.get(id)
     const snippet =
-      detail?.snippet ||
-      playlistItems.find((p) => p.contentDetails?.videoId === id)?.snippet
+      detail?.snippet || playlistItems.find((p) => p.contentDetails?.videoId === id)?.snippet
     const title = snippet?.title || 'Untitled video'
     const description = snippet?.description || ''
     const duration = detail?.contentDetails?.duration

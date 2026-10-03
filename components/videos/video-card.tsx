@@ -74,7 +74,9 @@ export default function VideoCard({
           </Link>
         </h2>
         {description ? (
-          <p className="mt-1 line-clamp-2 text-sm text-stone-600 dark:text-stone-400">{description}</p>
+          <p className="mt-1 line-clamp-2 text-sm text-stone-600 dark:text-stone-400">
+            {description}
+          </p>
         ) : null}
         {published ? (
           <p className="mt-1.5 text-xs text-stone-500 dark:text-stone-500">{published}</p>

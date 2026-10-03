@@ -22,7 +22,9 @@ function walk(node: WalkNode, visit: (obj: Record<string, unknown>) => void) {
 }
 
 function textFrom(value: unknown): string {
-  if (!value || typeof value !== 'object') return ''
+  if (!value) return ''
+  if (typeof value === 'string') return value
+  if (typeof value !== 'object') return ''
   const obj = value as Record<string, unknown>
   if (typeof obj.simpleText === 'string') return obj.simpleText
   if (typeof obj.content === 'string') return obj.content
@@ -32,6 +34,13 @@ function textFrom(value: unknown): string {
       .join('')
   }
   return ''
+}
+
+function thumbnailFrom(value: unknown): string | undefined {
+  if (!value || typeof value !== 'object') return undefined
+  const json = JSON.stringify(value)
+  const match = json.match(/https:\/\/i\.ytimg\.com\/vi\/[^"\\]+/)
+  return match?.[0]?.replace(/\\u0026/g, '&')
 }
 
 /**
@@ -65,6 +74,27 @@ export async function fetchYoutubeViaChannelPages(): Promise<YoutubeVideo[]> {
 
   const byId = new Map<string, YoutubeVideo>()
 
+  const upsert = (
+    id: string,
+    partial: Partial<YoutubeVideo> & { title: string },
+    forceShort: boolean
+  ) => {
+    if (!id || id.length !== 11) return
+    const existing = byId.get(id)
+    const title = existing?.title || partial.title
+    const description = existing?.description || partial.description || ''
+    byId.set(id, {
+      id,
+      title,
+      description,
+      publishedAt: existing?.publishedAt || partial.publishedAt || '',
+      thumbnailUrl: existing?.thumbnailUrl || partial.thumbnailUrl || youtubeThumbnailUrl(id),
+      url: youtubeWatchUrl(id),
+      embedUrl: youtubeEmbedUrl(id),
+      isShort: Boolean(existing?.isShort || forceShort || looksLikeShort(title, description)),
+    })
+  }
+
   const ingest = (html: string, forceShort: boolean) => {
     const match = html.match(/var ytInitialData = (\{[\s\S]*?\});<\/script>/)
     if (!match) return
@@ -76,29 +106,65 @@ export async function fetchYoutubeViaChannelPages(): Promise<YoutubeVideo[]> {
     }
 
     walk(data, (obj) => {
-      // Long-form cards
+      // Modern channel grid cards
+      const lockup = obj.lockupViewModel as Record<string, unknown> | undefined
+      if (lockup && typeof lockup.contentId === 'string') {
+        const metaRoot = lockup.metadata as Record<string, unknown> | undefined
+        const meta = metaRoot?.lockupMetadataViewModel as Record<string, unknown> | undefined
+        const title = textFrom(meta?.title) || 'Untitled video'
+        const rows =
+          (
+            (meta?.metadata as Record<string, unknown> | undefined)?.contentMetadataViewModel as
+              | Record<string, unknown>
+              | undefined
+          )?.metadataRows || []
+        let publishedAt = ''
+        if (Array.isArray(rows)) {
+          for (const row of rows) {
+            const parts = (row as Record<string, unknown>)?.metadataParts
+            if (!Array.isArray(parts)) continue
+            for (const part of parts) {
+              const label = textFrom((part as Record<string, unknown>)?.accessibilityLabel)
+              if (/ago|Streamed|Premiered|\d{4}/i.test(label)) {
+                publishedAt = label
+              }
+            }
+          }
+        }
+        upsert(
+          lockup.contentId,
+          {
+            title,
+            publishedAt,
+            thumbnailUrl:
+              thumbnailFrom(lockup.contentImage) || youtubeThumbnailUrl(lockup.contentId),
+          },
+          forceShort
+        )
+      }
+
+      // Legacy long-form cards
       const videoRenderer = (obj.videoRenderer || obj.gridVideoRenderer) as
         | Record<string, unknown>
         | undefined
       if (videoRenderer && typeof videoRenderer.videoId === 'string') {
         const id = videoRenderer.videoId
-        const title = textFrom(videoRenderer.title) || textFrom(videoRenderer.headline) || 'Untitled video'
+        const title =
+          textFrom(videoRenderer.title) || textFrom(videoRenderer.headline) || 'Untitled video'
         const description = textFrom(videoRenderer.descriptionSnippet)
         const publishedAt = textFrom(videoRenderer.publishedTimeText)
         const thumbs = (videoRenderer.thumbnail as { thumbnails?: { url?: string }[] } | undefined)
           ?.thumbnails
-        const thumbnailUrl = thumbs?.[thumbs.length - 1]?.url || youtubeThumbnailUrl(id)
-        const existing = byId.get(id)
-        byId.set(id, {
+        upsert(
           id,
-          title: existing?.title || title,
-          description: existing?.description || description,
-          publishedAt: existing?.publishedAt || publishedAt,
-          thumbnailUrl: existing?.thumbnailUrl || thumbnailUrl,
-          url: youtubeWatchUrl(id),
-          embedUrl: youtubeEmbedUrl(id),
-          isShort: Boolean(existing?.isShort || forceShort || looksLikeShort(title, description)),
-        })
+          {
+            title,
+            description,
+            publishedAt,
+            thumbnailUrl: thumbs?.[thumbs.length - 1]?.url || youtubeThumbnailUrl(id),
+          },
+          forceShort
+        )
       }
 
       // Shorts shelf / lockup
@@ -114,35 +180,13 @@ export async function fetchYoutubeViaChannelPages(): Promise<YoutubeVideo[]> {
             textFrom(overlay?.primaryText) ||
             textFrom(shortsLockup.accessibilityText) ||
             'Untitled Short'
-          const existing = byId.get(id)
-          byId.set(id, {
-            id,
-            title: existing?.title || title,
-            description: existing?.description || '',
-            publishedAt: existing?.publishedAt || '',
-            thumbnailUrl: existing?.thumbnailUrl || youtubeThumbnailUrl(id),
-            url: youtubeWatchUrl(id),
-            embedUrl: youtubeEmbedUrl(id),
-            isShort: true,
-          })
+          upsert(id, { title }, true)
         }
       }
 
       const reelItem = obj.reelItemRenderer as Record<string, unknown> | undefined
       if (reelItem && typeof reelItem.videoId === 'string') {
-        const id = reelItem.videoId
-        const title = textFrom(reelItem.headline) || 'Untitled Short'
-        const existing = byId.get(id)
-        byId.set(id, {
-          id,
-          title: existing?.title || title,
-          description: existing?.description || '',
-          publishedAt: existing?.publishedAt || '',
-          thumbnailUrl: existing?.thumbnailUrl || youtubeThumbnailUrl(id),
-          url: youtubeWatchUrl(id),
-          embedUrl: youtubeEmbedUrl(id),
-          isShort: true,
-        })
+        upsert(reelItem.videoId, { title: textFrom(reelItem.headline) || 'Untitled Short' }, true)
       }
     })
   }
@@ -150,7 +194,6 @@ export async function fetchYoutubeViaChannelPages(): Promise<YoutubeVideo[]> {
   ingest(videosHtml, false)
   ingest(shortsHtml, true)
 
-  // Prefer channel uploads order from videos page; shorts-only entries append
   const videos = Array.from(byId.values())
   if (!videos.length) {
     throw new Error(`No videos parsed for channel ${channelId}`)

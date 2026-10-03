@@ -94,7 +94,12 @@ export default function VideosList({ videos, error, source }: VideosListProps) {
 
       {source ? (
         <p className="mt-10 text-center text-xs text-stone-400 dark:text-stone-600">
-          Source: {source === 'api' ? 'YouTube Data API' : source === 'rss' ? 'YouTube RSS' : 'YouTube channel'}
+          Source:{' '}
+          {source === 'api'
+            ? 'YouTube Data API'
+            : source === 'rss'
+              ? 'YouTube RSS'
+              : 'YouTube channel'}
         </p>
       ) : null}
     </div>

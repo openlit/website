@@ -26,11 +26,7 @@ function attrValue(block: string, tag: string, attr: string) {
 /** Heuristic for RSS path: #shorts tag, or media title/description cues. */
 export function looksLikeShort(title: string, description: string) {
   const haystack = `${title}\n${description}`.toLowerCase()
-  return (
-    haystack.includes('#shorts') ||
-    haystack.includes('#short') ||
-    /\bshorts?\b/.test(title.toLowerCase())
-  )
+  return haystack.includes('#shorts') || haystack.includes('#short ') || /#short\b/.test(haystack)
 }
 
 export function parseYoutubeAtomFeed(xml: string): YoutubeVideo[] {
@@ -47,11 +43,9 @@ export function parseYoutubeAtomFeed(xml: string): YoutubeVideo[] {
       if (!id) return null
 
       const title = tagValue(entry, 'title') || 'Untitled video'
-      const description =
-        tagValue(entry, 'media:description') || tagValue(entry, 'summary') || ''
+      const description = tagValue(entry, 'media:description') || tagValue(entry, 'summary') || ''
       const publishedAt = tagValue(entry, 'published') || tagValue(entry, 'updated') || ''
-      const thumbnailUrl =
-        attrValue(entry, 'media:thumbnail', 'url') || youtubeThumbnailUrl(id)
+      const thumbnailUrl = attrValue(entry, 'media:thumbnail', 'url') || youtubeThumbnailUrl(id)
 
       const video: YoutubeVideo = {
         id,

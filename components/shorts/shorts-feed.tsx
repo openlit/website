@@ -1,23 +1,8 @@
 'use client'
 
-import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  type KeyboardEvent as ReactKeyboardEvent,
-} from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import Link from 'next/link'
-import {
-  ChevronDown,
-  ChevronUp,
-  ExternalLink,
-  Link2,
-  Share2,
-  Volume2,
-  VolumeX,
-} from 'lucide-react'
+import { ChevronDown, ChevronUp, ExternalLink, Link2, Share2, Volume2, VolumeX } from 'lucide-react'
 import { cn } from 'lib/utils'
 import type { YoutubeVideo } from 'lib/youtube/types'
 import { youtubeShortsUrl } from 'lib/youtube/config'
@@ -254,15 +239,16 @@ export default function ShortsFeed({
   }, [shorts, ensurePlayer, pauseAllExcept])
 
   useEffect(() => {
+    const players = playersRef.current
     return () => {
-      playersRef.current.forEach((player) => {
+      players.forEach((player) => {
         try {
           player.destroy()
         } catch {
           // ignore
         }
       })
-      playersRef.current.clear()
+      players.clear()
     }
   }, [])
 
@@ -291,6 +277,30 @@ export default function ShortsFeed({
     })
   }, [activeIndex, shorts])
 
+  useEffect(() => {
+    const onKeyDown = (event: KeyboardEvent) => {
+      const target = event.target as HTMLElement | null
+      if (
+        target &&
+        (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable)
+      ) {
+        return
+      }
+      if (event.key === 'ArrowDown' || event.key === 'PageDown' || event.key === 'j') {
+        event.preventDefault()
+        scrollToIndex(activeIndex + 1)
+      } else if (event.key === 'ArrowUp' || event.key === 'PageUp' || event.key === 'k') {
+        event.preventDefault()
+        scrollToIndex(activeIndex - 1)
+      } else if (event.key === 'm' || event.key === 'M') {
+        event.preventDefault()
+        toggleMute()
+      }
+    }
+    window.addEventListener('keydown', onKeyDown)
+    return () => window.removeEventListener('keydown', onKeyDown)
+  }, [activeIndex, scrollToIndex, toggleMute])
+
   const shareCurrent = useCallback(async () => {
     const video = shorts[activeIndex]
     if (!video) return
@@ -314,22 +324,6 @@ export default function ShortsFeed({
     }
     window.setTimeout(() => setShareStatus(null), 2000)
   }, [activeIndex, shorts])
-
-  const onKeyDown = useCallback(
-    (event: ReactKeyboardEvent<HTMLDivElement>) => {
-      if (event.key === 'ArrowDown' || event.key === 'PageDown' || event.key === 'j') {
-        event.preventDefault()
-        scrollToIndex(activeIndex + 1)
-      } else if (event.key === 'ArrowUp' || event.key === 'PageUp' || event.key === 'k') {
-        event.preventDefault()
-        scrollToIndex(activeIndex - 1)
-      } else if (event.key === 'm' || event.key === 'M') {
-        event.preventDefault()
-        toggleMute()
-      }
-    },
-    [activeIndex, scrollToIndex, toggleMute]
-  )
 
   if (!shorts.length) {
     return (
@@ -355,11 +349,9 @@ export default function ShortsFeed({
     <div className="relative flex h-[calc(100dvh-3.25rem)] min-h-[28rem] w-full flex-col bg-stone-950 text-white md:h-[calc(100dvh-3.5rem)]">
       <div
         ref={scrollerRef}
-        tabIndex={0}
         role="feed"
         aria-label="OpenLIT YouTube Shorts"
-        onKeyDown={onKeyDown}
-        className="h-full snap-y snap-mandatory overflow-y-auto overscroll-y-contain scroll-smooth outline-none focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-brandPrimary/60"
+        className="h-full snap-y snap-mandatory overflow-y-auto overscroll-y-contain scroll-smooth"
       >
         {shorts.map((video, index) => {
           const isActive = index === activeIndex
@@ -396,12 +388,14 @@ export default function ShortsFeed({
                     if (el) hostRefs.current.set(video.id, el)
                     else hostRefs.current.delete(video.id)
                   }}
-                  className="absolute inset-0 h-full w-full [&>iframe]:h-full [&>iframe]:w-full [&>div]:h-full [&>div]:w-full"
+                  className="absolute inset-0 h-full w-full [&>div]:h-full [&>div]:w-full [&>iframe]:h-full [&>iframe]:w-full"
                 />
 
                 <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/85 via-black/45 to-transparent px-4 pb-6 pt-24">
                   <div className="pointer-events-auto max-w-[85%]">
-                    <h2 className="text-base font-semibold leading-snug sm:text-lg">{video.title}</h2>
+                    <h2 className="text-base font-semibold leading-snug sm:text-lg">
+                      {video.title}
+                    </h2>
                     {video.description ? (
                       <p className="mt-1 line-clamp-3 text-sm text-white/80">{video.description}</p>
                     ) : null}

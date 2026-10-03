@@ -1,18 +1,11 @@
 import type { YoutubeCatalog, YoutubeVideo } from './types'
-import {
-  getYoutubeApiKey,
-  getYoutubeChannelId,
-  YOUTUBE_REVALIDATE_SECONDS,
-} from './config'
+import { getYoutubeApiKey, getYoutubeChannelId, YOUTUBE_REVALIDATE_SECONDS } from './config'
 import { parseYoutubeAtomFeed } from './parse-rss'
 import { enrichShortFlags } from './shorts-detect'
 import { fetchYoutubeViaApi } from './fetch-api'
 import { fetchYoutubeViaChannelPages } from './fetch-channel-page'
 
-export type {
-  YoutubeCatalog,
-  YoutubeVideo,
-} from './types'
+export type { YoutubeCatalog, YoutubeVideo } from './types'
 
 export {
   DEFAULT_YOUTUBE_CHANNEL_ID,
@@ -96,7 +89,9 @@ export async function getYoutubeCatalog(): Promise<YoutubeCatalog> {
       ...splitCatalog(items),
       source: 'channel-page',
       fetchedAt,
-      error: errors.length ? `RSS unavailable (${errors.join('; ')}); used channel page fallback` : undefined,
+      error: errors.length
+        ? `RSS unavailable (${errors.join('; ')}); used channel page fallback`
+        : undefined,
     }
   } catch (error) {
     errors.push(error instanceof Error ? error.message : 'Channel page fallback failed')

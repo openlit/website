@@ -26,11 +26,7 @@ export default function VideoWatch({ video, related = [] }: VideoWatchProps) {
 
   return (
     <div className="mx-auto w-full max-w-3xl px-4 py-10 md:px-6 md:py-14">
-      <YoutubeFacade
-        videoId={video.id}
-        title={video.title}
-        thumbnailUrl={video.thumbnailUrl}
-      />
+      <YoutubeFacade videoId={video.id} title={video.title} thumbnailUrl={video.thumbnailUrl} />
 
       <h1 className="mt-6 text-2xl font-bold tracking-tight text-stone-950 dark:text-stone-50 md:text-3xl">
         {video.title}
