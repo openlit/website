@@ -62,6 +62,22 @@ export const STATIC_SEARCH_ITEMS: SearchItem[] = [
     keywords: 'posts articles news',
   },
   {
+    id: 'page-videos',
+    title: 'Videos',
+    description: 'OpenLIT YouTube demos, talks, and deep dives',
+    href: '/videos',
+    category: 'Page',
+    keywords: 'youtube videos demos talks webinars',
+  },
+  {
+    id: 'page-shorts',
+    title: 'Shorts',
+    description: 'OpenLIT YouTube Shorts — quick agent observability tips',
+    href: '/shorts',
+    category: 'Page',
+    keywords: 'youtube shorts vertical clips tips',
+  },
+  {
     id: 'page-about',
     title: 'About Us',
     description: 'Learn about the OpenLIT team and mission',

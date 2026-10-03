@@ -3,6 +3,7 @@ import { allBlogs } from 'contentlayer/generated'
 import siteMetadata from 'data/siteMetadata'
 import competitors from 'data/comparisons'
 import GLOSSARY_TERMS from 'data/glossary'
+import { getYoutubeCatalog } from 'lib/youtube'
 
 const SITE = siteMetadata.siteUrl.replace(/\/$/, '')
 /** Stable content date for evergreen marketing pages (avoid build-time "today"). */
@@ -34,13 +35,38 @@ function entry({
   }
 }
 
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const published = allBlogs.filter((post) => !post.draft)
   const latestPostDate = published.reduce<string | undefined>((latest, post) => {
     const date = toDate(post.lastmod || post.date)
     if (!date) return latest
     return !latest || date > latest ? date : latest
   }, undefined)
+
+  let youtubeVideoRoutes: MetadataRoute.Sitemap = []
+  try {
+    const catalog = await getYoutubeCatalog()
+    youtubeVideoRoutes = [
+      ...catalog.videos.map((video) =>
+        entry({
+          path: `videos/${video.id}`,
+          lastModified: video.publishedAt || CONTENT_UPDATED,
+          changeFrequency: 'weekly',
+          priority: 0.7,
+        })
+      ),
+      ...catalog.shorts.map((video) =>
+        entry({
+          path: `shorts/${video.id}`,
+          lastModified: video.publishedAt || CONTENT_UPDATED,
+          changeFrequency: 'weekly',
+          priority: 0.6,
+        })
+      ),
+    ]
+  } catch {
+    youtubeVideoRoutes = []
+  }
 
   const routes: MetadataRoute.Sitemap = [
     entry({
@@ -86,6 +112,18 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 0.6,
     }),
     entry({
+      path: 'videos',
+      lastModified: CONTENT_UPDATED,
+      changeFrequency: 'daily',
+      priority: 0.8,
+    }),
+    entry({
+      path: 'shorts',
+      lastModified: CONTENT_UPDATED,
+      changeFrequency: 'daily',
+      priority: 0.7,
+    }),
+    entry({
       path: 'privacy-policy',
       lastModified: CONTENT_UPDATED,
       changeFrequency: 'yearly',
@@ -126,7 +164,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     })
   )
 
-  return [...routes, ...compareRoutes, ...glossaryRoutes, ...blogRoutes]
+  return [...routes, ...compareRoutes, ...glossaryRoutes, ...blogRoutes, ...youtubeVideoRoutes]
 }
 
 // Must stay static (no edge). Contentlayer in an edge sitemap breaks the

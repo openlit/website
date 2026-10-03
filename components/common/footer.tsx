@@ -1,8 +1,11 @@
+'use client'
+
 import siteMetadata from 'data/siteMetadata'
 import competitors from '@/data/comparisons'
+import { usePathname } from 'next/navigation'
 
 import Image from 'next/image'
-import { Github, Mail } from '../social-icons/icons'
+import { Github, Mail, Youtube } from '../social-icons/icons'
 
 const Item = ({ link, text, target }: { link?: string; text?: string; target?: string }) =>
   link &&
@@ -47,6 +50,8 @@ const linkGroups = [
     links: [
       { text: 'About Us', link: '/about-us' },
       { text: 'Blog', link: '/blogs' },
+      { text: 'Videos', link: '/videos' },
+      { text: 'Shorts', link: '/shorts' },
       { text: 'Pricing', link: '/pricing' },
       { text: 'Agent harness engineering', link: '/agent-harness-engineering' },
       { text: 'Glossary', link: '/glossary' },
@@ -80,15 +85,19 @@ const linkGroups = [
 
 const socialLinks = [
   { href: siteMetadata.github, icon: Github, label: 'GitHub' },
+  { href: siteMetadata.youtube, icon: Youtube, label: 'YouTube' },
   { href: `mailto:${siteMetadata.email}`, icon: Mail, label: 'Email' },
 ]
 
 export default function Footer() {
+  const pathname = usePathname() || ''
+  // Immersive Shorts feed — keep the chrome light
+  if (pathname.startsWith('/shorts')) return null
+
   return (
     <footer id="footer">
       <section className="container px-4 py-12 sm:py-16">
         <div className="flex flex-col gap-12 lg:flex-row lg:gap-16">
-          {/* Brand */}
           <div className="flex flex-col gap-5 lg:w-56 lg:shrink-0">
             <a href="/" className="flex items-center gap-2 text-xl font-bold">
               <Image
@@ -120,7 +129,6 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* Link columns */}
           <div className="grid flex-1 grid-cols-2 gap-x-6 gap-y-10 sm:grid-cols-3 sm:gap-x-8 lg:grid-cols-5">
             {linkGroups.map((group) => (
               <div key={group.heading} className="flex min-w-0 flex-col gap-3">

@@ -22,6 +22,7 @@ const AI_CRAWLERS = [
 ]
 
 export default function robots(): MetadataRoute.Robots {
+  const site = siteMetadata.siteUrl.replace(/\/$/, '')
   return {
     rules: [
       {
@@ -34,7 +35,7 @@ export default function robots(): MetadataRoute.Robots {
         allow: '/',
       })),
     ],
-    sitemap: `${siteMetadata.siteUrl}/sitemap.xml`,
+    sitemap: [`${site}/sitemap.xml`, `${site}/sitemap-videos.xml`],
   }
 }
 
