@@ -6,13 +6,13 @@ const DuplicatePackageCheckerPlugin = require('duplicate-package-checker-webpack
 
 const ContentSecurityPolicy = `
   default-src 'self';
-  script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com;
+  script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://www.youtube.com https://www.youtube-nocookie.com;
   style-src 'self' 'unsafe-inline';
   img-src * blob: data:;
   media-src 'self' *.s3.amazonaws.com *.s3.us-west-1.amazonaws.com openlit.io docs.openlit.io mintcdn.com;
   connect-src *;
   font-src 'self';
-  frame-src openlit.io story.screenspace.io;
+  frame-src openlit.io story.screenspace.io https://www.youtube.com https://www.youtube-nocookie.com;
   frame-ancestors 'none';
 `
 
@@ -96,6 +96,14 @@ module.exports = () => {
           protocol: 'https',
           hostname: 'miro.medium.com',
         },
+        {
+          protocol: 'https',
+          hostname: 'i.ytimg.com',
+        },
+        {
+          protocol: 'https',
+          hostname: 'img.youtube.com',
+        },
       ],
     },
     async rewrites() {
@@ -111,6 +119,9 @@ module.exports = () => {
         },
         { source: '/glossary.md', destination: '/markdown/glossary' },
         { source: '/glossary/:slug.md', destination: '/markdown/glossary/:slug' },
+        { source: '/videos.md', destination: '/markdown/videos' },
+        { source: '/shorts.md', destination: '/markdown/shorts' },
+        { source: '/sitemap-videos.xml', destination: '/sitemap-videos' },
       ]
     },
     async headers() {

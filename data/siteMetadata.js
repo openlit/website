@@ -18,6 +18,8 @@ module.exports = {
   discord: 'https://discord.com/invite/RbNPvG54',
   linkedin: 'https://www.linkedin.com/company/openlit/',
   youtube: 'https://www.youtube.com/@openlit',
+  /** Default OpenLIT channel ID (`@openlit`). Override with YOUTUBE_CHANNEL_ID. */
+  youtubeChannelId: 'UCu2sVCs3BHaQiyWoWwlJ3rg',
   slack: 'https://join.slack.com/t/openlit/shared_invite/zt-2etnfttwg-TjP_7BZXfYg84oAukY8QRQ',
   locale: 'en-US',
   // feedbackLink: 'https://app.formbricks.com/IiFk9GnqOF',

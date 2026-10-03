@@ -19,6 +19,8 @@ const MOBILE_LINKS = [
   { label: 'Harness', href: '/agent-harness-engineering' },
   { label: 'Glossary', href: '/glossary' },
   { label: 'Blogs', href: '/blogs' },
+  { label: 'Videos', href: '/videos' },
+  { label: 'Shorts', href: '/shorts' },
   { label: 'About', href: '/about-us' },
   { label: 'Docs', href: 'https://docs.openlit.io/latest/overview', external: true },
 ]
@@ -70,6 +72,8 @@ function pageLabel(pathname: string) {
   if (pathname.startsWith('/agent-harness-engineering')) return 'Agent harness engineering'
   if (pathname.startsWith('/glossary')) return 'Glossary'
   if (pathname.startsWith('/blogs')) return 'Blogs'
+  if (pathname.startsWith('/videos')) return 'Videos'
+  if (pathname.startsWith('/shorts')) return 'Shorts'
   if (pathname.startsWith('/about-us')) return 'About Us'
   if (pathname.startsWith('/privacy-policy')) return 'Privacy Policy'
   if (pathname.startsWith('/terms')) return 'Terms'

@@ -7,6 +7,7 @@ import {
   BookOpen,
   BookText,
   ChevronsUpDown,
+  Clapperboard,
   GitCompare,
   Github,
   Home,
@@ -52,6 +53,12 @@ const NAV_ITEMS = [
     href: '/blogs',
     icon: Newspaper,
     match: (path: string) => path.startsWith('/blogs'),
+  },
+  {
+    label: 'Videos',
+    href: '/videos',
+    icon: Clapperboard,
+    match: (path: string) => path.startsWith('/videos') || path.startsWith('/shorts'),
   },
   {
     label: 'About',

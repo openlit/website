@@ -506,6 +506,41 @@ export function personIdForAuthor(slug: string | undefined, name: string | undef
   return `${SITE}/#person-${key}`
 }
 
+export function createVideoObjectSchema({
+  name,
+  description,
+  thumbnailUrl,
+  uploadDate,
+  duration,
+  embedUrl,
+  contentUrl,
+  watchPageUrl,
+}: {
+  name: string
+  description: string
+  thumbnailUrl: string | string[]
+  uploadDate?: string
+  duration?: string
+  embedUrl: string
+  contentUrl: string
+  watchPageUrl: string
+}) {
+  const schema: Record<string, unknown> = {
+    '@type': 'VideoObject',
+    '@id': `${watchPageUrl}#video`,
+    name,
+    description: description || name,
+    thumbnailUrl: Array.isArray(thumbnailUrl) ? thumbnailUrl : [thumbnailUrl],
+    embedUrl,
+    contentUrl,
+    url: watchPageUrl,
+    publisher: { '@id': SCHEMA_IDS.org },
+  }
+  if (uploadDate) schema.uploadDate = uploadDate
+  if (duration) schema.duration = duration
+  return schema
+}
+
 export function createAuthorPersonSchema(author: {
   slug?: string
   name: string

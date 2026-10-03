@@ -166,6 +166,45 @@ Live contributor avatars and public GitHub metrics are shown on the HTML About p
 `
 }
 
+export function videosMarkdown() {
+  return `# OpenLIT Videos
+
+> Demos, talks, and deep dives from the OpenLIT YouTube channel on agent observability, OpenTelemetry tracing, evals, and prompt management.
+
+- HTML: ${SITE}/videos
+- Markdown: ${SITE}/videos.md
+- YouTube: ${siteMetadata.youtube}
+- Shorts: ${SITE}/shorts
+
+The videos list updates automatically from the OpenLIT YouTube channel (RSS by default; optional YouTube Data API when \`YOUTUBE_API_KEY\` is set). Each video has an indexable watch page at \`/videos/{id}\` with VideoObject structured data. Playback uses the official YouTube IFrame embed so views count on YouTube.
+
+## Related
+
+- Shorts: ${SITE}/shorts.md
+- About: ${SITE}/about-us.md
+- Blog: ${SITE}/blogs
+`
+}
+
+export function shortsMarkdown() {
+  return `# OpenLIT Shorts
+
+> Vertical YouTube Shorts from OpenLIT — quick tips on tracing AI agents, OpenTelemetry, evals, and prompt management.
+
+- HTML: ${SITE}/shorts
+- Markdown: ${SITE}/shorts.md
+- YouTube: ${siteMetadata.youtube}
+- Videos: ${SITE}/videos
+
+The Shorts experience mirrors YouTube Shorts (full-height snap scrolling, mute/unmute, share). Each Short has an indexable page at \`/shorts/{id}\`. Without a YouTube API key, Shorts are detected via \`#shorts\` in the title/description and by checking whether \`/shorts/{id}\` stays on the Shorts URL.
+
+## Related
+
+- Videos: ${SITE}/videos.md
+- About: ${SITE}/about-us.md
+`
+}
+
 export function compareIndexMarkdown() {
   const links = competitors
     .map((c) => `- [${c.tagline}](${SITE}/compare/${c.slug}.md): ${c.description}`)
@@ -326,6 +365,22 @@ export const LLM_PAGES: LlmPage[] = [
     body: aboutMarkdown,
   },
   {
+    mdPath: '/videos.md',
+    htmlPath: '/videos',
+    title: 'OpenLIT Videos',
+    summary:
+      'Demos, talks, and deep dives from the OpenLIT YouTube channel on agent observability and OpenTelemetry.',
+    body: videosMarkdown,
+  },
+  {
+    mdPath: '/shorts.md',
+    htmlPath: '/shorts',
+    title: 'OpenLIT Shorts',
+    summary:
+      'Vertical YouTube Shorts from OpenLIT with quick tips on tracing AI agents, evals, and prompts.',
+    body: shortsMarkdown,
+  },
+  {
     mdPath: '/compare.md',
     htmlPath: '/compare',
     title: 'OpenLIT vs Alternatives: Agent Observability & Evals Tools Compared',
@@ -431,6 +486,8 @@ ${blogs}
 - About: ${SITE}/about-us
 - Compare: ${SITE}/compare
 - Blog: ${SITE}/blogs
+- Videos: ${SITE}/videos
+- Shorts: ${SITE}/shorts
 
 ## Full content dump
 
