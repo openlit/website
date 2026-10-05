@@ -1,6 +1,6 @@
 import { ExternalLink } from 'lucide-react'
 import Link from 'next/link'
-import YoutubeFacade from './youtube-facade'
+import YoutubeEmbed from './youtube-embed'
 import { Button } from '@/components/ui/button'
 import type { YoutubeVideo } from 'lib/youtube/types'
 import { youtubeWatchUrl } from 'lib/youtube/config'
@@ -26,7 +26,8 @@ export default function VideoWatch({ video, related = [] }: VideoWatchProps) {
 
   return (
     <div className="mx-auto w-full max-w-3xl px-4 py-10 md:px-6 md:py-14">
-      <YoutubeFacade videoId={video.id} title={video.title} thumbnailUrl={video.thumbnailUrl} />
+      {/* Server-rendered iframe so Google treats this as a video watch page. */}
+      <YoutubeEmbed videoId={video.id} title={video.title} />
 
       <h1 className="mt-6 text-2xl font-bold tracking-tight text-stone-950 dark:text-stone-50 md:text-3xl">
         {video.title}

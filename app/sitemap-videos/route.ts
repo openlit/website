@@ -20,7 +20,6 @@ function videoEntry({
   title,
   description,
   thumbnailUrl,
-  contentUrl,
   playerUrl,
   publicationDate,
   durationSeconds,
@@ -29,7 +28,6 @@ function videoEntry({
   title: string
   description: string
   thumbnailUrl: string
-  contentUrl: string
   playerUrl: string
   publicationDate?: string
   durationSeconds?: number
@@ -44,13 +42,14 @@ function videoEntry({
       ? `<video:duration>${Math.round(durationSeconds)}</video:duration>`
       : ''
 
+  // For YouTube embeds, advertise player_loc only. content_loc must point at the
+  // actual media file bytes — not a youtube.com/watch page URL.
   return `  <url>
     <loc>${escapeXml(loc)}</loc>
     <video:video>
       <video:thumbnail_loc>${escapeXml(thumbnailUrl)}</video:thumbnail_loc>
       <video:title>${escapeXml(title.slice(0, 100))}</video:title>
       <video:description>${desc}</video:description>
-      <video:content_loc>${escapeXml(contentUrl)}</video:content_loc>
       <video:player_loc>${escapeXml(playerUrl)}</video:player_loc>
       ${pub}
       ${duration}
@@ -74,7 +73,6 @@ export async function GET() {
       title: video.title,
       description: video.description,
       thumbnailUrl: video.thumbnailUrl,
-      contentUrl: video.url,
       playerUrl: video.embedUrl,
       publicationDate: video.publishedAt,
       durationSeconds: parseIsoDurationSeconds(video.duration),
@@ -87,7 +85,6 @@ export async function GET() {
       title: video.title,
       description: video.description,
       thumbnailUrl: video.thumbnailUrl,
-      contentUrl: video.url,
       playerUrl: video.embedUrl,
       publicationDate: video.publishedAt,
       durationSeconds: parseIsoDurationSeconds(video.duration),
