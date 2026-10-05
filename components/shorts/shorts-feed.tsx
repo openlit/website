@@ -383,29 +383,30 @@ export default function ShortsFeed({
                   />
                 ) : null}
 
+                {/*
+                  Keep the crawler-visible embed OUTSIDE the YT IFrame API host.
+                  ensurePlayer() clears hostRefs with innerHTML='', which would
+                  detach a React-managed iframe and crash on the next render
+                  (removeChild / NotFoundError) when isReady flips.
+                */}
+                {index === startIndex && !isReady ? (
+                  <iframe
+                    src={youtubeEmbedUrl(video.id, { autoplay: false, mute: true })}
+                    title={video.title}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                    referrerPolicy="strict-origin-when-cross-origin"
+                    className="absolute inset-0 h-full w-full border-0"
+                  />
+                ) : null}
+
                 <div
                   ref={(el) => {
                     if (el) hostRefs.current.set(video.id, el)
                     else hostRefs.current.delete(video.id)
                   }}
                   className="absolute inset-0 h-full w-full [&>div]:h-full [&>div]:w-full [&>iframe]:h-full [&>iframe]:w-full"
-                >
-                  {/*
-                    Server-render an iframe for the requested Short so Googlebot
-                    sees a player without waiting for the IFrame API. Client
-                    hydration replaces this host via ensurePlayer().
-                  */}
-                  {index === startIndex && !isReady ? (
-                    <iframe
-                      src={youtubeEmbedUrl(video.id, { autoplay: false, mute: true })}
-                      title={video.title}
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-                      allowFullScreen
-                      referrerPolicy="strict-origin-when-cross-origin"
-                      className="h-full w-full border-0"
-                    />
-                  ) : null}
-                </div>
+                />
 
                 <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/85 via-black/45 to-transparent px-4 pb-6 pt-24">
                   <div className="pointer-events-auto max-w-[85%]">
