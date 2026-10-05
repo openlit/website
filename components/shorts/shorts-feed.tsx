@@ -5,7 +5,7 @@ import Link from 'next/link'
 import { ChevronDown, ChevronUp, ExternalLink, Link2, Share2, Volume2, VolumeX } from 'lucide-react'
 import { cn } from 'lib/utils'
 import type { YoutubeVideo } from 'lib/youtube/types'
-import { youtubeShortsUrl } from 'lib/youtube/config'
+import { youtubeEmbedUrl, youtubeShortsUrl } from 'lib/youtube/config'
 import siteMetadata from 'data/siteMetadata'
 
 declare global {
@@ -346,7 +346,7 @@ export default function ShortsFeed({
   }
 
   return (
-    <div className="relative flex h-[calc(100dvh-3.25rem)] min-h-[28rem] w-full flex-col bg-stone-950 text-white md:h-[calc(100dvh-3.5rem)]">
+    <div className="relative flex h-[calc(100dvh-3.25rem)] min-h-[28rem] w-full flex-col bg-white text-stone-950 dark:bg-stone-950 dark:text-stone-50 md:h-[calc(100dvh-3.5rem)]">
       <div
         ref={scrollerRef}
         role="feed"
@@ -369,7 +369,7 @@ export default function ShortsFeed({
               aria-label={video.title}
               className="relative flex h-full w-full snap-start snap-always flex-col"
             >
-              <div className="relative mx-auto flex h-full w-full max-w-lg flex-1 items-center justify-center overflow-hidden bg-black md:max-w-md lg:max-w-lg">
+              <div className="relative mx-auto flex h-full w-full max-w-lg flex-1 items-center justify-center overflow-hidden bg-stone-100 dark:bg-stone-950 md:max-w-md lg:max-w-lg">
                 {!isReady ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img
@@ -383,6 +383,23 @@ export default function ShortsFeed({
                   />
                 ) : null}
 
+                {/*
+                  Keep the crawler-visible embed OUTSIDE the YT IFrame API host.
+                  ensurePlayer() clears hostRefs with innerHTML='', which would
+                  detach a React-managed iframe and crash on the next render
+                  (removeChild / NotFoundError) when isReady flips.
+                */}
+                {index === startIndex && !isReady ? (
+                  <iframe
+                    src={youtubeEmbedUrl(video.id, { autoplay: false, mute: true })}
+                    title={video.title}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                    referrerPolicy="strict-origin-when-cross-origin"
+                    className="absolute inset-0 h-full w-full border-0"
+                  />
+                ) : null}
+
                 <div
                   ref={(el) => {
                     if (el) hostRefs.current.set(video.id, el)
@@ -391,7 +408,7 @@ export default function ShortsFeed({
                   className="absolute inset-0 h-full w-full [&>div]:h-full [&>div]:w-full [&>iframe]:h-full [&>iframe]:w-full"
                 />
 
-                <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/85 via-black/45 to-transparent px-4 pb-6 pt-24">
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/85 via-black/45 to-transparent px-4 pb-6 pt-24 text-white">
                   <div className="pointer-events-auto max-w-[85%]">
                     <h2 className="text-base font-semibold leading-snug sm:text-lg">
                       {video.title}
@@ -456,7 +473,7 @@ export default function ShortsFeed({
       <div className="pointer-events-none absolute right-4 top-1/2 z-30 hidden -translate-y-1/2 flex-col gap-2 md:flex">
         <button
           type="button"
-          className="pointer-events-auto flex size-10 items-center justify-center rounded-full border border-white/20 bg-black/50 text-white backdrop-blur hover:bg-black/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brandPrimary disabled:opacity-40"
+          className="pointer-events-auto flex size-10 items-center justify-center rounded-full border border-stone-200 bg-white/90 text-stone-950 shadow-sm backdrop-blur transition hover:bg-stone-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brandPrimary disabled:opacity-40 dark:border-white/20 dark:bg-black/50 dark:text-white dark:hover:bg-black/70"
           onClick={() => scrollToIndex(activeIndex - 1)}
           disabled={activeIndex <= 0}
           aria-label="Previous Short"
@@ -465,7 +482,7 @@ export default function ShortsFeed({
         </button>
         <button
           type="button"
-          className="pointer-events-auto flex size-10 items-center justify-center rounded-full border border-white/20 bg-black/50 text-white backdrop-blur hover:bg-black/70 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brandPrimary disabled:opacity-40"
+          className="pointer-events-auto flex size-10 items-center justify-center rounded-full border border-stone-200 bg-white/90 text-stone-950 shadow-sm backdrop-blur transition hover:bg-stone-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brandPrimary disabled:opacity-40 dark:border-white/20 dark:bg-black/50 dark:text-white dark:hover:bg-black/70"
           onClick={() => scrollToIndex(activeIndex + 1)}
           disabled={activeIndex >= shorts.length - 1}
           aria-label="Next Short"
@@ -474,9 +491,11 @@ export default function ShortsFeed({
         </button>
       </div>
 
-      <div className="pointer-events-none absolute left-3 top-3 z-30 rounded-md bg-black/50 px-2 py-1 text-xs text-white/80 backdrop-blur">
+      <div className="pointer-events-none absolute left-3 top-3 z-30 rounded-md border border-stone-200 bg-white/90 px-2 py-1 text-xs text-stone-700 shadow-sm backdrop-blur dark:border-transparent dark:bg-black/50 dark:text-white/80">
         {activeIndex + 1} / {shorts.length}
-        {shareStatus ? <span className="ml-2 text-orange-300">{shareStatus}</span> : null}
+        {shareStatus ? (
+          <span className="ml-2 text-brandPrimary dark:text-orange-300">{shareStatus}</span>
+        ) : null}
       </div>
 
       <p className="sr-only">

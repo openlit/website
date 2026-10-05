@@ -15,7 +15,6 @@ import {
   getYoutubeChannelUrl,
   youtubeEmbedUrl,
   youtubeShortsUrl,
-  youtubeWatchUrl,
   YOUTUBE_REVALIDATE_SECONDS,
 } from 'lib/youtube'
 
@@ -112,7 +111,6 @@ export default async function ShortWatchPage({ params }: PageProps) {
     uploadDate: video.publishedAt || undefined,
     duration: durationForSchema(video.duration),
     embedUrl: embed,
-    contentUrl: youtubeWatchUrl(video.id),
     watchPageUrl: watchUrl,
   })
 

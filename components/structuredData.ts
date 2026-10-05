@@ -522,7 +522,11 @@ export function createVideoObjectSchema({
   uploadDate?: string
   duration?: string
   embedUrl: string
-  contentUrl: string
+  /**
+   * URL of the actual media file bytes. Do not set this to a YouTube watch page
+   * URL — for YouTube embeds, prefer embedUrl only.
+   */
+  contentUrl?: string
   watchPageUrl: string
 }) {
   const schema: Record<string, unknown> = {
@@ -532,10 +536,10 @@ export function createVideoObjectSchema({
     description: description || name,
     thumbnailUrl: Array.isArray(thumbnailUrl) ? thumbnailUrl : [thumbnailUrl],
     embedUrl,
-    contentUrl,
     url: watchPageUrl,
     publisher: { '@id': SCHEMA_IDS.org },
   }
+  if (contentUrl) schema.contentUrl = contentUrl
   if (uploadDate) schema.uploadDate = uploadDate
   if (duration) schema.duration = duration
   return schema

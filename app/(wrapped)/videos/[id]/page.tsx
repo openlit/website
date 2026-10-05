@@ -112,7 +112,6 @@ export default async function VideoWatchPage({ params }: PageProps) {
     uploadDate: video.publishedAt || undefined,
     duration: durationForSchema(video.duration),
     embedUrl: embed,
-    contentUrl: youtubeWatchUrl(video.id),
     watchPageUrl: watchUrl,
   })
 

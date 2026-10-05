@@ -16,8 +16,9 @@ type YoutubeFacadeProps = {
 }
 
 /**
- * Click-to-load YouTube iframe facade. Uses the official embed so genuine plays
- * count on YouTube. No hidden/preloaded players.
+ * Click-to-load YouTube iframe facade for listing/card surfaces.
+ * Dedicated watch pages (/videos/[id], /shorts/[id]) should use YoutubeEmbed
+ * (or an equivalent SSR iframe) so crawlers see a player in the HTML.
  */
 export default function YoutubeFacade({
   videoId,
