@@ -1,3 +1,4 @@
+import { MARKDOWN_NOT_FOUND_HEADERS, markdownNotFoundBody } from 'lib/agent/not-found-markdown'
 import { getMarkdownBySlug } from 'lib/llms/pages'
 import { textResponse } from 'lib/llms/response'
 
@@ -10,7 +11,11 @@ type Params = {
 export function GET(_request: Request, { params }: Params) {
   const markdown = getMarkdownBySlug(params.slug)
   if (!markdown) {
-    return new Response('Not Found', { status: 404 })
+    const path = !params.slug || params.slug.length === 0 ? '/' : `/${params.slug.join('/')}`
+    return new Response(markdownNotFoundBody(path), {
+      status: 404,
+      headers: MARKDOWN_NOT_FOUND_HEADERS,
+    })
   }
 
   const slug = params.slug

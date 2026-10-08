@@ -13,6 +13,9 @@ import {
 } from 'constants/pricing'
 import SUPPORTED_INTEGRATIONS from 'constants/integrations'
 import { PILLAR_FAQ } from 'constants/pillar-faq'
+import { overviewPlainText } from 'constants/home-overview'
+import { WHEN_TO_USE_SECTION } from 'lib/agent/instructions'
+import { CONTACT_MARKDOWN, PRIVACY_MARKDOWN, SANDBOX_MARKDOWN } from 'lib/agent/trust-copy'
 
 const SITE = siteMetadata.siteUrl.replace(/\/$/, '')
 const DOCS_LLMS = 'https://docs.openlit.io/llms.txt'
@@ -63,15 +66,20 @@ ${OPENLIT_POSITIONING}
 ## Instrumentation paths
 
 1. **Native SDKs** (Python, JavaScript, Go): \`pip install openlit\` / \`npm install openlit\` / \`go get github.com/openlit/openlit/sdk/go\`, then \`openlit.init()\`.
-2. **eBPF controller** (enterprise): zero-code instrumentation for Kubernetes, Docker, and Linux.
-3. **GPU collector**: OpenTelemetry GPU metrics for NVIDIA, AMD, and Intel.
-4. **Any OTel source**: point OTel SDKs, OBI, OpenLLMetry, or other OTLP exporters at OpenLIT.
+2. **Official CLI** (coding agents): \`brew install openlit/openlit/openlit\`. Formula: https://github.com/openlit/homebrew-openlit/blob/main/Formula/openlit.rb. Docs: https://docs.openlit.io/latest/cli/installation.
+3. **eBPF controller** (enterprise): zero-code instrumentation for Kubernetes, Docker, and Linux.
+4. **GPU collector**: OpenTelemetry GPU metrics for NVIDIA, AMD, and Intel.
+5. **Any OTel source**: point OTel SDKs, OBI, OpenLLMetry, or other OTLP exporters at OpenLIT.
 
 OpenLIT has ${SUPPORTED_INTEGRATIONS.length}+ integrations across LLMs, agent frameworks, vector databases, and GPUs.
 
 ## FAQ
 
 ${faqMarkdown(HOME_FAQ_ITEMS.filter((item) => !item.excludeFromSchema))}
+
+## Start here
+
+${overviewPlainText()}
 
 ## Related
 
@@ -342,6 +350,18 @@ ${related || `- Glossary index: ${SITE}/glossary.md`}
 `
 }
 
+export function contactMarkdown() {
+  return CONTACT_MARKDOWN
+}
+
+export function privacyMarkdown() {
+  return PRIVACY_MARKDOWN
+}
+
+export function sandboxMarkdown() {
+  return SANDBOX_MARKDOWN
+}
+
 export const LLM_PAGES: LlmPage[] = [
   {
     mdPath: '/index.md',
@@ -363,6 +383,30 @@ export const LLM_PAGES: LlmPage[] = [
     title: 'About OpenLIT',
     summary: HERO_DESCRIPTION,
     body: aboutMarkdown,
+  },
+  {
+    mdPath: '/contact.md',
+    htmlPath: '/contact',
+    title: 'Contact OpenLIT',
+    summary:
+      'Email contact@openlit.io. Headquarters in New Delhi, India. Security, product, and press. Self-host without a sales call.',
+    body: contactMarkdown,
+  },
+  {
+    mdPath: '/privacy.md',
+    htmlPath: '/privacy',
+    title: 'Privacy Policy',
+    summary:
+      'How OpenLIT handles information on openlit.io. Self-hosted OpenLIT does not send your traces to us.',
+    body: privacyMarkdown,
+  },
+  {
+    mdPath: '/sandbox.md',
+    htmlPath: '/sandbox',
+    title: 'OpenLIT local sandbox',
+    summary:
+      'Free Docker Compose sandbox. Create your own API key in the local UI. No credit card and no sales form.',
+    body: sandboxMarkdown,
   },
   {
     mdPath: '/videos.md',
@@ -420,11 +464,25 @@ export const LLM_PAGES: LlmPage[] = [
   })),
 ]
 
+const MARKDOWN_ALIASES: Record<string, string> = {
+  '/about': '/about-us.md',
+  '/about-us': '/about-us.md',
+}
+
+export function markdownForPathname(pathname: string): string | null {
+  let path = pathname.split('?')[0] || '/'
+  if (path.length > 1 && path.endsWith('/')) path = path.slice(0, -1)
+  if (path.endsWith('.md')) {
+    path = path === '/index.md' ? '/' : path.slice(0, -3)
+  }
+  const mdPath = MARKDOWN_ALIASES[path] || (path === '/' ? '/index.md' : `${path}.md`)
+  const page = LLM_PAGES.find((entry) => entry.mdPath === mdPath || entry.htmlPath === path)
+  return page ? page.body() : null
+}
+
 export function getMarkdownBySlug(slug: string[] | undefined): string | null {
   const path = !slug || slug.length === 0 ? '/' : `/${slug.join('/')}`
-  const mdPath = path === '/' ? '/index.md' : `${path}.md`
-  const page = LLM_PAGES.find((entry) => entry.mdPath === mdPath)
-  return page ? page.body() : null
+  return markdownForPathname(path)
 }
 
 const FEATURED_BLOGS = [
@@ -457,6 +515,7 @@ export function buildLlmsTxt() {
 
 This file helps agents find clean Markdown versions of key marketing pages and high-intent blog posts. Product documentation has its own index at ${DOCS_LLMS}.
 
+${WHEN_TO_USE_SECTION}
 ## What OpenLIT is
 
 ${OPENLIT_DEFINITION}
@@ -484,6 +543,9 @@ ${blogs}
 - Glossary: ${SITE}/glossary
 - Pricing: ${SITE}/pricing
 - About: ${SITE}/about-us
+- Contact: ${SITE}/contact
+- Privacy: ${SITE}/privacy
+- Sandbox: ${SITE}/sandbox
 - Compare: ${SITE}/compare
 - Blog: ${SITE}/blogs
 - Videos: ${SITE}/videos
@@ -500,6 +562,13 @@ ${blogs}
 - Quickstart: https://docs.openlit.io/latest/openlit/quickstart-ai-observability
 - Evaluations: https://docs.openlit.io/latest/openlit/evaluations/overview
 - Prompt Hub: https://docs.openlit.io/latest/openlit/prompts-experiments/prompt-hub/overview
+
+## Machine-readable
+
+- OpenAPI: ${SITE}/openapi.json
+- OAuth metadata: ${SITE}/.well-known/oauth-authorization-server
+- Protected resource metadata: ${SITE}/.well-known/oauth-protected-resource
+- CLI formula: https://github.com/openlit/homebrew-openlit/blob/main/Formula/openlit.rb
 
 ## Project
 

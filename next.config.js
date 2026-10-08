@@ -108,9 +108,23 @@ module.exports = () => {
     },
     async rewrites() {
       return [
+        { source: '/about', destination: '/about-us' },
+        { source: '/privacy', destination: '/privacy-policy' },
+        {
+          source: '/.well-known/oauth-authorization-server',
+          destination: '/oauth/authorization-server',
+        },
+        {
+          source: '/.well-known/oauth-protected-resource',
+          destination: '/oauth/protected-resource',
+        },
         { source: '/index.md', destination: '/markdown' },
         { source: '/pricing.md', destination: '/markdown/pricing' },
         { source: '/about-us.md', destination: '/markdown/about-us' },
+        { source: '/about.md', destination: '/markdown/about-us' },
+        { source: '/contact.md', destination: '/markdown/contact' },
+        { source: '/privacy.md', destination: '/markdown/privacy' },
+        { source: '/sandbox.md', destination: '/markdown/sandbox' },
         { source: '/compare.md', destination: '/markdown/compare' },
         { source: '/compare/:slug.md', destination: '/markdown/compare/:slug' },
         {
