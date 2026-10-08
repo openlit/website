@@ -112,6 +112,24 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.6,
     }),
     entry({
+      path: 'about',
+      lastModified: CONTENT_UPDATED,
+      changeFrequency: 'monthly',
+      priority: 0.6,
+    }),
+    entry({
+      path: 'contact',
+      lastModified: CONTENT_UPDATED,
+      changeFrequency: 'yearly',
+      priority: 0.5,
+    }),
+    entry({
+      path: 'sandbox',
+      lastModified: CONTENT_UPDATED,
+      changeFrequency: 'monthly',
+      priority: 0.7,
+    }),
+    entry({
       path: 'videos',
       lastModified: CONTENT_UPDATED,
       changeFrequency: 'daily',
@@ -125,6 +143,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }),
     entry({
       path: 'privacy-policy',
+      lastModified: CONTENT_UPDATED,
+      changeFrequency: 'yearly',
+      priority: 0.3,
+    }),
+    entry({
+      path: 'privacy',
       lastModified: CONTENT_UPDATED,
       changeFrequency: 'yearly',
       priority: 0.3,

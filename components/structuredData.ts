@@ -1,4 +1,5 @@
 import { OPENLIT_DEFINITION } from 'constants/openlit-definition'
+import { ORGANIZATION_ADDRESS, ORGANIZATION_CONTACT } from '../lib/agent/organization'
 
 const SITE = 'https://openlit.io'
 const DEFINITION = OPENLIT_DEFINITION
@@ -67,6 +68,7 @@ export const organisationSchema = {
   image: SHARE_IMAGE,
   description: DEFINITION,
   email: 'contact@openlit.io',
+  address: ORGANIZATION_ADDRESS,
   // Public GitHub org activity begins early 2024; precise founding month not independently verified.
   foundingDate: '2024',
   founders: { '@id': SCHEMA_IDS.founder },
@@ -80,15 +82,10 @@ export const organisationSchema = {
     'https://discord.com/invite/RbNPvG54',
     'https://pypi.org/project/openlit/',
     'https://www.npmjs.com/package/openlit',
+    'https://github.com/openlit/homebrew-openlit',
     'https://docs.openlit.io/latest/overview',
   ],
-  contactPoint: {
-    '@type': 'ContactPoint',
-    email: 'contact@openlit.io',
-    contactType: 'customer support',
-    url: SITE,
-    availableLanguage: 'English',
-  },
+  contactPoint: ORGANIZATION_CONTACT,
   knowsAbout: KNOWS_ABOUT,
   keywords: KNOWS_ABOUT.join(', '),
   areaServed: 'Worldwide',

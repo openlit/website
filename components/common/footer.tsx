@@ -49,6 +49,8 @@ const linkGroups = [
     heading: 'Company',
     links: [
       { text: 'About Us', link: '/about-us' },
+      { text: 'Contact', link: '/contact' },
+      { text: 'Sandbox', link: '/sandbox' },
       { text: 'Blog', link: '/blogs' },
       { text: 'Videos', link: '/videos' },
       { text: 'Shorts', link: '/shorts' },
@@ -68,7 +70,7 @@ const linkGroups = [
   {
     heading: 'Legal',
     links: [
-      { text: 'Privacy Policy', link: '/privacy-policy' },
+      { text: 'Privacy Policy', link: '/privacy' },
       { text: 'Terms of Service', link: '/terms' },
       {
         text: 'Security',
