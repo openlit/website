@@ -106,10 +106,17 @@ module.exports = () => {
         },
       ],
     },
+    async redirects() {
+      return [
+        { source: '/blog', destination: '/blogs', permanent: true },
+        { source: '/blog/:slug*', destination: '/blogs/:slug*', permanent: true },
+      ]
+    },
     async rewrites() {
       return [
         { source: '/index.md', destination: '/markdown' },
         { source: '/pricing.md', destination: '/markdown/pricing' },
+        { source: '/enterprise.md', destination: '/markdown/enterprise' },
         { source: '/about-us.md', destination: '/markdown/about-us' },
         { source: '/compare.md', destination: '/markdown/compare' },
         { source: '/compare/:slug.md', destination: '/markdown/compare/:slug' },

@@ -1,6 +1,7 @@
 'use client'
 
 import Image from 'next/image'
+import Link from 'next/link'
 import { useEffect, useState, type ReactNode } from 'react'
 import { Check, Copy } from 'lucide-react'
 import SUPPORTED_INTEGRATIONS from 'constants/integrations'
@@ -118,6 +119,7 @@ function PathShell({
   id,
   badge,
   badgeTone = 'neutral',
+  badgeHref,
   title,
   body,
   children,
@@ -125,23 +127,30 @@ function PathShell({
   id: string
   badge: string
   badgeTone?: 'neutral' | 'enterprise'
+  badgeHref?: string
   title: string
   body: string
   children: ReactNode
 }) {
+  const badgeClassName =
+    badgeTone === 'enterprise'
+      ? 'shrink-0 rounded bg-brandPrimary/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-brandPrimary'
+      : 'shrink-0 rounded bg-stone-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-stone-500 dark:bg-stone-900 dark:text-stone-400'
+
   return (
     <div className="flex h-full min-w-0 flex-col overflow-hidden bg-white p-4 dark:bg-stone-950 sm:p-5 lg:p-6">
       <div className="flex items-center justify-between gap-3">
         <span className="font-mono text-xs text-stone-400">{id}</span>
-        <span
-          className={
-            badgeTone === 'enterprise'
-              ? 'shrink-0 rounded bg-brandPrimary/10 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-brandPrimary'
-              : 'shrink-0 rounded bg-stone-100 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-stone-500 dark:bg-stone-900 dark:text-stone-400'
-          }
-        >
-          {badge}
-        </span>
+        {badgeHref ? (
+          <Link
+            href={badgeHref}
+            className={`${badgeClassName} transition hover:bg-brandPrimary/20`}
+          >
+            {badge}
+          </Link>
+        ) : (
+          <span className={badgeClassName}>{badge}</span>
+        )}
       </div>
       <h3 className="mt-4 text-lg font-semibold text-stone-900 dark:text-stone-50">{title}</h3>
       <p className="mt-2 text-sm leading-relaxed text-stone-600 dark:text-stone-300">{body}</p>
@@ -216,6 +225,7 @@ function EbpfPath() {
       id="02"
       badge="Enterprise"
       badgeTone="enterprise"
+      badgeHref="/enterprise"
       title="eBPF controller"
       body="Zero-code instrumentation for any language. No SDK, no app changes."
     >
@@ -317,7 +327,7 @@ function IntegrationsMarquee() {
 
 export default function WorksWithStack() {
   return (
-    <section className="w-full bg-white px-4 py-16 dark:bg-stone-950 md:py-20">
+    <section className="w-full px-4 py-16 md:py-20">
       <div className="mx-auto max-w-6xl">
         <div className="grid gap-8 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-end lg:gap-12">
           <div>
@@ -330,8 +340,12 @@ export default function WorksWithStack() {
             </h2>
           </div>
           <p className="max-w-xl text-base leading-relaxed text-stone-600 dark:text-stone-300 md:text-lg lg:justify-self-end">
-            Use OpenLIT SDKs, the enterprise eBPF controller, the GPU collector, or send OTLP from
-            OTel SDKs, OBI, OpenLLMetry, and other OpenTelemetry instrumentations.
+            Use OpenLIT SDKs, the{' '}
+            <Link href="/enterprise" className="font-medium text-brandPrimary hover:underline">
+              Enterprise Edition
+            </Link>{' '}
+            eBPF controller, the GPU collector, or send OTLP from OTel SDKs, OBI, OpenLLMetry, and
+            other OpenTelemetry instrumentations.
           </p>
         </div>
 

@@ -346,7 +346,7 @@ export default function ShortsFeed({
   }
 
   return (
-    <div className="relative flex h-[calc(100dvh-3.25rem)] min-h-[28rem] w-full flex-col bg-white text-stone-950 dark:bg-stone-950 dark:text-stone-50 md:h-[calc(100dvh-3.5rem)]">
+    <div className="relative flex h-[calc(100dvh-3.25rem)] min-h-[28rem] w-full flex-col text-stone-950 dark:text-stone-50 md:h-[calc(100dvh-3.5rem)]">
       <div
         ref={scrollerRef}
         role="feed"

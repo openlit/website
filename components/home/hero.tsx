@@ -9,7 +9,7 @@ export default function Hero() {
   const { activeLabel, toggle, setActiveLabel } = useHarnessSelection(null)
 
   return (
-    <div className="relative w-full bg-white dark:bg-stone-950">
+    <div className="relative w-full">
       <section className="relative mx-auto flex w-full max-w-6xl flex-col items-center px-4 pb-10 pt-10 md:pt-14">
         <div className="relative z-10 mx-auto max-w-4xl text-center">
           <h1 className="text-balance text-3xl font-bold tracking-tight text-black dark:text-white sm:text-4xl md:text-5xl lg:text-6xl">

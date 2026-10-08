@@ -11,6 +11,7 @@ import {
   PRICING_SEO,
   type PlanValue,
 } from 'constants/pricing'
+import { ENTERPRISE_FAQ_ITEMS, ENTERPRISE_FEATURES, ENTERPRISE_SEO } from 'constants/enterprise'
 import SUPPORTED_INTEGRATIONS from 'constants/integrations'
 import { PILLAR_FAQ } from 'constants/pillar-faq'
 
@@ -63,7 +64,7 @@ ${OPENLIT_POSITIONING}
 ## Instrumentation paths
 
 1. **Native SDKs** (Python, JavaScript, Go): \`pip install openlit\` / \`npm install openlit\` / \`go get github.com/openlit/openlit/sdk/go\`, then \`openlit.init()\`.
-2. **eBPF controller** (enterprise): zero-code instrumentation for Kubernetes, Docker, and Linux.
+2. **eBPF controller** ([Enterprise Edition](${SITE}/enterprise.md)): zero-code instrumentation for Kubernetes, Docker, and Linux.
 3. **GPU collector**: OpenTelemetry GPU metrics for NVIDIA, AMD, and Intel.
 4. **Any OTel source**: point OTel SDKs, OBI, OpenLLMetry, or other OTLP exporters at OpenLIT.
 
@@ -78,6 +79,7 @@ ${faqMarkdown(HOME_FAQ_ITEMS.filter((item) => !item.excludeFromSchema))}
 - Agent harness engineering: ${SITE}/agent-harness-engineering.md
 - Glossary: ${SITE}/glossary.md
 - Pricing: ${SITE}/pricing.md
+- Enterprise Edition: ${SITE}/enterprise.md
 - About: ${SITE}/about-us.md
 - Compare: ${SITE}/compare.md
 - Product docs (llms.txt): ${DOCS_LLMS}
@@ -86,6 +88,7 @@ ${faqMarkdown(HOME_FAQ_ITEMS.filter((item) => !item.excludeFromSchema))}
 
 export function pricingMarkdown() {
   const oss = PRICING_PLANS.oss
+  const enterprise = PRICING_PLANS.enterprise
   const cloud = PRICING_PLANS.cloud
 
   const ossFeatures = OSS_FEATURE_ROWS.map((category) => {
@@ -104,7 +107,7 @@ export function pricingMarkdown() {
 
 ## Plans
 
-### ${oss.name} (${oss.badge})
+### ${oss.name}${oss.badge ? ` (${oss.badge})` : ''}
 
 ${oss.summary}
 
@@ -116,7 +119,19 @@ Highlights:
 
 ${oss.highlights.map((item) => `- ${item}`).join('\n')}
 
-### ${cloud.name} (${cloud.badge})
+### ${enterprise.name}${enterprise.badge ? ` (${enterprise.badge})` : ''}
+
+${enterprise.summary}
+
+- Price: ${enterprise.priceLabel}. ${enterprise.priceHint}
+- CTA: [${enterprise.ctaLabel}](${enterprise.ctaHref})
+- Features: ${SITE}/enterprise.md
+
+Highlights:
+
+${enterprise.highlights.map((item) => `- ${item}`).join('\n')}
+
+### ${cloud.name}${cloud.badge ? ` (${cloud.badge})` : ''}
 
 ${cloud.summary}
 
@@ -134,6 +149,38 @@ ${ossFeatures}
 ## FAQ
 
 ${faqMarkdown(PRICING_FAQ_ITEMS)}
+`
+}
+
+export function enterpriseMarkdown() {
+  const features = ENTERPRISE_FEATURES.map((feature) => {
+    const points = feature.points.map((point) => `- ${point}`).join('\n')
+    const docs = feature.docsHref ? `\n\nDocs: ${feature.docsHref}` : ''
+    return `### ${feature.name}\n\n${feature.summary}\n\n${points}${docs}`
+  }).join('\n\n')
+
+  return `# ${ENTERPRISE_SEO.title}
+
+> ${ENTERPRISE_SEO.description}
+
+- HTML: ${SITE}/enterprise
+- Markdown: ${SITE}/enterprise.md
+- Contact: contact@openlit.io
+
+OpenLIT Enterprise Edition is self-hosted OpenLIT with licensed features. It includes everything in OpenLIT OSS (tracing, evaluations, guardrails, Prompt Hub, Vault, OpenGround, and dashboards) plus the features below.
+
+## Enterprise Edition features
+
+${features}
+
+## FAQ
+
+${faqMarkdown(ENTERPRISE_FAQ_ITEMS)}
+
+## Related
+
+- Pricing: ${SITE}/pricing.md
+- Docs: https://docs.openlit.io/latest/overview
 `
 }
 
@@ -358,6 +405,13 @@ export const LLM_PAGES: LlmPage[] = [
     body: pricingMarkdown,
   },
   {
+    mdPath: '/enterprise.md',
+    htmlPath: '/enterprise',
+    title: ENTERPRISE_SEO.title,
+    summary: ENTERPRISE_SEO.description,
+    body: enterpriseMarkdown,
+  },
+  {
     mdPath: '/about-us.md',
     htmlPath: '/about-us',
     title: 'About OpenLIT',
@@ -483,6 +537,7 @@ ${blogs}
 - Agent harness engineering: ${SITE}/agent-harness-engineering
 - Glossary: ${SITE}/glossary
 - Pricing: ${SITE}/pricing
+- Enterprise Edition: ${SITE}/enterprise
 - About: ${SITE}/about-us
 - Compare: ${SITE}/compare
 - Blog: ${SITE}/blogs

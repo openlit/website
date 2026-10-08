@@ -1,6 +1,7 @@
 'use client'
 
-import { Check, Github, ArrowRight, Server, Cloud } from 'lucide-react'
+import { Check, Github, ArrowRight, Cloud, Building2, type LucideIcon } from 'lucide-react'
+import Link from 'next/link'
 import siteMetadata from '@/data/siteMetadata'
 import ReadyToGetStarted from './common/ready-to-get-started'
 import {
@@ -19,6 +20,20 @@ function PlanValueCell({ value }: { value: PlanValue }) {
   return <span className="text-xs font-medium text-stone-600 dark:text-stone-300">{value}</span>
 }
 
+const PLAN_ICONS: Record<string, LucideIcon> = {
+  OSS: Github,
+  Enterprise: Building2,
+  Cloud: Cloud,
+}
+
+const PLAN_ICON_TONES: Record<string, string> = {
+  OSS: 'border-orange-200 bg-gradient-to-b from-orange-50 to-orange-100 text-orange-700 dark:border-orange-900/70 dark:from-orange-950/60 dark:to-orange-950/20 dark:text-orange-300',
+  Enterprise:
+    'border-stone-800 bg-gradient-to-b from-stone-800 to-stone-950 text-white dark:border-stone-300 dark:from-white dark:to-stone-200 dark:text-stone-950',
+  Cloud:
+    'border-sky-200 bg-gradient-to-b from-sky-50 to-sky-100 text-sky-700 dark:border-sky-900/70 dark:from-sky-950/60 dark:to-sky-950/20 dark:text-sky-300',
+}
+
 function PlanCard({
   plan,
   featured = false,
@@ -26,7 +41,7 @@ function PlanCard({
   plan: (typeof PRICING_PLANS)[keyof typeof PRICING_PLANS]
   featured?: boolean
 }) {
-  const Icon = plan.name === 'OSS' ? Server : Cloud
+  const Icon = PLAN_ICONS[plan.name]
 
   return (
     <div
@@ -38,33 +53,22 @@ function PlanCard({
       )}
     >
       <div className="flex items-start justify-between gap-3">
-        <div className="flex items-center gap-3">
-          <span
-            className={cn(
-              'inline-flex size-9 items-center justify-center rounded-md border',
-              featured
-                ? 'border-orange-200 bg-orange-50 text-orange-700 dark:border-orange-900/70 dark:bg-orange-950/40 dark:text-orange-300'
-                : 'border-stone-200 bg-stone-50 text-stone-700 dark:border-stone-800 dark:bg-stone-900 dark:text-stone-200'
-            )}
-          >
-            <Icon className="h-4 w-4" />
-          </span>
-          <div>
-            <h2 className="text-lg font-semibold text-stone-950 dark:text-stone-50">{plan.name}</h2>
-            <p className="text-xs text-stone-500 dark:text-stone-400">{plan.summary}</p>
-          </div>
-        </div>
         <span
           className={cn(
-            'shrink-0 rounded-md px-2 py-1 text-[11px] font-semibold uppercase tracking-wide',
-            featured
-              ? 'bg-brandPrimary text-white'
-              : 'border border-stone-200 text-stone-500 dark:border-stone-700 dark:text-stone-400'
+            'inline-flex size-11 items-center justify-center rounded-lg border shadow-sm',
+            PLAN_ICON_TONES[plan.name]
           )}
         >
-          {plan.badge}
+          <Icon className="size-5" strokeWidth={1.75} />
         </span>
+        {plan.badge ? (
+          <span className="shrink-0 rounded-md border border-stone-200 px-2 py-1 text-[11px] font-semibold uppercase tracking-wide text-stone-500 dark:border-stone-700 dark:text-stone-400">
+            {plan.badge}
+          </span>
+        ) : null}
       </div>
+      <h2 className="mt-4 text-lg font-semibold text-stone-950 dark:text-stone-50">{plan.name}</h2>
+      <p className="mt-1 text-sm text-stone-500 dark:text-stone-400">{plan.summary}</p>
 
       <div className="mt-6">
         <p className="text-3xl font-bold tracking-tight text-stone-950 dark:text-stone-50">
@@ -123,13 +127,18 @@ export default function PricingContent() {
         </h1>
         <p className="mt-3 text-base leading-relaxed text-stone-600 dark:text-stone-300">
           Self-host OpenLIT free under Apache 2.0 for unlimited LLM tracing, evaluations, prompt
-          management, and agent monitoring. OpenLIT Cloud is coming soon for teams that want a fully
-          hosted option.
+          management, and agent monitoring.{' '}
+          <Link href="/enterprise" className="font-medium text-brandPrimary hover:underline">
+            Enterprise Edition
+          </Link>{' '}
+          adds access control, audit logs, and alerting for production teams. OpenLIT Cloud is
+          coming soon for teams that want a fully hosted option.
         </p>
       </div>
 
-      <div className="mb-14 grid gap-4 sm:grid-cols-2">
+      <div className="mb-14 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
         <PlanCard plan={PRICING_PLANS.oss} featured />
+        <PlanCard plan={PRICING_PLANS.enterprise} />
         <PlanCard plan={PRICING_PLANS.cloud} />
       </div>
 

@@ -53,6 +53,7 @@ const linkGroups = [
       { text: 'Videos', link: '/videos' },
       { text: 'Shorts', link: '/shorts' },
       { text: 'Pricing', link: '/pricing' },
+      { text: 'Enterprise', link: '/enterprise' },
       { text: 'Agent harness engineering', link: '/agent-harness-engineering' },
       { text: 'Glossary', link: '/glossary' },
       { text: 'GitHub', link: 'https://github.com/openlit/openlit' },

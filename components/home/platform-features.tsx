@@ -332,7 +332,7 @@ function FeatureVisual({ kind }: { kind: Feature['visual'] }) {
 
 export default function PlatformFeatures() {
   return (
-    <section className="w-full bg-white px-4 py-16 dark:bg-stone-950 md:py-20">
+    <section className="w-full px-4 py-16 md:py-20">
       <div className="mx-auto max-w-6xl">
         <div className="mx-auto max-w-3xl text-center">
           <h2 className="text-3xl font-bold tracking-tight text-stone-900 dark:text-stone-50 md:text-4xl">
