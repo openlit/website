@@ -502,6 +502,35 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@contentlayer2/core@patch:@contentlayer2/core@npm%3A0.4.1#./.yarn/patches/@contentlayer2-core-npm-0.4.1-5ae0117bcc.patch::locator=tailwind-nextjs-starter-blog%40workspace%3A.":
+  version: 0.4.1
+  resolution: "@contentlayer2/core@patch:@contentlayer2/core@npm%3A0.4.1#./.yarn/patches/@contentlayer2-core-npm-0.4.1-5ae0117bcc.patch::version=0.4.1&hash=f347db&locator=tailwind-nextjs-starter-blog%40workspace%3A."
+  dependencies:
+    "@contentlayer2/utils": 0.4.1
+    camel-case: ^4.1.2
+    comment-json: ^4.2.3
+    esbuild: 0.17.x || 0.18.x || 0.19.x || 0.20.x
+    gray-matter: ^4.0.3
+    mdx-bundler: ^10.0.2
+    rehype-stringify: ^10.0.0
+    remark-frontmatter: ^5.0.0
+    remark-parse: ^11.0.0
+    remark-rehype: ^11.1.0
+    source-map-support: ^0.5.21
+    type-fest: ^4.10.0
+    unified: ^11.0.4
+  peerDependencies:
+    esbuild: 0.17.x || 0.18.x || 0.19.x || 0.20.x
+    markdown-wasm: 1.x
+  peerDependenciesMeta:
+    esbuild:
+      optional: true
+    markdown-wasm:
+      optional: true
+  checksum: d5dfe0086d28373b9ae9dfdbf96c690700e64a2b0ef2e759560217e4fc22935e43985fb45e053af9d9118dc4c9362c24acee727cd6510b6fcbd823d3758aa705
+  languageName: node
+  linkType: hard
+
 "@contentlayer2/source-files@npm:0.4.1":
   version: 0.4.1
   resolution: "@contentlayer2/source-files@npm:0.4.1"

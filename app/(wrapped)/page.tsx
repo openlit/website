@@ -5,6 +5,7 @@ import WorksWithStack from '@/components/home/works-with-stack'
 import OpenPlatform from '@/components/home/open-platform'
 import WhyOpenlit from '@/components/home/why-openlit'
 import HomeFaq from '@/components/home/home-faq'
+import ProductOverview from '@/components/home/product-overview'
 import { genPageMetadata } from 'app/seo'
 import { createJsonLdGraph, createWebPageSchema, SCHEMA_IDS } from '@/components/structuredData'
 import JsonLd from '@/components/json-ld'
@@ -44,6 +45,7 @@ export default function Page() {
         <WorksWithStack />
         <OpenPlatform />
         <WhyOpenlit />
+        <ProductOverview />
         <HomeFaq />
       </div>
     </main>

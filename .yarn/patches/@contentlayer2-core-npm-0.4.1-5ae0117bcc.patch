@@ -1,0 +1,53 @@
+diff --git a/dist/generation/generate-dotpkg.js b/dist/generation/generate-dotpkg.js
+index b0734ddf49a22a88aaa8790d74cf5129b7330f5d..a22cbfd4df5fc1711c4abe8ab1d7dde00e8eafd7 100644
+--- a/dist/generation/generate-dotpkg.js
++++ b/dist/generation/generate-dotpkg.js
+@@ -43,9 +43,18 @@ const writeFilesForCache = ({ config, cache, schemaDef, targetPath, generationOp
+     const allDocuments = allCacheItems.map((_) => _.document);
+     const documentDefs = Object.values(schemaDef.documentTypeDefMap);
+     const [nodeVersionMajor, nodeVersionMinor] = yield* $(T.succeedWith(() => process.versions.node.split('.').map((_) => parseInt(_, 10))));
+-    // NOTE Type assert statements for `.json` files are neccessary from Node v16.14 onwards
+-    const needsJsonAssertStatement = nodeVersionMajor > 16 || (nodeVersionMajor === 16 && nodeVersionMinor >= 14);
+-    const assertStatement = needsJsonAssertStatement ? ` assert { type: 'json' }` : '';
++    // JSON imports need an import attribute from Node 16.14.
++    // Node 18.20+, 20.10+, and 21+ support `with`. Node 22 removed the `assert` keyword.
++    const supportsImportAttributes = nodeVersionMajor > 20 ||
++        (nodeVersionMajor === 20 && nodeVersionMinor >= 10) ||
++        (nodeVersionMajor === 18 && nodeVersionMinor >= 20);
++    const needsJsonAssertStatement = !supportsImportAttributes &&
++        (nodeVersionMajor > 16 || (nodeVersionMajor === 16 && nodeVersionMinor >= 14));
++    const assertStatement = supportsImportAttributes
++        ? ` with { type: 'json' }`
++        : needsJsonAssertStatement
++            ? ` assert { type: 'json' }`
++            : '';
+     const typeNameField = generationOptions.options.fieldOptions.typeFieldName;
+     const dataBarrelFiles = documentDefs.map((docDef) => ({
+         content: makeDataExportFile({
+diff --git a/src/generation/generate-dotpkg.ts b/src/generation/generate-dotpkg.ts
+index 847f87900272b6b4b50b919b7102c55ff0e6ba59..e8463570b394cc37cdedbfd858a827e3ac9247a0 100644
+--- a/src/generation/generate-dotpkg.ts
++++ b/src/generation/generate-dotpkg.ts
+@@ -191,9 +191,19 @@ const writeFilesForCache = ({
+         T.succeedWith(() => process.versions.node.split('.').map((_) => parseInt(_, 10)) as [number, number, number]),
+       )
+ 
+-      // NOTE Type assert statements for `.json` files are neccessary from Node v16.14 onwards
+-      const needsJsonAssertStatement = nodeVersionMajor > 16 || (nodeVersionMajor === 16 && nodeVersionMinor >= 14)
+-      const assertStatement = needsJsonAssertStatement ? ` assert { type: 'json' }` : ''
++      // JSON imports need an import attribute from Node 16.14.
++      // Node 18.20+, 20.10+, and 21+ support `with`. Node 22 removed the `assert` keyword.
++      const supportsImportAttributes =
++        nodeVersionMajor > 20 ||
++        (nodeVersionMajor === 20 && nodeVersionMinor >= 10) ||
++        (nodeVersionMajor === 18 && nodeVersionMinor >= 20)
++      const needsJsonAssertStatement =
++        !supportsImportAttributes && (nodeVersionMajor > 16 || (nodeVersionMajor === 16 && nodeVersionMinor >= 14))
++      const assertStatement = supportsImportAttributes
++        ? ` with { type: 'json' }`
++        : needsJsonAssertStatement
++          ? ` assert { type: 'json' }`
++          : ''
+ 
+       const typeNameField = generationOptions.options.fieldOptions.typeFieldName
+       const dataBarrelFiles = documentDefs.map((docDef) => ({

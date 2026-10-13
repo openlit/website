@@ -9,6 +9,7 @@
     "serve": "next start",
     "analyze": "cross-env ANALYZE=true next build",
     "lint": "next lint --fix --dir pages --dir app --dir components --dir lib --dir layouts --dir scripts",
+    "test": "node --experimental-strip-types --import ./lib/agent/test-register.mjs --test lib/agent/*.test.ts",
     "prepare": "husky",
     "cloudflare-build": "next-on-pages"
   },
@@ -83,5 +84,8 @@
   "packageManager": "yarn@3.6.1",
   "overrides": {
     "vercel": "$vercel"
+  },
+  "resolutions": {
+    "@contentlayer2/core@0.4.1": "patch:@contentlayer2/core@npm%3A0.4.1#./.yarn/patches/@contentlayer2-core-npm-0.4.1-5ae0117bcc.patch"
   }
 }

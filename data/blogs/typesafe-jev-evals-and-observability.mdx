@@ -1,0 +1,258 @@
+---
+title: 'TypeSafe Jev in OpenLIT: Day 1 Evals and Observability'
+date: '2026-09-21'
+lastmod: '2026-09-21'
+tags:
+  [
+    'openlit',
+    'typesafe',
+    'jev',
+    'evaluations',
+    'observability',
+    'opentelemetry',
+    'llm',
+    'production',
+    'genai',
+  ]
+draft: false
+summary: OpenLIT adds day 1 TypeSafe Jev support. Use System One as your eval judge and trace system_one calls with OpenTelemetry from one openlit.init().
+authors: ['Aman']
+---
+
+**Short answer:** OpenLIT supports TypeSafe Jev on day 1 for both jobs people actually have. Use Jev as the judge on Evaluations (native System One, not a chat model stuffed into a JSON schema). And if your app already calls `system_one` / `systemOne`, `openlit.init()` emits OpenTelemetry `decision` spans for those calls. Same platform, same OTLP path you already use for OpenAI.
+
+TypeSafe shipped [Jev](https://docs.typesafe.ai/) in mid-September 2026. It is not another chat model. It is the first System One model: you send state plus typed questions, it returns typed answers with probabilities. No prose. No "as an AI language model". Your code can branch on the number.
+
+That is a weird release if you have spent three years forcing LLMs to emit `{"verdict": true}`. It is a normal release if you have been paying generation prices for a yes or no. [Langfuse](https://langfuse.com/blog/2026-09-18-using-typesafes-jev-for-evals), [Braintrust](https://www.braintrust.dev/blog/evaluate-agent-responses-with-jev), [LangChain](https://www.langchain.com/blog/building-a-harness-with-jev), and [Vercel](https://vercel.com/changelog/typesafe-ai-jev-now-available-on-ai-gateway) all wrote it up in the same week. We wanted OpenLIT on that list without pretending Jev is GPT with extra steps.
+
+This post covers what Jev is, why we wired it as a decision model, how to use it as an OpenLIT evaluator, and how to get traces from one `openlit.init()` call.
+
+## What Jev actually is
+
+Regular language models generate text one token at a time. You then parse that text, hope the JSON is valid, and treat the field as a score. Jev skips the generation. One request takes a `state` (string, object, or array) and a map of questions. Every question runs in parallel against that state. You get answers you can put in an `if`.
+
+Three question types, and they mix in one call:
+
+| Type | Ask | You get back |
+| --- | --- | --- |
+| Noul | Is this true? | `noul`, a probability from 0 to 1 |
+| Score | Grade this on an ordered rubric | Weighted `score`, per-level probabilities, `confidence` |
+| Choice | Pick one label from a set you define | Winning `choice`, full distribution, `confidence` |
+
+TypeSafe's own numbers on classification workloads are aggressive: they report Jev as roughly 20 to 200x faster and 40 to 400x cheaper than frontier models for this job, with input priced at [$0.042 per million tokens and output free](https://docs.typesafe.ai/models). Treat those as vendor numbers. Bench it on your traces before you rewrite the eval budget.
+
+The flipside is honest and you should design around it:
+
+- Jev cannot write a sentence. There is no rationale to paste into a ticket.
+- It reads literally. It will not do arithmetic. Dates are text.
+- It will not abstain. If you force a binary with no escape hatch, it picks the least wrong answer.
+- Accuracy drops when the state is full of junk the question does not need. Keep the payload tight.
+
+If you need an explanation for a customer or an auditor, keep a generative judge for that slice. If you need a cheap, typed verdict at volume, Jev is the better tool.
+
+## Why this matters for evals and traces
+
+Agent evaluation is a decision. Given prompt, response, and context, is this a hallucination? How complete is it? Did we leak PII? Those are noul and score questions. They are not "write a paragraph about quality".
+
+The pattern most of us shipped anyway:
+
+1. Call the product model.
+2. Call a second, often larger, model with a judge prompt.
+3. Parse JSON.
+4. Store a score next to the trace.
+5. Pay twice, wait twice, and still get a different verdict on retry.
+
+Jev collapses steps 2 and 3. You still have to write good criteria. Atomic questions, one failure mode each. That is the same advice you already got for LLM-as-a-judge, except the model actually wants it.
+
+Observability is the other half. If Jev sits in the agent loop as a router, a tool gate, or an online scorer, it is another model call. Latency, tokens, cost, which questions you asked, which model version answered: that belongs on a span, next to the chat spans, with OpenTelemetry names a backend can query.
+
+We did not want a private wrapper. OpenLIT is OpenTelemetry-native. Jev traces should look like every other GenAI span we emit, just with `decision` as the operation instead of `chat`.
+
+## How OpenLIT supports Jev on day 1
+
+Two paths. Use one or both.
+
+**In-product evals.** On Evaluations, pick provider **TypeSafe** and a Jev model. OpenLIT posts to the native TypeSafe API (`POST https://api.typesafe.ai/v1/systemone`) with the key in Vault. Your existing evaluation types keep their names. We map them onto System One questions so you do not rewrite the catalog.
+
+**SDK traces.** Install `openlit` next to `typesafe-sdk` or `@typesafe-ai/sdk`. Call `openlit.init()`. Sync and async `system_one` / `systemOne` become CLIENT spans named `decision {model}`. Provider is `typesafe`. Cost uses the catalog prices in Manage Models.
+
+What we deliberately did not do:
+
+- Jev is not in Chat or OpenGround. It cannot generate a reply, so a playground would be a lie.
+- We did not route the in-product judge through Vercel `experimental_evaluate`. The platform talks to System One directly. When that AI SDK path is stable we can add it. It is not required to use Jev today.
+- Auto-evaluation of chat traces does not pick up Jev spans. Operation stays `decision`, not `chat`. Scoring Jev with Jev would be a cute loop and a bad idea.
+
+Models in the catalog: `jev-latest`, `jev-1.13.0`, `jev-preview`. Aliases move when TypeSafe ships. Pin `jev-1.13.0` once a threshold depends on a version.
+
+## How to use Jev as the OpenLIT judge
+
+You already have hallucination, bias, toxicity, and the rest of the [built-in types](https://docs.openlit.io/latest/openlit/evaluations/evaluators). Jev does not invent new categories. It answers the ones you enable.
+
+| OpenLIT type | System One question | How we score it |
+| --- | --- | --- |
+| Hallucination, bias, toxicity, safety, sensitivity | Noul | `score = noul` |
+| Relevance, coherence, faithfulness, instruction following, completeness, conciseness | Score on `none / minor / moderate / severe` | Severity is `rawScore / 3` |
+| Custom types | Noul | Same as issue types |
+
+Verdict is `score > threshold` (default 0.5). Explanation is the classification bucket plus the number, for example `Hallucination classified as moderate (score 0.42)`. Jev does not return a written reason, so we do not fake one.
+
+Setup:
+
+1. Get a TypeSafe API key and store it in Vault.
+2. Confirm TypeSafe is in [Manage Models](https://docs.openlit.io/latest/openlit/costs/manage-models/overview). Pricing is $0.042 per million input tokens, $0 output, 64k context. That matches [TypeSafe's models page](https://docs.typesafe.ai/models).
+3. Open **Monitor → Evaluations → Configuration**.
+4. Provider **TypeSafe**, model `jev-1.13.0` if you are calibrating, Vault key, save.
+5. Enable the evaluation types you care about. Turn on Auto Evaluation if you want new chat traces scored on a cron.
+
+When context is present (Rule Engine or the trace payload), the judge uses that context as ground truth. If the context says the refund window is 30 days and the model says 60, that is a miss even if 60 is "true" in the real world.
+
+Pin the version before you set a threshold you will live with. `jev-latest` is fine for a first look. It is a bad pin for a production gate.
+
+## How to trace Jev in your app
+
+If Jev is in the request path, you want those calls in the same UI as the chat spans. Auto-instrumentation is the whole point of the SDK. No `wrapTypeSafe`. No extra OpenTelemetry setup in app code.
+
+Python (`typesafe-sdk >= 0.6.0`):
+
+```python
+import os
+
+import openlit
+from typesafe_sdk import TypeSafeClient
+
+openlit.init(
+    otlp_endpoint=os.environ.get("OTEL_EXPORTER_OTLP_ENDPOINT", "http://127.0.0.1:4318"),
+    service_name="support-agent",
+    environment="production",
+)
+
+client = TypeSafeClient()
+result = client.system_one(
+    state={
+        "prompt": "What is the refund window?",
+        "response": "Enterprise customers get 60 days.",
+        "ground_truth_context": "Enterprise refunds: 30 days from purchase.",
+    },
+    questions={
+        "hallucination": {
+            "type": "noul",
+            "instructions": "Flag invented or contradictory claims versus the ground-truth context.",
+        }
+    },
+    model="jev-1.13.0",
+)
+
+print(result.answers["hallucination"].noul)
+```
+
+TypeScript (`@typesafe-ai/sdk >= 0.6.0`):
+
+```typescript
+import openlit from "openlit"
+import { TypeSafeClient } from "@typesafe-ai/sdk"
+
+openlit.init({
+  otlpEndpoint: process.env.OTEL_EXPORTER_OTLP_ENDPOINT || "http://127.0.0.1:4318",
+  applicationName: "support-agent",
+  environment: "production",
+})
+
+const client = new TypeSafeClient()
+const result = await client.systemOne({
+  state: {
+    prompt: "What is the refund window?",
+    response: "Enterprise customers get 60 days.",
+    ground_truth_context: "Enterprise refunds: 30 days from purchase.",
+  },
+  questions: {
+    hallucination: {
+      type: "noul",
+      instructions:
+        "Flag invented or contradictory claims versus the ground-truth context.",
+    },
+  },
+  model: "jev-1.13.0",
+})
+
+console.log(result.answers.hallucination.noul)
+```
+
+Set `TYPESAFE_API_KEY`. Point `OTEL_EXPORTER_OTLP_ENDPOINT` at OpenLIT (`http://127.0.0.1:4318` if you ran `docker compose up` from the [repo](https://github.com/openlit/openlit)) or at any other OTLP backend. Filter traces on span name `decision jev-1.13.0`.
+
+Each span follows the OpenTelemetry GenAI name format `{gen_ai.operation.name} {gen_ai.request.model}`. Shared attributes match the OpenAI instrumentor where they apply: stream flag, finish reasons, time to first token, token usage, cost. We do not invent temperature or top_p. System One has no such fields. Question ids and types land on `typesafe.*` attributes so you can see what you asked without opening the payload every time.
+
+Instrumentor aliases: `typesafe`, `jev`, `typesafe-ai`, `typesafe_sdk`. Docs: [Monitor TypeSafe Jev using OpenTelemetry](https://docs.openlit.io/latest/sdk/integrations/typesafe).
+
+## Benefits if you already run OpenLIT
+
+You do not add a second eval product to get Jev. The judge is a provider dropdown. The traces are the same ClickHouse tables, the same filters, the same cost view.
+
+A few things that are easy to undersell:
+
+**Fan-out is cheap.** One System One request can carry hallucination, toxicity, and a custom noul. TypeSafe evaluates them in parallel. Adding a fourth question mostly costs the tokens of that question. That is a better shape for Auto Evaluation than one chat completion per type.
+
+**Probabilities beat a boolean you parsed out of prose.** A noul of 0.88 is a different ops problem than 0.51. You can auto-fail the high band, send the middle to a generative judge or a human, and ignore the rest. Calibrate on your own labels. Do not copy a 0.5 threshold from a blog (including this one) into a medical workflow.
+
+**Cost is an eval feature.** At $0.042 per million input tokens you can sample more production traffic than you would with a frontier judge. Sample rate on Auto Evaluation still exists because "can" is not "should dump every span into TypeSafe".
+
+**Portable telemetry.** Spans are OTLP. Grafana, Datadog, New Relic, or stay in OpenLIT. We would rather lose the UI argument than lock the data.
+
+Langfuse split "score traces with Jev" and "trace Jev calls" into two docs. Braintrust wraps the client. LangChain exposes a classifier, not a chat model. We think the OpenLIT version is simpler for teams that already call `openlit.init()`: one init, one Vault key, one catalog row. Does that match how you actually run judges today, or do you still keep evals in a notebook off to the side?
+
+## When to use Jev, and when not to
+
+Use Jev in OpenLIT when:
+
+- You are scoring high volume traces and the answer is a label, a rubric, or a yes/no.
+- You already know the failure modes (hallucination vs the retrieved context, PII, "is this ready to send").
+- Jev is in the live agent as a router or gate, and you need those calls on the trace.
+- You want Auto Evaluation without lighting money on fire.
+
+Keep a generative judge, or a human, when:
+
+- Someone has to read why the score failed.
+- The question is not atomic ("rate this agent run" with five independent axes stuffed into one prompt).
+- The state is a huge trace dump. Trim it. Jev gets worse as unused context grows.
+- You need Chat or OpenGround. Wrong model family.
+
+A setup that has worked for us in similar stacks: Jev on the cheap, frequent checks (hallucination, toxicity, a custom noul that maps to a product rule). A larger LLM on the cases Jev marks uncertain, or on a small golden set where you still want a written critique. Same Evaluations page, different providers, depending on the type.
+
+## FAQ
+
+**Does OpenLIT support TypeSafe Jev?**
+Yes. Jev is an evaluation provider in the platform and an auto-instrumented SDK integration for Python and TypeScript.
+
+**Is Jev an LLM-as-a-judge?**
+It is a judge. It is not an LLM. You still define criteria. You do not get a chain of thought. OpenLIT maps your evaluation types onto noul and score questions and stores score, classification, and verdict.
+
+**How do I evaluate traces with Jev in OpenLIT?**
+Store a TypeSafe key in Vault, select TypeSafe and a Jev model under Evaluations → Configuration, enable types, optionally turn on Auto Evaluation. Details: [Evaluators](https://docs.openlit.io/latest/openlit/evaluations/evaluators) and [Configuration](https://docs.openlit.io/latest/openlit/evaluations/configuration).
+
+**How do I trace TypeSafe System One calls?**
+`pip install openlit typesafe-sdk` or `npm install openlit @typesafe-ai/sdk`, then `openlit.init()` before you construct the client. Spans export over OTLP.
+
+**Why is the span named `decision jev-1.13.0` instead of `chat`?**
+OpenTelemetry GenAI names spans `{operation} {model}`. Jev's operation is `decision`. Using `chat` would make auto-eval treat a classifier as a completion.
+
+**Should I use `jev-latest` or `jev-1.13.0`?**
+`jev-latest` for exploration. Pin `jev-1.13.0` (or whatever version you calibrated) for any threshold you ship. The response `model` field tells you which version actually answered.
+
+**Can I use Jev in the Chat playground?**
+No. Jev does not generate text. OpenGround is the same story.
+
+**Where do I put the API key?**
+Platform evals: Vault. SDK apps: `TYPESAFE_API_KEY` in the environment. Do not commit it.
+
+## Try it
+
+If you already have OpenLIT up, this is a provider change and an SDK bump, not a new stack.
+
+```bash
+git clone https://github.com/openlit/openlit.git
+cd openlit
+docker compose up -d
+```
+
+UI at `http://localhost:3000`. Send Jev spans to `http://127.0.0.1:4318`. Docs to keep open: [TypeSafe integration](https://docs.openlit.io/latest/sdk/integrations/typesafe), [Evaluations](https://docs.openlit.io/latest/openlit/evaluations/evaluators), [TypeSafe models](https://docs.typesafe.ai/models).
+
+Star the [repo](https://github.com/openlit/openlit) if the day 1 wiring saved you a weekend of wrapping `system_one` by hand. Then tell us which question you actually put on Jev first: a built-in hallucination noul, or a custom one that matches a rule your agent already has?
