@@ -327,7 +327,7 @@ function IntegrationsMarquee() {
 
 export default function WorksWithStack() {
   return (
-    <section className="w-full px-4 py-16 md:py-20">
+    <section className="w-full bg-white px-4 py-16 dark:bg-stone-950 md:py-20">
       <div className="mx-auto max-w-6xl">
         <div className="grid gap-8 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:items-end lg:gap-12">
           <div>

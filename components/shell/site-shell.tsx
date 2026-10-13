@@ -6,7 +6,6 @@ import { SidebarLayoutProvider, useSidebarLayout } from './sidebar-layout-contex
 import SidebarBrand from './sidebar-brand'
 import HeaderContextRow from './header-context-row'
 import SiteSidebar from './site-sidebar'
-import CheckeredBackground from '@/components/common/checkered-background'
 import { SiteSearchProvider } from './site-search'
 import { NavigationLoaderProvider } from './navigation-loader'
 import type { SearchItem } from 'lib/search-index'
@@ -37,9 +36,8 @@ function SiteShellFrame({ children }: { children: ReactNode }) {
         >
           <SiteSidebar />
         </div>
-        <div className="relative flex min-w-0 flex-1 flex-col bg-white dark:bg-stone-950">
-          <CheckeredBackground />
-          <main className="relative flex min-h-0 flex-1 flex-col overflow-y-auto overflow-x-hidden">
+        <div className="flex min-w-0 flex-1 flex-col bg-white dark:bg-stone-950">
+          <main className="relative flex min-h-0 flex-1 flex-col overflow-y-auto overflow-x-hidden bg-white dark:bg-stone-950">
             {children}
           </main>
         </div>
