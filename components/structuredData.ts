@@ -4,7 +4,7 @@ import { ORGANIZATION_ADDRESS, ORGANIZATION_CONTACT } from '../lib/agent/organiz
 const SITE = 'https://openlit.io'
 const DEFINITION = OPENLIT_DEFINITION
 const LOGO = `${SITE}/static/images/logo.png`
-const SHARE_IMAGE = `${SITE}/static/images/twitter-card.png`
+const SHARE_IMAGE = `${SITE}/static/images/og-image.png`
 const GITHUB_REPO = 'https://github.com/openlit/openlit'
 const DOCS_INSTALL = 'https://docs.openlit.io/latest/openlit/installation'
 const DOCS_OVERVIEW = 'https://docs.openlit.io/latest/overview'
@@ -18,6 +18,7 @@ export const SCHEMA_IDS = {
   product: `${SITE}/#product`,
   offerOss: `${SITE}/pricing#offer-oss`,
   offerCloud: `${SITE}/pricing#offer-cloud`,
+  offerEnterprise: `${SITE}/pricing#offer-enterprise`,
   catalog: `${SITE}/pricing#catalog`,
   serviceOss: `${SITE}/pricing#service-oss`,
   serviceCloud: `${SITE}/pricing#service-cloud`,
@@ -69,9 +70,9 @@ export const organisationSchema = {
   description: DEFINITION,
   email: 'contact@openlit.io',
   address: ORGANIZATION_ADDRESS,
-  // Public GitHub org activity begins early 2024; precise founding month not independently verified.
-  foundingDate: '2024',
-  founders: { '@id': SCHEMA_IDS.founder },
+  // Founding date confirmed by the OpenLIT team (1 April 2024), ISO 8601 as schema.org expects.
+  foundingDate: '2024-04-01',
+  founder: { '@id': SCHEMA_IDS.founder },
   employee: { '@id': SCHEMA_IDS.founder },
   sameAs: [
     GITHUB_REPO,
@@ -102,6 +103,19 @@ const ossOffer = {
   url: `${SITE}/pricing`,
   description:
     'Free open-source agent harness engineering platform. Self-host under Apache 2.0 with unlimited usage.',
+  seller: { '@id': SCHEMA_IDS.org },
+  itemOffered: { '@id': SCHEMA_IDS.software },
+}
+
+const enterpriseOffer = {
+  '@type': 'Offer',
+  '@id': SCHEMA_IDS.offerEnterprise,
+  name: 'OpenLIT Enterprise Edition',
+  category: 'Licensed self-hosted software',
+  availability: 'https://schema.org/InStock',
+  url: `${SITE}/enterprise`,
+  description:
+    'Self-hosted OpenLIT with RBAC, scoped API keys, audit logs, alerts, premium connectors, GPU cost insights, and the eBPF controller. Contact sales for pricing.',
   seller: { '@id': SCHEMA_IDS.org },
   itemOffered: { '@id': SCHEMA_IDS.software },
 }
@@ -439,6 +453,7 @@ export function createPricingGraph({
       url: `${SITE}/pricing`,
     },
     ossOffer,
+    enterpriseOffer,
     cloudOffer,
     {
       '@type': 'OfferCatalog',
@@ -455,6 +470,12 @@ export function createPricingGraph({
         {
           '@type': 'ListItem',
           position: 2,
+          name: enterpriseOffer.name,
+          item: enterpriseOffer,
+        },
+        {
+          '@type': 'ListItem',
+          position: 3,
           name: cloudOffer.name,
           item: cloudOffer,
         },

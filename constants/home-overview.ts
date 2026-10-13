@@ -7,6 +7,8 @@ export type OverviewSection = {
 
 export const HOME_OVERVIEW = {
   title: 'Start on the free sandbox, then call the API yourself',
+  /** Words in `title` drawn with the marker underline, like the other homepage headings. */
+  titleHighlight: 'free sandbox',
   intro:
     'OpenLIT is free to self-host under Apache 2.0. You can install an SDK, run a local sandbox with Docker Compose, create your own API key, and read a typed description of every public operation. Nothing on that path asks for a credit card or a sales conversation. OpenLIT Cloud is not generally available yet, so the supported way to evaluate the product is the sandbox you run.',
   sections: [

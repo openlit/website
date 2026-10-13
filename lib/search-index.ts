@@ -30,6 +30,14 @@ export const STATIC_SEARCH_ITEMS: SearchItem[] = [
     keywords: 'plans cost free self-host',
   },
   {
+    id: 'page-enterprise',
+    title: 'Enterprise',
+    description: 'OpenLIT Enterprise Edition features',
+    href: '/enterprise',
+    category: 'Page',
+    keywords: 'enterprise edition rbac roles audit logs alerts connectors ebpf gpu license',
+  },
+  {
     id: 'page-compare',
     title: 'Compare',
     description: 'Compare OpenLIT with other agent observability and evals tools',

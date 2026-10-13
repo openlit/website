@@ -11,7 +11,7 @@ module.exports = {
   siteUrl: 'https://openlit.io',
   siteRepo: 'https://github.com/openlit/openlit',
   siteLogo: '/static/images/logo.png',
-  socialBanner: '/static/images/twitter-card.png',
+  socialBanner: '/static/images/og-image.png',
   email: 'contact@openlit.io',
   github: 'https://github.com/openlit',
   twitter: 'https://x.com/openlit_io',

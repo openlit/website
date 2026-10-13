@@ -3,7 +3,11 @@ import GLOSSARY_TERMS, { type GlossaryTerm } from 'data/glossary'
 import siteMetadata from 'data/siteMetadata'
 import { HERO_DESCRIPTION, HERO_TITLE } from 'constants/hero'
 import { HOME_FAQ_ITEMS } from 'constants/home-faq'
-import { OPENLIT_DEFINITION, OPENLIT_POSITIONING } from 'constants/openlit-definition'
+import {
+  OPENLIT_DEFINITION,
+  OPENLIT_DEFINITION_SHORT,
+  OPENLIT_POSITIONING,
+} from 'constants/openlit-definition'
 import {
   OSS_FEATURE_ROWS,
   PRICING_FAQ_ITEMS,
@@ -11,10 +15,10 @@ import {
   PRICING_SEO,
   type PlanValue,
 } from 'constants/pricing'
+import { ENTERPRISE_FAQ_ITEMS, ENTERPRISE_FEATURES, ENTERPRISE_SEO } from 'constants/enterprise'
 import SUPPORTED_INTEGRATIONS from 'constants/integrations'
 import { PILLAR_FAQ } from 'constants/pillar-faq'
 import { overviewPlainText } from 'constants/home-overview'
-import { WHEN_TO_USE_SECTION } from 'lib/agent/instructions'
 import { CONTACT_MARKDOWN, PRIVACY_MARKDOWN, SANDBOX_MARKDOWN } from 'lib/agent/trust-copy'
 
 const SITE = siteMetadata.siteUrl.replace(/\/$/, '')
@@ -67,7 +71,7 @@ ${OPENLIT_POSITIONING}
 
 1. **Native SDKs** (Python, JavaScript, Go): \`pip install openlit\` / \`npm install openlit\` / \`go get github.com/openlit/openlit/sdk/go\`, then \`openlit.init()\`.
 2. **Official CLI** (coding agents): \`brew install openlit/openlit/openlit\`. Formula: https://github.com/openlit/homebrew-openlit/blob/main/Formula/openlit.rb. Docs: https://docs.openlit.io/latest/cli/installation.
-3. **eBPF controller** (enterprise): zero-code instrumentation for Kubernetes, Docker, and Linux.
+3. **eBPF controller** ([Enterprise Edition](${SITE}/enterprise.md)): zero-code instrumentation for Kubernetes, Docker, and Linux.
 4. **GPU collector**: OpenTelemetry GPU metrics for NVIDIA, AMD, and Intel.
 5. **Any OTel source**: point OTel SDKs, OBI, OpenLLMetry, or other OTLP exporters at OpenLIT.
 
@@ -86,6 +90,7 @@ ${overviewPlainText()}
 - Agent harness engineering: ${SITE}/agent-harness-engineering.md
 - Glossary: ${SITE}/glossary.md
 - Pricing: ${SITE}/pricing.md
+- Enterprise Edition: ${SITE}/enterprise.md
 - About: ${SITE}/about-us.md
 - Compare: ${SITE}/compare.md
 - Product docs (llms.txt): ${DOCS_LLMS}
@@ -94,6 +99,7 @@ ${overviewPlainText()}
 
 export function pricingMarkdown() {
   const oss = PRICING_PLANS.oss
+  const enterprise = PRICING_PLANS.enterprise
   const cloud = PRICING_PLANS.cloud
 
   const ossFeatures = OSS_FEATURE_ROWS.map((category) => {
@@ -112,7 +118,7 @@ export function pricingMarkdown() {
 
 ## Plans
 
-### ${oss.name} (${oss.badge})
+### ${oss.name}${oss.badge ? ` (${oss.badge})` : ''}
 
 ${oss.summary}
 
@@ -124,7 +130,19 @@ Highlights:
 
 ${oss.highlights.map((item) => `- ${item}`).join('\n')}
 
-### ${cloud.name} (${cloud.badge})
+### ${enterprise.name}${enterprise.badge ? ` (${enterprise.badge})` : ''}
+
+${enterprise.summary}
+
+- Price: ${enterprise.priceLabel}. ${enterprise.priceHint}
+- CTA: [${enterprise.ctaLabel}](${enterprise.ctaHref})
+- Features: ${SITE}/enterprise.md
+
+Highlights:
+
+${enterprise.highlights.map((item) => `- ${item}`).join('\n')}
+
+### ${cloud.name}${cloud.badge ? ` (${cloud.badge})` : ''}
 
 ${cloud.summary}
 
@@ -142,6 +160,38 @@ ${ossFeatures}
 ## FAQ
 
 ${faqMarkdown(PRICING_FAQ_ITEMS)}
+`
+}
+
+export function enterpriseMarkdown() {
+  const features = ENTERPRISE_FEATURES.map((feature) => {
+    const points = feature.points.map((point) => `- ${point}`).join('\n')
+    const docs = feature.docsHref ? `\n\nDocs: ${feature.docsHref}` : ''
+    return `### ${feature.name}\n\n${feature.summary}\n\n${points}${docs}`
+  }).join('\n\n')
+
+  return `# ${ENTERPRISE_SEO.title}
+
+> ${ENTERPRISE_SEO.description}
+
+- HTML: ${SITE}/enterprise
+- Markdown: ${SITE}/enterprise.md
+- Contact: contact@openlit.io
+
+OpenLIT Enterprise Edition is self-hosted OpenLIT with licensed features. It includes everything in OpenLIT OSS (tracing, evaluations, guardrails, Prompt Hub, Vault, OpenGround, and dashboards) plus the features below.
+
+## Enterprise Edition features
+
+${features}
+
+## FAQ
+
+${faqMarkdown(ENTERPRISE_FAQ_ITEMS)}
+
+## Related
+
+- Pricing: ${SITE}/pricing.md
+- Docs: https://docs.openlit.io/latest/overview
 `
 }
 
@@ -378,6 +428,13 @@ export const LLM_PAGES: LlmPage[] = [
     body: pricingMarkdown,
   },
   {
+    mdPath: '/enterprise.md',
+    htmlPath: '/enterprise',
+    title: ENTERPRISE_SEO.title,
+    summary: ENTERPRISE_SEO.description,
+    body: enterpriseMarkdown,
+  },
+  {
     mdPath: '/about-us.md',
     htmlPath: '/about-us',
     title: 'About OpenLIT',
@@ -485,96 +542,41 @@ export function getMarkdownBySlug(slug: string[] | undefined): string | null {
   return markdownForPathname(path)
 }
 
-const FEATURED_BLOGS = [
-  {
-    title: 'Best Langfuse alternatives (open source, 2026)',
-    path: '/blogs/langfuse-alternatives',
-    summary:
-      'Honest roundup of open-source Langfuse alternatives: OpenLIT, Phoenix, Opik, Helicone, and OpenLLMetry, with license, self-host, and OpenTelemetry stance.',
-  },
-  {
-    title: 'Best open-source tools for LLM evaluation and prompt management (2026)',
-    path: '/blogs/open-source-llm-evaluation-prompt-management',
-    summary:
-      'Roundup of open-source LLM evaluation and prompt management tools, including OpenLIT Prompt Hub, Langfuse, Phoenix, Opik, Braintrust, and Promptfoo.',
-  },
+const LLMS_KEY_PAGES: { label: string; href: string }[] = [
+  { label: 'Pricing', href: `${SITE}/pricing` },
+  { label: 'Enterprise Edition', href: `${SITE}/enterprise` },
+  { label: 'Compare', href: `${SITE}/compare` },
+  { label: 'Harness', href: `${SITE}/agent-harness-engineering` },
+  { label: 'Blogs', href: `${SITE}/blogs` },
+  { label: 'Videos', href: `${SITE}/videos` },
+  { label: 'About', href: `${SITE}/about-us` },
+  { label: 'OpenAPI document', href: `${SITE}/openapi.json` },
+  { label: 'Sandbox', href: `${SITE}/sandbox` },
+  { label: 'llms.txt', href: `${SITE}/llms.txt` },
+  { label: 'Glossary', href: `${SITE}/glossary` },
+  { label: 'Email', href: `mailto:${siteMetadata.email}` },
+  { label: 'Contact', href: `${SITE}/contact` },
+  { label: 'Shorts', href: `${SITE}/shorts` },
+  { label: 'vs Langfuse', href: `${SITE}/compare/openlit-vs-langfuse` },
+  { label: 'vs Helicone', href: `${SITE}/compare/openlit-vs-helicone` },
 ]
 
 export function buildLlmsTxt() {
-  const marketing = LLM_PAGES.map(
-    (page) => `- [${page.title}](${SITE}${page.mdPath}): ${page.summary}`
-  ).join('\n')
-
-  const blogs = FEATURED_BLOGS.map(
-    (post) => `- [${post.title}](${SITE}${post.path}): ${post.summary}`
-  ).join('\n')
+  const keyPages = LLMS_KEY_PAGES.map((page) => `- [${page.label}](${page.href})`).join('\n')
 
   return `# OpenLIT
 
-> ${siteMetadata.description}
-
-This file helps agents find clean Markdown versions of key marketing pages and high-intent blog posts. Product documentation has its own index at ${DOCS_LLMS}.
-
-${WHEN_TO_USE_SECTION}
-## What OpenLIT is
+> ${OPENLIT_DEFINITION_SHORT}
 
 ${OPENLIT_DEFINITION}
 
-${OPENLIT_POSITIONING}
+## Key pages
 
-## Key concepts
+${keyPages}
 
-- **Agent harness**: everything in an AI agent except the model (tools, context, prompts, memory, hooks, guardrails, feedback loops). See ${SITE}/glossary/agent-harness.md
-- **Agent harness engineering**: designing, measuring, and improving that harness so agents are reliable in production. See ${SITE}/agent-harness-engineering.md
-- **OpenLIT's role**: open-source platform to trace, evaluate, guard, and improve any harness on OpenTelemetry—not a runtime harness itself.
+## Optional
 
-## Marketing site (Markdown)
-
-${marketing}
-
-## Buyer guides (HTML)
-
-${blogs}
-
-## HTML pages
-
-- Home: ${SITE}/
-- Agent harness engineering: ${SITE}/agent-harness-engineering
-- Glossary: ${SITE}/glossary
-- Pricing: ${SITE}/pricing
-- About: ${SITE}/about-us
-- Contact: ${SITE}/contact
-- Privacy: ${SITE}/privacy
-- Sandbox: ${SITE}/sandbox
-- Compare: ${SITE}/compare
-- Blog: ${SITE}/blogs
-- Videos: ${SITE}/videos
-- Shorts: ${SITE}/shorts
-
-## Full content dump
-
-- ${SITE}/llms-full.txt
-
-## Product documentation
-
-- Docs llms.txt: ${DOCS_LLMS}
-- Docs overview: https://docs.openlit.io/latest/overview
-- Quickstart: https://docs.openlit.io/latest/openlit/quickstart-ai-observability
-- Evaluations: https://docs.openlit.io/latest/openlit/evaluations/overview
-- Prompt Hub: https://docs.openlit.io/latest/openlit/prompts-experiments/prompt-hub/overview
-
-## Machine-readable
-
-- OpenAPI: ${SITE}/openapi.json
-- OAuth metadata: ${SITE}/.well-known/oauth-authorization-server
-- Protected resource metadata: ${SITE}/.well-known/oauth-protected-resource
-- CLI formula: https://github.com/openlit/homebrew-openlit/blob/main/Formula/openlit.rb
-
-## Project
-
-- GitHub: ${siteMetadata.siteRepo}
-- License: Apache 2.0
-- Contact: ${siteMetadata.email}
+- [Sitemap](${SITE}/sitemap.xml): Full list of pages
 `
 }
 

@@ -17,9 +17,9 @@ export type PricingFaqItem = {
 }
 
 export const PRICING_SEO = {
-  title: 'OpenLIT Pricing: Free Open Source Self-Host and Cloud',
+  title: 'OpenLIT Pricing: Free Open Source, Enterprise, and Cloud',
   description:
-    'OpenLIT pricing is simple. Self-host the open-source Agent Harness Engineering platform free under Apache 2.0 with unlimited usage. OpenLIT Cloud is coming soon for fully hosted teams.',
+    'OpenLIT pricing is simple. Self-host the open-source Agent Harness Engineering platform free under Apache 2.0 with unlimited usage. Enterprise Edition adds RBAC, audit logs, and alerts. OpenLIT Cloud is coming soon for fully hosted teams.',
   keywords: [
     'OpenLIT pricing',
     'open source Harness Engineering',
@@ -31,6 +31,7 @@ export const PRICING_SEO = {
     'self hosted AI observability',
     'OpenTelemetry LLM',
     'OpenLIT Cloud',
+    'OpenLIT Enterprise',
     'open source AI engineering platform',
   ],
 } as const
@@ -67,6 +68,11 @@ export const PRICING_FAQ_ITEMS: PricingFaqItem[] = [
       'Cloud is in development. Pricing details will be published at launch. Email waitlist@openlit.io to join the waitlist.',
   },
   {
+    question: 'What is OpenLIT Enterprise Edition?',
+    answer:
+      'OpenLIT Enterprise Edition is self-hosted OpenLIT with licensed features: role-based access control, scoped API keys, audit logs, alerts, premium connectors, GPU cost insights, and the eBPF controller. See openlit.io/enterprise or email contact@openlit.io for pricing.',
+  },
+  {
     question: 'Does self-hosted OpenLIT support OpenTelemetry?',
     answer:
       'Yes. OpenLIT is OpenTelemetry-native. Use OpenLIT SDKs or send OTLP to OpenLIT, and export traces to Grafana, Datadog, or any OTLP backend.',
@@ -81,9 +87,8 @@ export const PRICING_FAQ_ITEMS: PricingFaqItem[] = [
 export const PRICING_PLANS = {
   oss: {
     name: 'OSS',
-    badge: 'Available now',
-    summary:
-      'Self-host the open source Harness Engineering platform on your own infra with Helm or Docker.',
+    badge: null,
+    summary: 'Self-host free on your own infra.',
     priceLabel: 'Free',
     priceHint: 'Apache 2.0. Unlimited self-hosted usage.',
     ctaLabel: 'Deploy from GitHub',
@@ -99,10 +104,29 @@ export const PRICING_PLANS = {
       'Community support on GitHub',
     ],
   },
+  enterprise: {
+    name: 'Enterprise',
+    badge: 'Self-hosted',
+    summary: 'OSS plus access control, audit, and alerts.',
+    priceLabel: 'Contact us',
+    priceHint: 'Licensed per organisation. Runs on your own infra.',
+    ctaLabel: 'Contact sales',
+    ctaHref: 'mailto:contact@openlit.io?subject=OpenLIT%20Enterprise%20Edition',
+    secondaryLabel: 'Enterprise features',
+    secondaryHref: '/enterprise',
+    highlights: [
+      'Everything in OSS',
+      'Role-based access control and scoped API keys',
+      'Organisation and project audit logs',
+      'Alerts to Slack, PagerDuty, Opsgenie, and more',
+      'Premium connectors such as Datadog and New Relic',
+      'GPU cost insights and the eBPF controller',
+    ],
+  },
   cloud: {
     name: 'Cloud',
     badge: 'Coming soon',
-    summary: 'Fully hosted OpenLIT for teams that prefer managed operations.',
+    summary: 'Fully hosted OpenLIT, zero ops.',
     priceLabel: 'Coming soon',
     priceHint: 'Join the waitlist for launch updates and pricing.',
     ctaLabel: 'Join waitlist',

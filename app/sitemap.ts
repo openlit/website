@@ -82,6 +82,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.9,
     }),
     entry({
+      path: 'enterprise',
+      lastModified: CONTENT_UPDATED,
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    }),
+    entry({
       path: 'compare',
       lastModified: CONTENT_UPDATED,
       changeFrequency: 'weekly',

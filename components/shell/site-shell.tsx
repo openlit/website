@@ -7,6 +7,7 @@ import SidebarBrand from './sidebar-brand'
 import HeaderContextRow from './header-context-row'
 import SiteSidebar from './site-sidebar'
 import { SiteSearchProvider } from './site-search'
+import { NavigationLoaderProvider } from './navigation-loader'
 import type { SearchItem } from 'lib/search-index'
 
 function SiteShellFrame({ children }: { children: ReactNode }) {
@@ -54,9 +55,11 @@ export default function SiteShell({
 }) {
   return (
     <SidebarLayoutProvider>
-      <SiteSearchProvider blogItems={blogItems}>
-        <SiteShellFrame>{children}</SiteShellFrame>
-      </SiteSearchProvider>
+      <NavigationLoaderProvider>
+        <SiteSearchProvider blogItems={blogItems}>
+          <SiteShellFrame>{children}</SiteShellFrame>
+        </SiteSearchProvider>
+      </NavigationLoaderProvider>
     </SidebarLayoutProvider>
   )
 }

@@ -6,6 +6,7 @@ import { useEffect, useRef, useState, type ReactNode } from 'react'
 import {
   BookOpen,
   BookText,
+  Building2,
   ChevronsUpDown,
   Clapperboard,
   GitCompare,
@@ -34,6 +35,12 @@ const NAV_ITEMS = [
     href: '/pricing',
     icon: Tag,
     match: (path: string) => path.startsWith('/pricing'),
+  },
+  {
+    label: 'Enterprise',
+    href: '/enterprise',
+    icon: Building2,
+    match: (path: string) => path.startsWith('/enterprise'),
   },
   {
     label: 'Compare',

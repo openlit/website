@@ -11,6 +11,7 @@ import {
   type ReactNode,
 } from 'react'
 import { useRouter } from 'next/navigation'
+import { useNavigationLoader } from './navigation-loader'
 import { FileText, BookOpen, GitCompare, Search as SearchIcon, Layout } from 'lucide-react'
 import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
 import { STATIC_SEARCH_ITEMS, matchesSearch, type SearchItem } from 'lib/search-index'
@@ -48,6 +49,7 @@ function SearchDialog({
   items: SearchItem[]
 }) {
   const router = useRouter()
+  const { start: startNavigation } = useNavigationLoader()
   const [query, setQuery] = useState('')
   const [activeIndex, setActiveIndex] = useState(0)
 
@@ -74,9 +76,10 @@ function SearchDialog({
         window.open(item.href, '_blank', 'noopener,noreferrer')
         return
       }
+      startNavigation(item.href)
       router.push(item.href)
     },
-    [onOpenChange, router]
+    [onOpenChange, router, startNavigation]
   )
 
   const inputRef = useRef<HTMLInputElement>(null)
