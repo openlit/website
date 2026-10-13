@@ -4,7 +4,7 @@ import { ORGANIZATION_ADDRESS, ORGANIZATION_CONTACT } from '../lib/agent/organiz
 const SITE = 'https://openlit.io'
 const DEFINITION = OPENLIT_DEFINITION
 const LOGO = `${SITE}/static/images/logo.png`
-const SHARE_IMAGE = `${SITE}/static/images/twitter-card.png`
+const SHARE_IMAGE = `${SITE}/static/images/og-image.png`
 const GITHUB_REPO = 'https://github.com/openlit/openlit'
 const DOCS_INSTALL = 'https://docs.openlit.io/latest/openlit/installation'
 const DOCS_OVERVIEW = 'https://docs.openlit.io/latest/overview'
@@ -70,9 +70,9 @@ export const organisationSchema = {
   description: DEFINITION,
   email: 'contact@openlit.io',
   address: ORGANIZATION_ADDRESS,
-  // Public GitHub org activity begins early 2024; precise founding month not independently verified.
-  foundingDate: '2024',
-  founders: { '@id': SCHEMA_IDS.founder },
+  // Founding date confirmed by the OpenLIT team (1 April 2024), ISO 8601 as schema.org expects.
+  foundingDate: '2024-04-01',
+  founder: { '@id': SCHEMA_IDS.founder },
   employee: { '@id': SCHEMA_IDS.founder },
   sameAs: [
     GITHUB_REPO,

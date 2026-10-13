@@ -6,6 +6,7 @@ import { Metadata, Viewport } from 'next'
 import Script from 'next/script'
 import { siteGraph, softwareApplicationJsonLd } from '@/components/structuredData'
 import JsonLd from '@/components/json-ld'
+import { shareImages } from 'app/seo'
 
 const inter = Inter({
   subsets: ['latin'],
@@ -31,7 +32,7 @@ export const metadata: Metadata = {
     description: siteMetadata.description,
     url: siteMetadata.siteUrl,
     siteName: siteMetadata.title,
-    images: [siteMetadata.socialBanner],
+    images: shareImages(siteMetadata.title),
     locale: 'en_US',
     type: 'website',
   },
@@ -44,19 +45,15 @@ export const metadata: Metadata = {
   robots: {
     index: true,
     follow: true,
-    googleBot: {
-      index: true,
-      follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
-    },
+    'max-image-preview': 'large',
+    'max-snippet': -1,
+    'max-video-preview': -1,
   },
   twitter: {
     title: siteMetadata.title,
     description: siteMetadata.description,
     card: 'summary_large_image',
-    images: [siteMetadata.socialBanner],
+    images: shareImages(siteMetadata.title),
   },
 }
 
