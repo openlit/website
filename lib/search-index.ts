@@ -38,6 +38,14 @@ export const STATIC_SEARCH_ITEMS: SearchItem[] = [
     keywords: 'enterprise edition rbac roles audit logs alerts connectors ebpf gpu license',
   },
   {
+    id: 'page-explore',
+    title: 'Explore Enterprise',
+    description: 'Interactive sample of OpenLIT Enterprise. Fictional data.',
+    href: '/explore',
+    category: 'Page',
+    keywords: 'demo product tour explore enterprise traces audit roles alerts gpus',
+  },
+  {
     id: 'page-compare',
     title: 'Compare',
     description: 'Compare OpenLIT with other agent observability and evals tools',

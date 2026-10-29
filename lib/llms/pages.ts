@@ -16,6 +16,7 @@ import {
   type PlanValue,
 } from 'constants/pricing'
 import { ENTERPRISE_FAQ_ITEMS, ENTERPRISE_FEATURES, ENTERPRISE_SEO } from 'constants/enterprise'
+import { EXPLORE_SEO, EXPLORE_URL, FLOW } from 'constants/product-demo'
 import SUPPORTED_INTEGRATIONS from 'constants/integrations'
 import { PILLAR_FAQ } from 'constants/pillar-faq'
 import { overviewPlainText } from 'constants/home-overview'
@@ -190,8 +191,34 @@ ${faqMarkdown(ENTERPRISE_FAQ_ITEMS)}
 
 ## Related
 
+- Interactive sample: ${SITE}/explore.md
 - Pricing: ${SITE}/pricing.md
 - Docs: https://docs.openlit.io/latest/overview
+`
+}
+
+export function exploreMarkdown() {
+  const steps = FLOW.map((step, index) => `${index + 1}. **${step.label}.** ${step.body}`).join(
+    '\n'
+  )
+
+  return `# ${EXPLORE_SEO.title}
+
+> ${EXPLORE_SEO.description}
+
+- HTML: ${EXPLORE_URL}
+- Markdown: ${EXPLORE_URL}.md
+- Enterprise Edition: ${SITE}/enterprise.md
+
+The page is a clickable sample of OpenLIT Enterprise. Northwind is fictional. Changes stay in the browser until reload.
+
+The flow follows one support-agent run:
+
+${steps}
+
+Enterprise surfaces in the sample: organisation spend limit (a warning only; provider calls are not stopped), evaluations, alerts, role permissions, scoped API keys, audit log, GPU cost, premium connectors, and the eBPF controller in Fleet Hub. Tracing, Prompt Hub, Vault, and the rule engine are included because Enterprise runs on the same platform as OpenLIT OSS.
+
+Nothing in the sample is a live customer workspace, and no secret values are real.
 `
 }
 
@@ -435,6 +462,13 @@ export const LLM_PAGES: LlmPage[] = [
     body: enterpriseMarkdown,
   },
   {
+    mdPath: '/explore.md',
+    htmlPath: '/explore',
+    title: EXPLORE_SEO.title,
+    summary: EXPLORE_SEO.description,
+    body: exploreMarkdown,
+  },
+  {
     mdPath: '/about-us.md',
     htmlPath: '/about-us',
     title: 'About OpenLIT',
@@ -545,6 +579,7 @@ export function getMarkdownBySlug(slug: string[] | undefined): string | null {
 const LLMS_KEY_PAGES: { label: string; href: string }[] = [
   { label: 'Pricing', href: `${SITE}/pricing` },
   { label: 'Enterprise Edition', href: `${SITE}/enterprise` },
+  { label: 'Explore Enterprise', href: `${SITE}/explore` },
   { label: 'Compare', href: `${SITE}/compare` },
   { label: 'Harness', href: `${SITE}/agent-harness-engineering` },
   { label: 'Blogs', href: `${SITE}/blogs` },

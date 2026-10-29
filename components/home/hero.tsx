@@ -47,13 +47,19 @@ export default function Hero() {
               ></path>
             </svg>
           </a>
+          <a
+            href="#explore"
+            className="inline-flex h-11 items-center justify-center rounded-md border border-stone-200 bg-white px-6 text-sm font-medium text-black transition hover:border-brandPrimary/40 dark:border-stone-700 dark:bg-stone-950 dark:text-white sm:h-10"
+          >
+            Explore the product
+          </a>
           <Dialog>
             <DialogTrigger asChild>
               <button
                 type="button"
                 className="inline-flex h-11 items-center justify-center rounded-md border border-stone-200 bg-white px-6 text-sm font-medium text-black transition hover:border-brandPrimary/40 dark:border-stone-700 dark:bg-stone-950 dark:text-white sm:h-10"
               >
-                View Demo
+                Watch a video
               </button>
             </DialogTrigger>
             <DialogContent
