@@ -1,48 +1,10 @@
 'use client'
 
 import { useEffect, useRef, useState, type ReactNode } from 'react'
+import { HARNESS_STAGES, type HarnessStage } from 'constants/harness-stages'
 
-export type HarnessStage = {
-  label: string
-  phase: 'develop' | 'produce'
-  items: string[]
-  video?: string
-  icon?: string
-}
-
-export const HARNESS_STAGES: HarnessStage[] = [
-  {
-    label: 'Instrument',
-    phase: 'develop',
-    items: ['No-code instrumentation', 'GPU Collector', 'OTel Native SDKs'],
-    video: 'https://mintlify.s3.us-west-1.amazonaws.com/openlit/images/observe-overview.mp4',
-    icon: '/static/images/integrations/opentelemetry.svg',
-  },
-  {
-    label: 'Develop',
-    phase: 'develop',
-    items: ['Prompt Hub', 'Openground'],
-    video: 'https://mintlify.s3.us-west-1.amazonaws.com/openlit/images/prompts-overview.mp4',
-  },
-  {
-    label: 'Manage',
-    phase: 'develop',
-    items: ['Vault', 'API Keys'],
-    video: 'https://mintlify.s3.us-west-1.amazonaws.com/openlit/images/secrets-overview.mp4',
-  },
-  {
-    label: 'Observe',
-    phase: 'produce',
-    items: ['Coding Agents', 'Cost', 'Tools'],
-    video: 'https://mintlify.s3.us-west-1.amazonaws.com/openlit/images/observe-overview.mp4',
-  },
-  {
-    label: 'Improve',
-    phase: 'produce',
-    items: ['Evals', 'Guardrails', 'Otter'],
-    video: 'https://mintlify.s3.us-west-1.amazonaws.com/openlit/images/evaluations-overview.mp4',
-  },
-]
+export type { HarnessStage }
+export { HARNESS_STAGES }
 
 function Card({
   label,
@@ -359,7 +321,7 @@ export function useHarnessSelection(defaultLabel: string | null = null) {
   const [activeLabel, setActiveLabel] = useState<string | null>(defaultLabel)
   const activeStage = HARNESS_STAGES.find((s) => s.label === activeLabel) ?? null
   const toggle = (label: string) => {
-    setActiveLabel((current) => (current === label ? null : label))
+    setActiveLabel(label)
   }
   return { activeLabel, activeStage, toggle, setActiveLabel }
 }

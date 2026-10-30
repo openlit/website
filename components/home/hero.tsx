@@ -1,13 +1,12 @@
 'use client'
 
+import Link from 'next/link'
 import { Dialog, DialogContent, DialogTrigger } from '../ui/dialog'
 import { HERO_LEAD } from 'constants/hero'
 import { MarkedWord } from '@/components/common/marker-underline'
-import { HarnessCanvas, useHarnessSelection } from './harness-canvas'
+import ProductExplorer from './product-explorer'
 
 export default function Hero() {
-  const { activeLabel, toggle, setActiveLabel } = useHarnessSelection(null)
-
   return (
     <div className="relative w-full bg-white dark:bg-stone-950">
       <section className="relative mx-auto flex w-full max-w-6xl flex-col items-center px-4 pb-10 pt-10 md:pt-14">
@@ -80,12 +79,17 @@ export default function Hero() {
           </Dialog>
         </div>
 
-        <div className="relative z-10 mt-10 w-full max-w-5xl">
-          <HarnessCanvas
-            activeLabel={activeLabel}
-            onToggle={toggle}
-            onDismiss={() => setActiveLabel(null)}
-          />
+        <p className="relative z-10 mt-4 text-center text-sm text-stone-600 dark:text-stone-300">
+          <Link
+            href="/agent-harness-engineering#stages"
+            className="font-medium underline-offset-4 hover:text-brandPrimary hover:underline"
+          >
+            Development and production stages
+          </Link>
+        </p>
+
+        <div className="relative z-10 mt-10 w-full">
+          <ProductExplorer embedded />
         </div>
       </section>
     </div>

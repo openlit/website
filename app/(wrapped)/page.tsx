@@ -1,5 +1,4 @@
 import Hero from '@/components/home/hero'
-import ProductExplorer from '@/components/home/product-explorer'
 import { TrustedBy } from '@/components/home/trusted-by'
 import PlatformFeatures from '@/components/home/platform-features'
 import WorksWithStack from '@/components/home/works-with-stack'
@@ -41,7 +40,6 @@ export default function Page() {
       <JsonLd data={createJsonLdGraph([homepageSchema, faqSchema])} />
       <div className="mx-auto flex min-h-screen w-full flex-col items-center justify-between">
         <Hero />
-        <ProductExplorer />
         <TrustedBy />
         <PlatformFeatures />
         <WorksWithStack />

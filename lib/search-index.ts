@@ -59,7 +59,8 @@ export const STATIC_SEARCH_ITEMS: SearchItem[] = [
     description: 'Definition, layers, and tools for agent harness engineering',
     href: '/agent-harness-engineering',
     category: 'Page',
-    keywords: 'agent harness harness engineering pillar',
+    keywords:
+      'agent harness harness engineering pillar development production stages instrument develop manage observe improve',
   },
   {
     id: 'page-glossary',

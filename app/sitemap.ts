@@ -7,7 +7,7 @@ import { getYoutubeCatalog } from 'lib/youtube'
 
 const SITE = siteMetadata.siteUrl.replace(/\/$/, '')
 /** Stable content date for evergreen marketing pages (avoid build-time "today"). */
-const CONTENT_UPDATED = '2026-10-01'
+const CONTENT_UPDATED = '2026-10-30'
 
 function toDate(value: string | Date | undefined) {
   if (!value) return undefined
