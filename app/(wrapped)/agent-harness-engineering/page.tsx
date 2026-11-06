@@ -12,6 +12,7 @@ const DESCRIPTION =
   'Agent harness engineering is the discipline of designing, measuring and improving everything around the model in an AI agent. Definition, layers, and tools.'
 const URL = 'https://openlit.io/agent-harness-engineering'
 const PUBLISHED = '2026-10-01'
+const MODIFIED = '2026-10-30'
 
 export const metadata = genPageMetadata({
   title: TITLE,
@@ -23,6 +24,7 @@ export const metadata = genPageMetadata({
     'agent harness',
     'agent observability',
     'agent evals',
+    'development and production stages',
     'OpenLIT',
   ],
   canonicalUrl: URL,
@@ -34,7 +36,7 @@ const pageSchema = createTechArticleSchema({
   url: URL,
   description: DESCRIPTION,
   datePublished: PUBLISHED,
-  dateModified: PUBLISHED,
+  dateModified: MODIFIED,
   breadcrumbs: [
     { name: 'Home', url: 'https://openlit.io' },
     { name: 'Agent harness engineering', url: URL },

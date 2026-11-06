@@ -127,6 +127,7 @@ module.exports = () => {
         { source: '/index.md', destination: '/markdown' },
         { source: '/pricing.md', destination: '/markdown/pricing' },
         { source: '/enterprise.md', destination: '/markdown/enterprise' },
+        { source: '/explore.md', destination: '/markdown/explore' },
         { source: '/about-us.md', destination: '/markdown/about-us' },
         { source: '/about.md', destination: '/markdown/about-us' },
         { source: '/contact.md', destination: '/markdown/contact' },

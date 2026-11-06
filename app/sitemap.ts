@@ -7,7 +7,7 @@ import { getYoutubeCatalog } from 'lib/youtube'
 
 const SITE = siteMetadata.siteUrl.replace(/\/$/, '')
 /** Stable content date for evergreen marketing pages (avoid build-time "today"). */
-const CONTENT_UPDATED = '2026-10-01'
+const CONTENT_UPDATED = '2026-10-30'
 
 function toDate(value: string | Date | undefined) {
   if (!value) return undefined
@@ -83,6 +83,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }),
     entry({
       path: 'enterprise',
+      lastModified: CONTENT_UPDATED,
+      changeFrequency: 'monthly',
+      priority: 0.8,
+    }),
+    entry({
+      path: 'explore',
       lastModified: CONTENT_UPDATED,
       changeFrequency: 'monthly',
       priority: 0.8,

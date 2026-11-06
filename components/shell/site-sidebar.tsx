@@ -12,6 +12,7 @@ import {
   GitCompare,
   Github,
   Home,
+  MousePointerClick,
   Info,
   Moon,
   Newspaper,
@@ -41,6 +42,12 @@ const NAV_ITEMS = [
     href: '/enterprise',
     icon: Building2,
     match: (path: string) => path.startsWith('/enterprise'),
+  },
+  {
+    label: 'Explore',
+    href: '/explore',
+    icon: MousePointerClick,
+    match: (path: string) => path.startsWith('/explore'),
   },
   {
     label: 'Compare',
