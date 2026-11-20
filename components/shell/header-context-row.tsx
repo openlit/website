@@ -17,6 +17,7 @@ const MOBILE_LINKS = [
   { label: 'Pricing', href: '/pricing' },
   { label: 'Enterprise', href: '/enterprise' },
   { label: 'Compare', href: '/compare' },
+  { label: 'Guides', href: '/guides' },
   { label: 'Harness', href: '/agent-harness-engineering' },
   { label: 'Glossary', href: '/glossary' },
   { label: 'Blogs', href: '/blogs' },
@@ -71,6 +72,7 @@ function pageLabel(pathname: string) {
   if (pathname.startsWith('/pricing')) return 'Pricing'
   if (pathname.startsWith('/enterprise')) return 'Enterprise'
   if (pathname.startsWith('/compare')) return 'Compare'
+  if (pathname.startsWith('/guides')) return 'Guides'
   if (pathname.startsWith('/agent-harness-engineering')) return 'Agent harness engineering'
   if (pathname.startsWith('/glossary')) return 'Glossary'
   if (pathname.startsWith('/blogs')) return 'Blogs'

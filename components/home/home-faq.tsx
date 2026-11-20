@@ -3,6 +3,7 @@
 import { useState, type ReactNode } from 'react'
 import { HOME_FAQ_ITEMS, type HomeFaqItem } from 'constants/home-faq'
 import { MarkedWord } from '@/components/common/marker-underline'
+import { HOME_UPDATED } from 'constants/site-dates'
 
 const URL_PATTERN = /(https?:\/\/[^\s]+)/g
 
@@ -30,37 +31,46 @@ function linkifyAnswer(answer: string): ReactNode[] {
 }
 
 function FaqRow({
+  id,
   item,
   open,
   onToggle,
 }: {
+  id: string
   item: HomeFaqItem
   open: boolean
   onToggle: () => void
 }) {
   return (
     <div className="border-b border-stone-200 dark:border-stone-800">
-      <button
-        type="button"
-        onClick={onToggle}
-        aria-expanded={open}
-        className="flex w-full items-start justify-between gap-4 py-5 text-left"
-      >
-        <span className="text-base font-medium text-stone-900 dark:text-stone-50">
-          {item.question}
-        </span>
-        <span
-          aria-hidden
-          className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center text-lg leading-none text-stone-400"
+      <h3>
+        <button
+          type="button"
+          onClick={onToggle}
+          aria-expanded={open}
+          aria-controls={id}
+          className="flex w-full items-start justify-between gap-4 py-5 text-left"
         >
-          {open ? '−' : '+'}
-        </span>
-      </button>
-      {open ? (
-        <div className="pb-5 pr-2 text-sm leading-relaxed text-stone-600 dark:text-stone-300 sm:pr-10 md:text-base">
-          {linkifyAnswer(item.answer)}
-        </div>
-      ) : null}
+          <span className="text-base font-medium text-stone-900 dark:text-stone-50">
+            {item.question}
+          </span>
+          {/* Icon drawn with CSS so the heading text still ends with "?" for crawlers. */}
+          <span
+            aria-hidden
+            className={`mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center text-lg leading-none text-stone-400 ${
+              open ? "before:content-['−']" : "before:content-['+']"
+            }`}
+          />
+        </button>
+      </h3>
+      {/* Always in the HTML (crawlers don't click); collapsed rows are only hidden. */}
+      <div
+        id={id}
+        hidden={!open}
+        className="pb-5 pr-2 text-sm leading-relaxed text-stone-600 dark:text-stone-300 sm:pr-10 md:text-base"
+      >
+        {linkifyAnswer(item.answer)}
+      </div>
     </div>
   )
 }
@@ -90,12 +100,24 @@ export default function HomeFaq() {
             </a>
             .
           </p>
+          <p className="mt-2 text-sm text-stone-500 dark:text-stone-400">
+            Updated{' '}
+            <time dateTime={HOME_UPDATED}>
+              {new Date(`${HOME_UPDATED}T00:00:00Z`).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                timeZone: 'UTC',
+              })}
+            </time>
+          </p>
         </div>
 
         <div className="mt-12 border-t border-stone-200 dark:border-stone-800">
           {HOME_FAQ_ITEMS.map((item, index) => (
             <FaqRow
               key={item.question}
+              id={`faq-answer-${index}`}
               item={item}
               open={openIndex === index}
               onToggle={() => setOpenIndex((current) => (current === index ? -1 : index))}

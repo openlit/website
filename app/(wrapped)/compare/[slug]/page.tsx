@@ -6,6 +6,7 @@ import { createComparisonPageSchema, createJsonLdGraph } from '@/components/stru
 import JsonLd from '@/components/json-ld'
 import FeaturePageHeader from '@/components/shell/feature-page-header'
 import { GitCompare } from 'lucide-react'
+import { COMPARE_UPDATED } from 'constants/site-dates'
 
 export async function generateStaticParams() {
   return competitors.map((c) => ({ slug: c.slug }))
@@ -42,6 +43,7 @@ export default function CompareSlugPage({ params }: { params: { slug: string } }
     url: `https://openlit.io/compare/${params.slug}`,
     description: competitor.description,
     competitorName: competitor.name,
+    dateModified: COMPARE_UPDATED,
     breadcrumbs: [
       { name: 'Home', url: 'https://openlit.io' },
       { name: 'Compare', url: 'https://openlit.io/compare' },

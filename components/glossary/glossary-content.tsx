@@ -3,6 +3,7 @@ import type { GlossaryTerm } from 'data/glossary'
 import { GLOSSARY_TERMS, getGlossaryTerm } from 'data/glossary'
 import { MarkedWord } from '@/components/common/marker-underline'
 import ReadyToGetStarted from '@/components/common/ready-to-get-started'
+import { GLOSSARY_UPDATED, formatSiteDate } from 'constants/site-dates'
 
 const PAGE_SHELL = 'mx-auto w-full max-w-3xl px-4 py-10 md:px-6 md:py-14'
 
@@ -59,6 +60,9 @@ export function GlossaryTermContent({ term }: { term: GlossaryTerm }) {
       </h1>
       <p className="mt-4 text-lg leading-relaxed text-stone-800 dark:text-stone-100">
         {term.definition}
+      </p>
+      <p className="mt-2 text-sm text-stone-500 dark:text-stone-400">
+        Last updated <time dateTime={GLOSSARY_UPDATED}>{formatSiteDate(GLOSSARY_UPDATED)}</time>
       </p>
 
       <article className="mt-8 space-y-4">

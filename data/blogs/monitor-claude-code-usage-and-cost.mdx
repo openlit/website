@@ -1,0 +1,148 @@
+---
+title: 'How to Monitor Claude Code Usage and Cost with OpenTelemetry (Codex and Cursor Too)'
+date: '2026-11-20'
+lastmod: '2026-11-20'
+tags: ['openlit', 'claude-code', 'coding-agents', 'cost-tracking', 'opentelemetry', 'observability']
+draft: false
+summary: Track Claude Code tokens, cost, sessions, and tool calls per developer and repository with the open-source openlit CLI, Claude Code's native OpenTelemetry exporter, or both. The same setup covers Codex, Cursor, and OpenCode.
+authors: ['OpenLIT']
+---
+
+**Short answer:** To monitor Claude Code usage and cost, install the open-source `openlit` CLI and run `openlit coding install --vendor=claude-code`. It wires Claude Code's hooks so every session, prompt, tool call, token count, and cost lands in a self-hosted OpenLIT instance as OpenTelemetry data, broken down per developer and per repository. You can also point Claude Code's built-in OpenTelemetry exporter at OpenLIT, or run both: OpenLIT merges them per session.
+
+The same CLI covers Codex, Cursor, and OpenCode, so one dashboard shows spend and activity across every coding agent your team uses. There is no SDK to add and no change to your repositories.
+
+## What can you track for Claude Code?
+
+OpenLIT records each Claude Code session as OpenTelemetry spans following the `gen_ai.*` semantic conventions plus OpenLIT's `coding_agent.*` conventions. Out of the box you get:
+
+| Signal | What it answers |
+| --- | --- |
+| Sessions | Who ran Claude Code, when, for how long, and how the session ended |
+| Tokens | Token usage per session and per model |
+| Cost | Estimated spend per session, developer, repository, and model |
+| Tool calls | Which tools ran (Bash, edits, MCP tools) and how often |
+| Users | Per-developer rollups of activity, cost, and code impact |
+| Repositories | The repository and working folder each session ran in |
+
+These feed a pre-built **Coding Agents** dashboard in OpenLIT with sessions, cost, top tools and repos, and session outcomes, scoped per vendor or per user.
+
+## How do I set it up?
+
+You need a running OpenLIT instance ([self-host with Docker or Kubernetes](https://docs.openlit.io/latest/openlit/installation)), an API key from **Settings → API Keys**, and the OTLP endpoint (`http://localhost:4318` for a local install). Then:
+
+**1. Install the CLI.**
+
+```bash
+# macOS
+brew install openlit/openlit/openlit
+
+# Linux
+curl -fsSL https://raw.githubusercontent.com/openlit/openlit/main/cli/scripts/install.sh | sh
+```
+
+Windows uses a PowerShell installer, and a Docker image is available. See the [setup docs](https://docs.openlit.io/latest/openlit/coding-agents/setup-and-configure) for both.
+
+**2. Point it at your OpenLIT instance.**
+
+```bash
+openlit configure \
+  --endpoint https://openlit.example.com:4318 \
+  --api-key  $OPENLIT_API_KEY
+```
+
+For fleet rollouts, set `OPENLIT_OTLP_ENDPOINT` and `OPENLIT_API_KEY` as environment variables instead.
+
+**3. Wire Claude Code.**
+
+```bash
+openlit coding install --vendor=claude-code
+
+# or run Claude Code through the launcher, which installs on first run
+openlit coding launch claude-code
+```
+
+This installs a Claude Code plugin that hooks `SessionStart`, `UserPromptSubmit`, `PreToolUse`, `PostToolUse`, `Stop`, `SubagentStop`, and `SessionEnd`. The install is idempotent, so it is safe to re-run.
+
+**4. Verify.** Run a short Claude Code session, then open the **Agents** page in OpenLIT. A new row appears with a **Coding** badge, with Overview, Sessions, and Users tabs.
+
+## Can I use Claude Code's built-in OpenTelemetry exporter instead?
+
+Yes. Claude Code can export its own metrics, logs, and traces over OTLP, and OpenLIT accepts them directly:
+
+```bash
+export CLAUDE_CODE_ENABLE_TELEMETRY=1
+export OTEL_METRICS_EXPORTER=otlp
+export OTEL_LOGS_EXPORTER=otlp
+export OTEL_EXPORTER_OTLP_PROTOCOL=grpc
+export OTEL_EXPORTER_OTLP_ENDPOINT=$OPENLIT_OTLP_ENDPOINT
+export OTEL_EXPORTER_OTLP_HEADERS="Authorization=Bearer $OPENLIT_API_KEY"
+# Traces (beta): needed for sessions to show on the Sessions and Users pages without the plugin
+export CLAUDE_CODE_ENHANCED_TELEMETRY_BETA=1
+export OTEL_TRACES_EXPORTER=otlp
+```
+
+With `OTEL_EXPORTER_OTLP_PROTOCOL=grpc`, point the endpoint at OpenLIT's gRPC port (`4317`, for example `http://localhost:4317`). OpenLIT listens on `4317` for OTLP/gRPC and `4318` for OTLP/HTTP. To use `4318`, set the protocol to `http/protobuf` instead. See [Claude Code's monitoring docs](https://code.claude.com/docs/en/monitoring-usage) for the full list of variables.
+
+The native exporter sends these Claude Code metrics, which OpenLIT stores as standard OpenTelemetry metrics:
+
+| Metric | What it measures |
+| --- | --- |
+| `claude_code.session.count` | Sessions started |
+| `claude_code.cost.usage` | Estimated session cost in USD |
+| `claude_code.token.usage` | Tokens used, split by type (input, output, cache read, cache creation) |
+| `claude_code.lines_of_code.count` | Lines of code modified |
+| `claude_code.commit.count` | Git commits created |
+| `claude_code.pull_request.count` | Pull requests created |
+| `claude_code.active_time.total` | Active time in seconds |
+
+To check the setup, start a session and look for `claude_code.session.count` in OpenLIT.
+
+| | openlit CLI plugin | Native OTel exporter |
+| --- | --- | --- |
+| Setup | One command | Environment variables per machine |
+| Token and cost data | From Claude Code's transcript | Claude Code's own figures |
+| Repository and folder context | Yes | No |
+| Tool-call spans | Yes | With the traces beta enabled |
+
+You can run both. OpenLIT deduplicates by `session.id`: Claude Code's native cost and token figures win, and the plugin adds the repository and working-folder context that Claude Code itself can't see.
+
+## How do I monitor Codex, Cursor, and OpenCode?
+
+Use the same CLI with a different vendor flag:
+
+```bash
+openlit coding install --vendor=codex
+openlit coding install --vendor=cursor
+openlit coding install --vendor=opencode
+```
+
+Each agent appears as its own row on the Agents page, so you can compare usage and cost across agents and developers in one place. Codex may need hooks enabled in `~/.codex/config.toml`; the [setup docs](https://docs.openlit.io/latest/openlit/coding-agents/setup-and-configure) show the exact keys.
+
+## Does it capture my prompts and code?
+
+By default the CLI captures full content. Set `OPENLIT_CODING_CONTENT_CAPTURE` to `metadata_only` or `minimal` to record less. The CLI sends data only to your own OpenLIT endpoint; there is no managed cloud in the path. See [Privacy & Governance](https://docs.openlit.io/latest/openlit/coding-agents/privacy-and-governance) for redaction options.
+
+## FAQ
+
+### How much does Claude Code cost per developer?
+
+It depends on usage, which is why per-developer tracking matters. OpenLIT's Users view rolls up cost, sessions, and code impact per developer, and the cost figures come from Claude Code's own token usage. Treat them as estimates and reconcile with your Anthropic Console, Amazon Bedrock, or Google Vertex billing.
+
+### Is OpenLIT free for coding agent monitoring?
+
+Yes. OpenLIT is open source under Apache 2.0 and free to self-host, with no per-seat or per-trace fee. You pay only for the servers you run it on.
+
+### Can I send Claude Code telemetry to Grafana or Datadog?
+
+Yes. OpenLIT emits standard OpenTelemetry, so the same data can be exported to Grafana, Datadog, or any OTLP-compatible backend.
+
+### Do I need to change my code or repositories?
+
+No. The CLI works through each coding agent's hook system on the developer's machine. Nothing is added to your repositories.
+
+## Related
+
+- [Coding agent observability docs](https://docs.openlit.io/latest/openlit/coding-agents/overview)
+- [Best AI agent observability platforms in 2026](https://openlit.io/guides/best-ai-agent-observability-platforms)
+- [Tracking LLM costs in production](https://openlit.io/blogs/tracking-llm-costs-in-production)

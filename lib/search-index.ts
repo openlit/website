@@ -1,5 +1,6 @@
 import competitors from 'data/comparisons'
 import GLOSSARY_TERMS from 'data/glossary'
+import BEST_GUIDES from 'data/best-guides'
 import { HERO_TITLE } from 'constants/hero'
 
 export type SearchItem = {
@@ -131,6 +132,22 @@ export const STATIC_SEARCH_ITEMS: SearchItem[] = [
     category: 'Docs',
     external: true,
   },
+  {
+    id: 'page-guides',
+    title: 'Guides',
+    description: 'Best LLM and AI agent observability platforms compared',
+    href: '/guides',
+    category: 'Page',
+    keywords: 'best top llm observability agent observability platforms tools open source',
+  },
+  ...BEST_GUIDES.map((guide) => ({
+    id: `guide-${guide.slug}`,
+    title: guide.title,
+    description: guide.description,
+    href: `/guides/${guide.slug}`,
+    category: 'Page' as const,
+    keywords: guide.keywords.join(' '),
+  })),
   ...competitors.map((competitor) => ({
     id: `compare-${competitor.slug}`,
     title: `OpenLIT vs ${competitor.name}`,

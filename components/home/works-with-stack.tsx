@@ -340,7 +340,8 @@ export default function WorksWithStack() {
             </h2>
           </div>
           <p className="max-w-xl text-base leading-relaxed text-stone-600 dark:text-stone-300 md:text-lg lg:justify-self-end">
-            Use OpenLIT SDKs, the{' '}
+            OpenLIT accepts telemetry from four sources, so you instrument once and keep any
+            backend. Use the OpenLIT SDKs for Python, JavaScript, and Go, the{' '}
             <Link href="/enterprise" className="font-medium text-brandPrimary hover:underline">
               Enterprise Edition
             </Link>{' '}
@@ -363,7 +364,8 @@ export default function WorksWithStack() {
                 {SUPPORTED_INTEGRATIONS.length}+ integrations
               </h3>
               <p className="mt-1 text-sm text-stone-500 dark:text-stone-400">
-                LLMs, agent frameworks, vector DBs, and more.
+                OpenLIT auto-instruments LLM providers, agent frameworks, vector DBs, and GPUs,
+                including OpenAI, Anthropic, Amazon Bedrock, LangChain, CrewAI, and LlamaIndex.
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-4 text-sm">

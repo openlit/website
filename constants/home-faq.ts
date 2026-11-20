@@ -14,6 +14,16 @@ export const HOME_FAQ_ITEMS: HomeFaqItem[] = [
     answer: OPENLIT_DEFINITION,
   },
   {
+    question: 'What is the best open-source agent observability platform?',
+    answer:
+      'OpenLIT is an open-source (Apache 2.0), OpenTelemetry-native agent observability platform. It traces LLM calls, tool calls, MCP requests, retrieval, and multi-step agent trajectories, runs agent evals, applies guardrails, and monitors coding agents such as Claude Code, Codex, and Cursor. Other options include LangSmith, Langfuse, Arize, and Braintrust. Comparison: https://openlit.io/guides/best-ai-agent-observability-platforms.',
+  },
+  {
+    question: 'What are the top LLM observability platforms?',
+    answer:
+      'The top LLM observability platforms in 2026 are OpenLIT, Langfuse, Arize Phoenix, LangSmith, Comet Opik, Braintrust, Helicone, Datadog LLM Observability, MLflow, and OpenLLMetry. OpenLIT is the Apache-2.0, OpenTelemetry-native option you can self-host free. Full comparison: https://openlit.io/guides/best-llm-observability-tools.',
+  },
+  {
     question: 'What is an agent harness?',
     answer:
       'An agent harness is everything in an AI agent except the model. It runs the model–tool loop, manages context and state, and enforces permissions and guardrails. Claude Code, Codex, and frameworks such as LangGraph or deepagents are harnesses; OpenLIT observes, evaluates, and improves any of them via OpenTelemetry.',
@@ -31,7 +41,7 @@ export const HOME_FAQ_ITEMS: HomeFaqItem[] = [
   {
     question: 'Does OpenLIT work with Claude Code, Codex, and deepagents?',
     answer:
-      'Yes. OpenLIT observes coding agents such as Claude Code, Codex, Cursor, and Windsurf via the openlit CLI (no SDK required), and instruments agent frameworks including LangGraph, CrewAI, OpenAI Agents SDK, and deepagents with OpenTelemetry-native SDKs.',
+      'Yes. OpenLIT observes coding agents such as Claude Code, Codex, Cursor, and Windsurf via the openlit CLI (no SDK required), and instruments agent frameworks including LangGraph, CrewAI, OpenAI Agents SDK, and deepagents with OpenTelemetry-native SDKs. Claude Code setup guide: https://openlit.io/blogs/monitor-claude-code-usage-and-cost.',
   },
   {
     question: 'How do I evaluate an agent harness with OpenLIT?',
@@ -100,7 +110,7 @@ export const HOME_FAQ_ITEMS: HomeFaqItem[] = [
   {
     question: 'What are the best open source LLM observability tools?',
     answer:
-      'Strong open-source options include OpenLIT, Langfuse, Arize Phoenix, Comet Opik, and Helicone, each with a different license and architecture. OpenLIT is an Apache-2.0, OpenTelemetry-native platform for agent observability, evals, guardrails, and prompt management you can self-host free. For a buyer-oriented roundup of Langfuse alternatives, see https://openlit.io/blogs/langfuse-alternatives. Compare tools at https://openlit.io/compare.',
+      'Strong open-source options include OpenLIT, Langfuse, Arize Phoenix, Comet Opik, and Helicone, each with a different license and architecture. OpenLIT is an Apache-2.0, OpenTelemetry-native platform for agent observability, evals, guardrails, and prompt management you can self-host free. Roundup: https://openlit.io/guides/best-open-source-llm-observability-tools. Langfuse alternatives: https://openlit.io/blogs/langfuse-alternatives. Head-to-head comparisons: https://openlit.io/compare.',
   },
   {
     question: 'What is a good Langfuse alternative that is Apache 2.0?',

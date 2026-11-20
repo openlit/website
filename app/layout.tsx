@@ -27,6 +27,7 @@ export const metadata: Metadata = {
     template: `%s | ${siteMetadata.title}`,
   },
   description: siteMetadata.description,
+  authors: [{ name: 'OpenLIT', url: `${siteMetadata.siteUrl}/about-us` }],
   openGraph: {
     title: siteMetadata.title,
     description: siteMetadata.description,

@@ -140,6 +140,8 @@ module.exports = () => {
         },
         { source: '/glossary.md', destination: '/markdown/glossary' },
         { source: '/glossary/:slug.md', destination: '/markdown/glossary/:slug' },
+        { source: '/guides.md', destination: '/markdown/guides' },
+        { source: '/guides/:slug.md', destination: '/markdown/guides/:slug' },
         { source: '/videos.md', destination: '/markdown/videos' },
         { source: '/shorts.md', destination: '/markdown/shorts' },
         { source: '/sitemap-videos.xml', destination: '/sitemap-videos' },

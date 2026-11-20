@@ -81,8 +81,11 @@ export default function OpenPlatform() {
             secrets
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-stone-600 dark:text-stone-300 md:text-lg">
-            Built on OpenTelemetry so your traces stay portable. Self-host under Apache 2.0, keep
-            full ownership of your data, and never get locked into a proprietary format.
+            OpenLIT keeps prompts and API keys out of your code: Prompt Hub versions prompts your
+            app fetches at runtime, and Vault stores provider keys, so you can change agent
+            behaviour without a redeploy. Every trace is standard OpenTelemetry, so you self-host
+            under Apache 2.0, own your data, and can export to Grafana, Datadog, or any OTLP
+            backend.
           </p>
         </div>
 
