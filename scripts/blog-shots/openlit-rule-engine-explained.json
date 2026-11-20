@@ -1,0 +1,93 @@
+{
+  "slug": "openlit-rule-engine-explained",
+  "login": {
+    "email": "user@openlit.io",
+    "password": "openlituser"
+  },
+  "dismiss": ["[aria-label=\"Dismiss founder call card\"]"],
+  "shots": [
+    {
+      "name": "01-rule-list",
+      "path": "/rule-engine",
+      "crop": {
+        "x": 256,
+        "y": 0,
+        "width": 1184,
+        "height": 432
+      }
+    },
+    {
+      "name": "02-create-rule",
+      "path": "/rule-engine",
+      "clickText": "Create Rule",
+      "crop": {
+        "x": 412,
+        "y": 150,
+        "width": 616,
+        "height": 590
+      }
+    },
+    {
+      "name": "03-production-rule",
+      "path": "/rule-engine/410c6dfa-baac-4432-b9f1-d7a97b72de7d",
+      "clickText": "Run Preview",
+      "crop": {
+        "x": 256,
+        "y": 0,
+        "width": 1184,
+        "height": 900
+      }
+    },
+    {
+      "name": "04-or-groups",
+      "path": "/rule-engine/729bc75b-776d-48de-adcc-42e143524f5e",
+      "clickText": "Run Preview",
+      "crop": {
+        "x": 256,
+        "y": 0,
+        "width": 1184,
+        "height": 900
+      }
+    },
+    {
+      "name": "05-context-rules",
+      "path": "/context/0fbec376-0814-47ed-a17c-b751ad36ad18",
+      "crop": {
+        "x": 256,
+        "y": 0,
+        "width": 1184,
+        "height": 620
+      }
+    },
+    {
+      "name": "06-evaluators-linked",
+      "path": "/evaluations?tab=evaluators",
+      "crop": {
+        "x": 256,
+        "y": 0,
+        "width": 1184,
+        "height": 900
+      }
+    },
+    {
+      "name": "07-inactive-canary",
+      "path": "/rule-engine/7c7204ec-e821-442c-81ba-05a00813c0d9",
+      "crop": {
+        "x": 256,
+        "y": 0,
+        "width": 1184,
+        "height": 620
+      }
+    },
+    {
+      "name": "08-api-keys",
+      "path": "/settings/api-keys",
+      "crop": {
+        "x": 256,
+        "y": 0,
+        "width": 1184,
+        "height": 600
+      }
+    }
+  ]
+}
