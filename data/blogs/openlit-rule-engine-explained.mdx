@@ -1,0 +1,231 @@
+---
+title: 'Rule Engine Explained: Run the Right Eval, Context and Prompt on the Right Trace'
+date: '2026-11-20'
+lastmod: '2026-11-20'
+tags:
+  [
+    'openlit',
+    'opentelemetry',
+    'rule-engine',
+    'context',
+    'prompt-hub',
+    'evaluations',
+    'agents',
+    'production',
+  ]
+draft: false
+summary: 'How the OpenLIT Rule Engine routes contexts, prompts and evaluators from trace fields, with real API output and the matching pitfalls to avoid.'
+authors: ['Aman']
+images: ['/static/images/blogs/openlit-rule-engine-explained/header.webp']
+---
+
+![Rule Engine: The Right Context for Every Trace. Header with Rule Engine, Context, Prompt Hub and Evaluations chips](/static/images/blogs/openlit-rule-engine-explained/header.webp)
+
+## Introduction
+
+Every AI app eventually grows a function that looks like this:
+
+```python
+if env == "production" and model in ("gpt-4o", "gpt-4o-mini"):
+    system = REFUND_POLICY + PROD_PROMPT
+    if model == "gpt-4o-mini":
+        system += CONCISE_STYLE
+elif env == "staging":
+    system = CANARY_PROMPT
+...
+```
+
+It starts as three lines. Six months later it decides which prompt each model gets, which policy text is injected, which evaluators run on which traffic, and nobody wants to touch it, because changing a sentence of policy means a code review and a deploy.
+
+The [OpenLIT Rule Engine](https://docs.openlit.io/latest/openlit/prompts-experiments/rule-engine/overview) moves that function out of your code. You describe the conditions once, in the UI, on the same fields your traces already carry. You link each rule to the [Contexts](https://docs.openlit.io/latest/openlit/prompts-experiments/context/overview), [Prompt Hub](https://docs.openlit.io/latest/openlit/prompts-experiments/prompt-hub/overview) prompts and evaluators it should return. Then your app asks one question at runtime: _what applies right now?_
+
+This post covers how rules are built and evaluated, what the API returns, and four matching behaviors we verified against a live instance that you should know before you rely on it in production. It is the deep dive behind Step 4 of [the harness engineering loop](/blogs/harness-engineering-loop-openlit).
+
+## Why It's Important
+
+- **Behavior changes without deploys.** Swapping the policy text or prompt for one model or environment becomes an edit in OpenLIT, live on the next call.
+- **One routing table for the app and its grader.** OpenLIT's own evaluations use the same rules to decide which judges run on a trace and which Context the judge treats as ground truth. The agent and its evaluation can't disagree about which policy applies.
+- **Eval cost control.** LLM-as-a-judge is not free. Rules let you run the expensive judges only on the traffic that deserves them.
+- **Reviewable and testable.** Each rule shows its conditions, status and linked entities on one page, and **Run Preview** tests it against real recent traces before you depend on it.
+
+## How to Implement It
+
+We'll extend the support agent from [the harness engineering loop post](/blogs/harness-engineering-loop-openlit). It is traced with `openlit.init(application_name="support-agent", environment="production")` and calls `gpt-4o` and `gpt-4o-mini`. By the end it will have four rules:
+
+| Rule                             | Matches when                                                                   | Returns                                                                  |
+| -------------------------------- | ------------------------------------------------------------------------------ | ------------------------------------------------------------------------ |
+| Support agent in production      | service `support-agent` AND env `production` AND model in `gpt-4o-mini,gpt-4o` | Refund Policy context, `support-agent-system` prompt, Hallucination eval |
+| gpt-4o-mini answer style         | model equals `gpt-4o-mini`                                                     | Concise answer style context                                             |
+| Expensive runs get deeper evals  | total cost > 0.0004 OR output tokens > 150                                     | Completeness and Relevance evals                                         |
+| Staging canary prompt (inactive) | env `staging` AND service `support-agent`                                      | `support-agent-system-canary` prompt                                     |
+
+### Step 1: Understand the anatomy of a rule
+
+A rule has four parts:
+
+1. **Status**: Active or Inactive. Only Active rules are ever evaluated.
+2. **Condition groups**: each group holds conditions joined by its own AND/OR.
+3. **Group operator**: how the groups combine. AND means all groups must match; OR means any group can.
+4. **Linked entities**: the Contexts, Prompts and Evaluation types returned when the rule matches.
+
+The **Rule Engine** page under **Develop** lists every rule with its group operator and status:
+
+![OpenLIT Rule Engine list page showing four rules with AND/OR group operator badges and Active/Inactive status](/static/images/blogs/openlit-rule-engine-explained/01-rule-list.webp)
+
+_Four rules, one of them inactive. The OR badge marks the rule whose groups combine with "any group matches"._
+
+**Create Rule** opens a small dialog for name, description, group operator and status. Conditions and links are added on the rule's page afterwards.
+
+![Create a new rule dialog with Name, Description, Group Operator set to AND all groups match, and Status set to Active](/static/images/blogs/openlit-rule-engine-explained/02-create-rule.webp)
+
+_Rules start empty. You add conditions and linked entities on the detail page._
+
+### Step 2: Write conditions on trace fields
+
+Conditions are picked from dropdowns, so you can't misspell a field. The fields come from your telemetry: Service Name, Span Name, Span Kind, Duration (ms), Status Code, Deployment Env, Gen AI System, Model, Input Tokens, Output Tokens, Total Cost ($) and Temperature. Recent builds also add tool-name and coding-agent fields. String fields support `equals`, `not_equals`, `contains`, `not_contains`, `starts_with`, `ends_with`, `regex`, `in` and `not_in`. Number fields support `equals`, `not_equals`, `gt`, `gte`, `lt`, `lte` and `between` (as `min,max`). Value boxes suggest the top 100 values seen in your traces.
+
+Here is the production rule: one AND group with three conditions, linked to a context, a prompt and the Hallucination evaluator. **Run Preview** checks the saved conditions against the last 100 traces:
+
+![Rule detail for Support agent in production: an AND group with Model in gpt-4o-mini and gpt-4o, Service Name equals support-agent, Deployment Env equals production; Rule Preview shows matched traces; Associated Entities lists Hallucination, Refund Policy and support-agent-system](/static/images/blogs/openlit-rule-engine-explained/03-production-rule.webp)
+
+_Conditions on the left, preview and linked entities on the right. Every previewed trace matched, so the rule is safe to wire in._
+
+### Step 3: Use OR groups for "either of these"
+
+Some routing is naturally "this _or_ that". The expensive-runs rule uses two single-condition groups and the **OR** group operator, so a run qualifies if it cost more than $0.0004 _or_ produced more than 150 output tokens:
+
+![Rule detail for Expensive runs get deeper evals with OR between Group 1 Output Tokens greater than 150 and Group 2 Total Cost greater than 0.0004, preview showing matches, and Relevance and Completeness evaluation types linked](/static/images/blogs/openlit-rule-engine-explained/04-or-groups.webp)
+
+_Two groups joined by OR. Only matching runs get the Relevance and Completeness judges, so you pay for them on a fraction of traffic._
+
+To express (A AND B) OR C, put A and B in one AND group, C in another, and set the rule's group operator to OR.
+
+### Step 4: Link Contexts, Prompts and evaluators
+
+Links work from either side. On a rule, pick an entity type in **Associated Entities** and click **Associate**. On a Context or Prompt page, the **Rules** panel shows which rules return it, and **New Rule** creates a rule that is already linked:
+
+![Context page for Concise answer style showing its markdown content and a Rules panel listing the active rule gpt-4o-mini answer style](/static/images/blogs/openlit-rule-engine-explained/05-context-rules.webp)
+
+_The Context page answers "when does this text get used?" without reading any code._
+
+Evaluation types show the link too. Under **Evaluations → Evaluators**, each type linked to a rule carries a **Rule engine** badge and a "Linked from rules" line:
+
+![Evaluators tab where Hallucination, Relevance and Completeness show Rule engine badges and Linked from rules lines naming Support agent in production and Expensive runs get deeper evals](/static/images/blogs/openlit-rule-engine-explained/06-evaluators-linked.webp)
+
+_Hallucination runs on production support traffic. Relevance and Completeness run only on expensive runs._
+
+When OpenLIT evaluates a trace, manually or with Auto Evaluation, it reads that trace's attributes, evaluates the rules, and passes the matching Contexts to the judge as ground truth. Your app and your grader read the same policy.
+
+### Step 5: Stage changes with Inactive rules
+
+Status is a kill switch. The canary rule is fully configured but **Inactive**, so it never matches, even for staging traffic. Flip it to Active when you're ready, and flip it back to roll back.
+
+![Rule detail for Staging canary prompt marked INACTIVE with conditions Service Name equals support-agent and Deployment Env equals staging](/static/images/blogs/openlit-rule-engine-explained/07-inactive-canary.webp)
+
+_Inactive rules are skipped entirely at evaluation time, which makes them a safe way to stage a change._
+
+### Step 6: Ask "what applies?" from your app
+
+Create a key under **Settings → API Keys**. The evaluate endpoint accepts a Bearer key, so no dashboard session is needed.
+
+![Settings API Keys page listing masked keys with names, access level and creation date](/static/images/blogs/openlit-rule-engine-explained/08-api-keys.webp)
+
+_Keys are shown once at creation and masked afterwards. Enterprise keys can be scoped to `rule_engine` only._
+
+With `curl`:
+
+```bash
+curl -X POST "$OPENLIT_URL/api/rule-engine/evaluate" \
+  -H "Authorization: Bearer $OPENLIT_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "entity_type": "context",
+    "fields": {
+      "service.name": "support-agent",
+      "deployment.environment": "production",
+      "gen_ai.request.model": "gpt-4o-mini"
+    }
+  }'
+```
+
+This is the response from our instance. Both the production rule and the mini-model style rule matched, so both contexts come back:
+
+```json
+{
+  "matchingRuleIds": ["2fa29ac3-...", "410c6dfa-..."],
+  "entities": [
+    { "rule_id": "2fa29ac3-...", "entity_type": "context", "entity_id": "0fbec376-..." },
+    { "rule_id": "410c6dfa-...", "entity_type": "context", "entity_id": "e48b3d14-..." }
+  ]
+}
+```
+
+Add `"include_entity_data": true` to get the full records (context `content`, prompt text) keyed by `"{entity_type}:{entity_id}"`. In the SDK, the same call replaces the `if` ladder from the introduction:
+
+```python
+import openlit
+
+def build_system_prompt(model: str, env: str) -> str:
+    fields = {
+        "service.name": "support-agent",
+        "deployment.environment": env,
+        "gen_ai.request.model": model,
+    }
+    prompt = openlit.evaluate_rule(
+        entity_type="prompt",
+        fields=fields,
+        include_entity_data=True,
+        entity_inputs={"variables": {"company": "Acme", "refund_days": "30"}, "shouldCompile": True},
+    )
+    ctx = openlit.evaluate_rule(entity_type="context", fields=fields, include_entity_data=True)
+
+    parts = [d.get("compiledPrompt") or d.get("prompt") for d in (prompt or {}).get("entity_data", {}).values()]
+    parts += [d["content"] for d in (ctx or {}).get("entity_data", {}).values()]
+    return "\n\n".join(p for p in parts if p)
+```
+
+`openlit.evaluate_rule` reads `OPENLIT_URL` and `OPENLIT_API_KEY` from the environment. TypeScript (`Openlit.evaluateRule`) and Go (`openlit.EvaluateRule`) have the same shape. See the [SDK Rule Engine reference](https://docs.openlit.io/latest/sdk/features/rule-engine).
+
+### Matching pitfalls (verified)
+
+We sent edge-case inputs to a live instance to see exactly how matching behaves. Four results are worth designing around:
+
+1. **Omitted fields are skipped, not failed.** A condition only applies when the caller sends that field. We sent _only_ `{"gen_ai.request.model": "gpt-4o"}`, and the production rule still matched, even though its service and environment conditions weren't satisfied. **Always send every field any of your rules use.** Building `fields` from one helper, as in `build_system_prompt` above, makes this hard to get wrong.
+2. **String matching is exact and case-sensitive.** `GPT-4o-mini` matched nothing. Send the values exactly as they appear in your traces; the value suggestions in the condition builder show you what those are.
+3. **`in` lists are split on commas, with no trimming.** Write `gpt-4o-mini,gpt-4o`. With a space after the comma, ` gpt-4o` (with its leading space) would never match.
+4. **Overlapping rules all return, with no winner.** Production `gpt-4o-mini` traffic matched two rules and got two contexts. That's what we wanted here: policy plus style. But if two rules return competing prompts, your code has to choose. Keep prompt rules mutually exclusive and let context rules stack.
+
+Also note that number fields parse non-numeric input as 0. A total cost of `"n/a"` is treated as `0`, so it won't trip a `> 0.0004` rule.
+
+## Benefits and Outcomes
+
+- **Routing lives in one place.** The table at the top of this post is the whole routing configuration, visible in the UI, not spread across `if` branches.
+- **Policy, prompt and judge stay in sync.** The Context the agent receives is the Context the evaluator grades against.
+- **Cheaper evaluations.** Expensive judges run only where a rule says they should.
+- **Safer rollouts.** Inactive rules stage changes, Run Preview tests them on real traffic, and rollback is a status toggle.
+- **Portable inputs.** Conditions use OpenTelemetry GenAI attribute names (`gen_ai.request.model`, `deployment.environment`), the same ones your traces already carry.
+
+### How OpenLIT differs
+
+Prompt registries hand you a prompt by name. The OpenLIT Rule Engine hands you the right _set_ of resources (contexts, prompts and evaluator configs) for a situation described by trace fields, and OpenLIT's own evaluation pipeline uses the same rules. We haven't found an equivalent pairing of a conditional rules engine with a context store in comparable open-source LLM observability tools, and it runs self-hosted under Apache-2.0.
+
+## When It's Required or Recommended
+
+Use the Rule Engine when:
+
+- **You serve more than one model or environment** and each needs different instructions or policy text.
+- **Domain knowledge changes more often than your code**: pricing, refund windows, compliance wording.
+- **Eval spend is growing** and you want judges to run on targeted slices instead of everything.
+- **Several teams own different parts of the harness** and you want changes to be reviewable on one page.
+
+You can skip it while you have a single prompt, one model and one environment. A Prompt Hub lookup by name is enough. Add your first rule when the first `if model == ...` branch appears.
+
+**Prerequisites:** a running OpenLIT (`docker compose up -d`), traces flowing so the field suggestions and preview have data, and an API key for runtime calls.
+
+## Conclusion
+
+The Rule Engine replaces scattered routing code with rules you can read, preview and toggle. Each rule pairs conditions on trace fields with the Contexts, Prompts and evaluators that should apply. Remember the four matching behaviors: send every field your rules use, match case exactly, write `in` lists without spaces, and expect overlapping rules to stack.
+
+Next, read [the harness engineering loop](/blogs/harness-engineering-loop-openlit) to see where rules fit end to end, or [how to detect hallucinations in your RAG pipeline](/blogs/how-to-detect-hallucinations-in-your-rag-pipeline) for the evaluation side. The [Rule Engine docs](https://docs.openlit.io/latest/openlit/prompts-experiments/rule-engine/overview) cover every field and operator, and issues and ideas are welcome on [GitHub](https://github.com/openlit/openlit).
+
+What is the first `if` branch in your agent you'd move into a rule?
