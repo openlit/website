@@ -82,7 +82,83 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = [
       'OpenTelemetry GenAI semantic conventions give a portable way to represent those spans. OpenLIT emits standard OTLP traces and metrics so the same data can power OpenLIT dashboards or export to Grafana, Datadog, and other OTLP backends.',
       'Coding agents and MCP servers are part of the same picture: sessions, tool calls, tokens, and cost per user or repo without requiring a proxy.',
     ],
-    relatedSlugs: ['agent-harness', 'agent-evals', 'trajectory-evaluation'],
+    relatedSlugs: ['llm-observability', 'agent-harness', 'agent-evals', 'trajectory-evaluation'],
+    faq: [
+      {
+        question: 'What is an agent observability platform?',
+        answer:
+          'An agent observability platform traces every step of an AI agent run (LLM calls, tool calls, MCP requests, retrieval, and sub-agents) with cost, latency, and outcome, and lets you evaluate and debug those runs. OpenLIT is an open-source, OpenTelemetry-native agent observability platform.',
+      },
+      {
+        question: 'What are the best agent observability platforms?',
+        answer:
+          'Commonly used options include OpenLIT, LangSmith, Langfuse, Arize, Braintrust, Maxim AI, Datadog, Comet Opik, Galileo, and AgentOps. See the comparison at https://openlit.io/guides/best-ai-agent-observability-platforms.',
+      },
+    ],
+  },
+  {
+    slug: 'llm-observability',
+    name: 'LLM observability',
+    title: 'What Is LLM Observability? Definition, Metrics and Tools',
+    description:
+      'LLM observability is tracing and monitoring LLM apps in production: prompts, responses, tokens, cost, latency, errors and quality. Definition, metrics and tools.',
+    definition:
+      'LLM observability is the practice of tracing, measuring, and evaluating large language model applications in production: prompts and completions, token usage, cost, latency, errors, and output quality.',
+    body: [
+      'Traditional APM tells you a request was slow or failed. LLM observability adds model-specific signals: which prompt and model produced a response, how many tokens it used, what it cost, and whether the output was accurate, relevant, and safe.',
+      'Core metrics are latency (including time to first token), token usage, cost per request, error and rate-limit rates, and quality scores from evaluations such as LLM-as-a-judge. For RAG apps, retrieval quality and vector database latency matter too. For agents, observability extends to tool calls and full trajectories (see agent observability).',
+      'OpenTelemetry GenAI semantic conventions standardize how LLM spans and metrics are recorded. OpenLIT is an open-source LLM observability platform that emits those spans natively, stores them in ClickHouse, and can export the same data to Grafana, Datadog, or any OTLP backend.',
+    ],
+    relatedSlugs: ['agent-observability', 'agent-evals', 'guardrails'],
+    faq: [
+      {
+        question: 'What is an LLM observability platform?',
+        answer:
+          'An LLM observability platform collects traces and metrics from LLM applications (prompts, responses, tokens, cost, latency, and errors) and adds evaluation, so teams can debug and improve quality in production. OpenLIT is an open-source, OpenTelemetry-native LLM observability platform.',
+      },
+      {
+        question: 'What metrics matter for LLM observability?',
+        answer:
+          'Latency and time to first token, token usage, cost per request and per user, error and rate-limit rates, and quality scores such as relevance, hallucination, and toxicity.',
+      },
+      {
+        question: 'What are the top LLM observability platforms?',
+        answer:
+          'OpenLIT, Langfuse, Arize Phoenix, LangSmith, Comet Opik, Braintrust, Helicone, Datadog LLM Observability, MLflow, and OpenLLMetry. See the comparison at https://openlit.io/guides/best-llm-observability-tools.',
+      },
+    ],
+  },
+  {
+    slug: 'opentelemetry-genai-semantic-conventions',
+    name: 'OpenTelemetry GenAI semantic conventions',
+    title: 'OpenTelemetry GenAI Semantic Conventions Explained (gen_ai.*)',
+    description:
+      'OpenTelemetry GenAI semantic conventions define standard gen_ai.* span names, attributes, and metrics for LLM calls, agents, tools, and MCP. What they cover and how to use them.',
+    definition:
+      'OpenTelemetry GenAI semantic conventions are the standard names for telemetry from generative AI systems: span names, gen_ai.* attributes, metrics, and events for LLM inference, embeddings, agents, tool calls, and MCP, so any OpenTelemetry backend can read LLM and agent traces the same way.',
+    body: [
+      'An LLM inference span is named "{gen_ai.operation.name} {gen_ai.request.model}", for example "chat gpt-4". The span carries gen_ai.provider.name (required, such as openai or aws.bedrock), gen_ai.request.model, and token counts in gen_ai.usage.input_tokens and gen_ai.usage.output_tokens. Agent spans use operations such as create_agent and invoke_agent, and tool calls use execute_tool. The conventions also define spans and metrics for MCP clients and servers.',
+      'The conventions are still marked Development, so attribute and metric names can change between releases. In 2026 they moved from the main semantic-conventions repository to a dedicated repository, open-telemetry/semantic-conventions-genai, which uses OpenTelemetry Weaver to generate the docs. Instrumentation should pin a semantic conventions version and expect migrations.',
+      'OpenLIT SDKs emit spans and metrics that follow the GenAI semantic conventions for LLM providers, vector databases, and agent frameworks, with a single openlit.init() call. Because the output is standard OTLP, the same traces work in OpenLIT, Grafana, Datadog, or any OpenTelemetry backend without re-instrumenting.',
+    ],
+    relatedSlugs: ['llm-observability', 'agent-observability', 'agent-harness'],
+    faq: [
+      {
+        question: 'What are OpenTelemetry GenAI semantic conventions?',
+        answer:
+          'They are the OpenTelemetry standard for naming generative AI telemetry: gen_ai.* span attributes, metrics, and events for LLM calls, embeddings, agents, tool calls, and MCP. They let any OTLP backend understand LLM and agent traces.',
+      },
+      {
+        question: 'Are the GenAI semantic conventions stable?',
+        answer:
+          'No. They are marked Development, so names can change. They are maintained in the open-telemetry/semantic-conventions-genai repository.',
+      },
+      {
+        question: 'Which tools emit OpenTelemetry GenAI semantic conventions?',
+        answer:
+          'OpenLIT, OpenLLMetry, and the OpenTelemetry Python contrib instrumentations emit gen_ai.* spans, and backends such as OpenLIT, Grafana, and Datadog can ingest them. OpenLIT is open source under Apache 2.0 and instruments LLMs, vector databases, and agent frameworks with one line of code.',
+      },
+    ],
   },
   {
     slug: 'agent-evals',

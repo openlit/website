@@ -2,6 +2,7 @@
 
 import siteMetadata from 'data/siteMetadata'
 import competitors from '@/data/comparisons'
+import BEST_GUIDES from '@/data/best-guides'
 import { usePathname } from 'next/navigation'
 
 import Image from 'next/image'
@@ -64,6 +65,7 @@ const linkGroups = [
   {
     heading: 'Comparisons',
     links: [
+      ...BEST_GUIDES.map((g) => ({ text: g.name, link: `/guides/${g.slug}` })),
       ...competitors.map((c) => ({ text: `vs ${c.name}`, link: `/compare/${c.slug}` })),
       { text: 'All Comparisons', link: '/compare' },
     ],

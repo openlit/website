@@ -25,6 +25,9 @@ export const SCHEMA_IDS = {
 }
 
 const KNOWS_ABOUT = [
+  'AI agent observability',
+  'LLM observability platform',
+  'LLM monitoring',
   'Agent harness',
   'Agent harness engineering',
   'Agent observability',
@@ -135,13 +138,17 @@ export const applicationSchema = {
   '@type': 'SoftwareApplication',
   '@id': SCHEMA_IDS.software,
   name: 'OpenLIT',
-  alternateName: 'Open source Agent Harness Engineering Platform',
+  alternateName: [
+    'OpenLIT AI agent observability platform',
+    'OpenLIT LLM observability platform',
+    'OpenLIT agent harness engineering platform',
+  ],
   url: SITE,
   image: SHARE_IMAGE,
   screenshot: SHARE_IMAGE,
   operatingSystem: 'Linux, Windows, macOS',
   applicationCategory: 'DeveloperApplication',
-  applicationSubCategory: 'Agent harness engineering platform',
+  applicationSubCategory: 'AI agent and LLM observability platform',
   description: DEFINITION,
   isAccessibleForFree: true,
   license: 'https://www.apache.org/licenses/LICENSE-2.0',
@@ -169,6 +176,8 @@ export const applicationSchema = {
     'https://www.npmjs.com/package/openlit',
   ],
   featureList: [
+    'AI agent observability',
+    'LLM observability',
     'Agent harness engineering',
     'OpenTelemetry-native LLM tracing',
     'Agent observability',
@@ -336,15 +345,18 @@ export function createComparisonPageSchema({
   description,
   competitorName,
   breadcrumbs,
+  dateModified,
 }: {
   name: string
   url: string
   description: string
   competitorName: string
   breadcrumbs?: { name: string; url: string }[]
+  dateModified?: string
 }) {
   return createWebPageSchema(name, url, description, breadcrumbs, {
     fields: {
+      ...(dateModified ? { dateModified } : {}),
       about: { '@id': SCHEMA_IDS.software },
       mentions: {
         '@type': 'SoftwareApplication',

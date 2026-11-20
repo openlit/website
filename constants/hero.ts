@@ -1,6 +1,6 @@
 import { OPENLIT_DEFINITION, OPENLIT_DEFINITION_SHORT } from 'constants/openlit-definition'
 
-export const HERO_TITLE = 'Open source Agent Harness Engineering Platform'
+export const HERO_TITLE = 'Open Source AI Agent & LLM Observability Platform'
 
 /** Visible hero paragraph — keep aligned with OPENLIT_DEFINITION. */
 export const HERO_LEAD = OPENLIT_DEFINITION
@@ -9,6 +9,10 @@ export const HERO_LEAD = OPENLIT_DEFINITION
 export const HERO_DESCRIPTION = OPENLIT_DEFINITION_SHORT
 
 export const HERO_KEYWORDS = [
+  'agent observability platform',
+  'LLM observability platform',
+  'AI agent observability',
+  'open source LLM observability',
   'agent harness engineering',
   'agent harness engineering platform',
   'open source agent harness engineering',

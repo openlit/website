@@ -11,6 +11,7 @@ import FeaturePageHeader from '@/components/shell/feature-page-header'
 import GLOSSARY_TERMS, { getGlossaryTerm } from 'data/glossary'
 import { createFaqPageSchema } from 'constants/home-faq'
 import { BookMarked } from 'lucide-react'
+import { GLOSSARY_UPDATED } from 'constants/site-dates'
 
 export async function generateStaticParams() {
   return GLOSSARY_TERMS.map((term) => ({ slug: term.slug }))
@@ -39,11 +40,17 @@ export default function GlossaryTermPage({ params }: { params: { slug: string } 
   if (!term) notFound()
 
   const url = `https://openlit.io/glossary/${term.slug}`
-  const pageSchema = createWebPageSchema(term.title, url, term.description, [
-    { name: 'Home', url: 'https://openlit.io' },
-    { name: 'Glossary', url: 'https://openlit.io/glossary' },
-    { name: term.name, url },
-  ])
+  const pageSchema = createWebPageSchema(
+    term.title,
+    url,
+    term.description,
+    [
+      { name: 'Home', url: 'https://openlit.io' },
+      { name: 'Glossary', url: 'https://openlit.io/glossary' },
+      { name: term.name, url },
+    ],
+    { pageType: 'WebPage', fields: { dateModified: GLOSSARY_UPDATED } }
+  )
   const termSchema = createDefinedTermSchema({
     name: term.name,
     description: term.definition,

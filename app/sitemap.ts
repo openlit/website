@@ -3,6 +3,8 @@ import { allBlogs } from 'contentlayer/generated'
 import siteMetadata from 'data/siteMetadata'
 import competitors from 'data/comparisons'
 import GLOSSARY_TERMS from 'data/glossary'
+import BEST_GUIDES from 'data/best-guides'
+import { COMPARE_UPDATED, GLOSSARY_UPDATED, HOME_UPDATED } from 'constants/site-dates'
 import { getYoutubeCatalog } from 'lib/youtube'
 
 const SITE = siteMetadata.siteUrl.replace(/\/$/, '')
@@ -71,7 +73,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const routes: MetadataRoute.Sitemap = [
     entry({
       path: '',
-      lastModified: CONTENT_UPDATED,
+      lastModified: HOME_UPDATED,
       changeFrequency: 'weekly',
       priority: 1,
     }),
@@ -89,7 +91,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     }),
     entry({
       path: 'compare',
-      lastModified: CONTENT_UPDATED,
+      lastModified: COMPARE_UPDATED,
       changeFrequency: 'weekly',
       priority: 0.9,
     }),
@@ -100,8 +102,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.9,
     }),
     entry({
+      path: 'guides',
+      lastModified: BEST_GUIDES.reduce((d, g) => (g.updated > d ? g.updated : d), CONTENT_UPDATED),
+      changeFrequency: 'weekly',
+      priority: 0.9,
+    }),
+    entry({
       path: 'glossary',
-      lastModified: CONTENT_UPDATED,
+      lastModified: GLOSSARY_UPDATED,
       changeFrequency: 'monthly',
       priority: 0.8,
     }),
@@ -170,7 +178,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const compareRoutes = competitors.map((competitor) =>
     entry({
       path: `compare/${competitor.slug}`,
-      lastModified: CONTENT_UPDATED,
+      lastModified: COMPARE_UPDATED,
       changeFrequency: 'monthly',
       priority: 0.8,
     })
@@ -179,9 +187,18 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const glossaryRoutes = GLOSSARY_TERMS.map((term) =>
     entry({
       path: `glossary/${term.slug}`,
-      lastModified: CONTENT_UPDATED,
+      lastModified: GLOSSARY_UPDATED,
       changeFrequency: 'monthly',
       priority: 0.7,
+    })
+  )
+
+  const guideRoutes = BEST_GUIDES.map((guide) =>
+    entry({
+      path: `guides/${guide.slug}`,
+      lastModified: guide.updated,
+      changeFrequency: 'weekly',
+      priority: 0.9,
     })
   )
 
@@ -194,7 +211,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })
   )
 
-  return [...routes, ...compareRoutes, ...glossaryRoutes, ...blogRoutes, ...youtubeVideoRoutes]
+  return [
+    ...routes,
+    ...guideRoutes,
+    ...compareRoutes,
+    ...glossaryRoutes,
+    ...blogRoutes,
+    ...youtubeVideoRoutes,
+  ]
 }
 
 // Must stay static (no edge). Contentlayer in an edge sitemap breaks the

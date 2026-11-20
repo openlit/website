@@ -1,13 +1,14 @@
 /** Canonical quotable definition for AI answer surfaces and above-the-fold copy. */
 export const OPENLIT_DEFINITION =
-  'OpenLIT is an open-source agent harness engineering platform: OpenTelemetry-native agent observability, evals, guardrails, prompt management, and cost and GPU monitoring for AI agents and coding agents. Free to self-host under Apache 2.0.'
+  'OpenLIT is an open-source AI agent and LLM observability platform built on OpenTelemetry: tracing, evals, guardrails, prompt management, and cost and GPU monitoring for AI agents and coding agents. It is the agent harness engineering platform you can self-host free under Apache 2.0.'
 
 /**
  * Meta / SERP description (≤160 chars). Keep aligned with OPENLIT_DEFINITION.
- * Length: 157 characters.
+ * Leads with the category names people type into answer engines
+ * ("agent observability platform", "LLM observability platform").
  */
 export const OPENLIT_DEFINITION_SHORT =
-  'OpenLIT is the open-source agent harness engineering platform: agent observability, evals, guardrails and prompt management on OpenTelemetry. Self-host free.'
+  'OpenLIT is an open-source AI agent and LLM observability platform on OpenTelemetry: tracing, evals, guardrails and prompt management. Self-host free.'
 
 /** One-line positioning used consistently across marketing surfaces. */
 export const OPENLIT_POSITIONING =

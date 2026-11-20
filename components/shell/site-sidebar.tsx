@@ -13,6 +13,7 @@ import {
   Github,
   Home,
   Info,
+  ListOrdered,
   Moon,
   Newspaper,
   Search,
@@ -47,6 +48,12 @@ const NAV_ITEMS = [
     href: '/compare',
     icon: GitCompare,
     match: (path: string) => path.startsWith('/compare'),
+  },
+  {
+    label: 'Guides',
+    href: '/guides',
+    icon: ListOrdered,
+    match: (path: string) => path.startsWith('/guides'),
   },
   {
     label: 'Harness',

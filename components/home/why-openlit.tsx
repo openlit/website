@@ -39,7 +39,7 @@ export default function WhyOpenlit() {
     {
       title: 'Unified platform',
       description:
-        'Agent observability, agent evals, guardrails, prompt management, Vault, OpenGround, and Otter work alone or together on the same production data.',
+        'OpenLIT puts agent observability, agent evals, guardrails, prompt management, Vault, OpenGround model comparison, and the Otter AI copilot in one platform. Each works alone or together on the same production traces.',
     },
     {
       title: 'Open source (Apache 2.0)',

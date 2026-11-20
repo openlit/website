@@ -11,6 +11,7 @@ import { createJsonLdGraph, createWebPageSchema, SCHEMA_IDS } from '@/components
 import JsonLd from '@/components/json-ld'
 import { HERO_DESCRIPTION, HERO_KEYWORDS, HERO_TITLE } from 'constants/hero'
 import { createFaqPageSchema, HOME_FAQ_ITEMS } from 'constants/home-faq'
+import { HOME_UPDATED } from 'constants/site-dates'
 
 export const metadata = genPageMetadata({
   title: HERO_TITLE,
@@ -28,6 +29,8 @@ const homepageSchema = createWebPageSchema(
   {
     fields: {
       mainEntity: { '@id': SCHEMA_IDS.software },
+      dateModified: HOME_UPDATED,
+      author: { '@type': 'Organization', '@id': SCHEMA_IDS.org, name: 'OpenLIT' },
     },
   }
 )

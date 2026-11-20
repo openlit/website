@@ -5,6 +5,7 @@ import siteMetadata from '@/data/siteMetadata'
 import ReadyToGetStarted from '../common/ready-to-get-started'
 import Link from 'next/link'
 import { MarkedWord } from '@/components/common/marker-underline'
+import { COMPARE_UPDATED, formatSiteDate } from 'constants/site-dates'
 
 function FeatureValue({ value }: { value: boolean | string }) {
   if (value === true) {
@@ -79,6 +80,10 @@ export default function ComparisonPage({ competitor }: { competitor: Competitor 
         </h1>
         <p className="mt-3 text-base leading-relaxed text-stone-600 dark:text-stone-300">
           {competitor.heroSubheadline}
+        </p>
+        <p className="mt-2 text-sm text-stone-500 dark:text-stone-400">
+          Last updated <time dateTime={COMPARE_UPDATED}>{formatSiteDate(COMPARE_UPDATED)}</time> ·
+          Free and open source (Apache 2.0), self-hosted
         </p>
       </div>
 

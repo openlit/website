@@ -340,8 +340,10 @@ export default function PlatformFeatures() {
             step
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-stone-600 dark:text-stone-300 md:text-lg">
-            Trace, evaluate, and improve the harness around your agents: LLM tracing, agent evals,
-            prompt management, and model comparison from prototype to production.
+            OpenLIT is an open-source agent observability platform that traces every LLM call, tool
+            call, MCP request, and agent step with OpenTelemetry. One self-hosted, Apache-2.0
+            platform covers LLM tracing, cost and token tracking, agent evals, guardrails, prompt
+            management, and model comparison, from prototype to production.
           </p>
         </div>
 

@@ -5,7 +5,29 @@ import { MARKDOWN_NOT_FOUND_HEADERS, markdownNotFoundBody } from './lib/agent/no
 import { decideNegotiation, normalizePathname } from './lib/agent/negotiate'
 import { markdownForPathname } from './lib/llms/pages'
 
+/**
+ * next.config.js `headers()` are not applied to rendered pages on Cloudflare
+ * Pages (next-on-pages), so set the safe baseline here. CSP and X-Frame-Options
+ * stay in next.config.js until they are tested against the live site.
+ */
+const BASELINE_HEADERS: Record<string, string> = {
+  'Strict-Transport-Security': 'max-age=31536000; includeSubDomains',
+  'X-Content-Type-Options': 'nosniff',
+  'Referrer-Policy': 'strict-origin-when-cross-origin',
+}
+
+function withBaselineHeaders<T extends Response>(response: T): T {
+  for (const [key, value] of Object.entries(BASELINE_HEADERS)) {
+    if (!response.headers.has(key)) response.headers.set(key, value)
+  }
+  return response
+}
+
 export function middleware(request: NextRequest) {
+  return withBaselineHeaders(handle(request))
+}
+
+function handle(request: NextRequest) {
   const pathname = normalizePathname(request.nextUrl.pathname)
   const wantsMarkdown = prefersMarkdown(request.headers.get('accept'))
   const markdown = wantsMarkdown ? markdownForPathname(pathname) : null
