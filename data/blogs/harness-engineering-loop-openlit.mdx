@@ -1,0 +1,319 @@
+---
+title: 'The Harness Engineering Loop, End to End: Observe, Evaluate, Guard, Fix, Verify'
+date: '2026-11-20'
+lastmod: '2026-11-20'
+tags:
+  [
+    'openlit',
+    'opentelemetry',
+    'agents',
+    'harness-engineering',
+    'evaluations',
+    'rule-engine',
+    'context',
+    'prompt-hub',
+    'vault',
+    'production',
+  ]
+draft: false
+summary: 'A hands-on walkthrough of the harness engineering loop for AI agents with OpenLIT: traces, evals, guardrails, Rule Engine, Context, Prompt Hub, Vault.'
+authors: ['Aman']
+images: ['/static/images/blogs/harness-engineering-loop-openlit/header.webp']
+---
+
+![The Harness Engineering Loop, End to End: header showing OpenLIT feature chips for Evaluations, Rule Engine, Context, Prompt Hub and Vault](/static/images/blogs/harness-engineering-loop-openlit/header.webp)
+
+## Introduction
+
+Your support agent tells a customer they have **60 days** to return an order. Your policy says **30**. Nothing crashed. Latency was fine. No error budget was spent. The agent was simply, confidently wrong, and you only found out because the customer forwarded the chat to finance.
+
+This is what agent failures look like in production. They are rarely exceptions; they are wrong answers delivered with a `200 OK`. Fixing them is not a model problem you can wait out until the next release. It is a **harness** problem: the tools, context, prompts, secrets and guardrails you wrap around the model.
+
+[Agent harness engineering](/agent-harness-engineering) is the discipline of improving that wrapper on purpose, in a loop:
+
+1. **Observe**: see every step the agent took.
+2. **Evaluate**: score whether the answer was right.
+3. **Guard**: block the inputs and outputs you never want.
+4. **Fix**: change the harness (context, prompt, routing, keys) without redeploying the app.
+5. **Verify**: prove the fix holds before and after you ship.
+
+This post walks through that loop end to end with [OpenLIT](https://github.com/openlit/openlit), using one small support agent and every feature it touches: tracing, Evaluations, guardrails, the Rule Engine, Context, Prompt Hub and Vault. Every screenshot below comes from a real local OpenLIT instance, not a mockup. Everything here runs on the free, self-hosted, Apache-2.0 edition.
+
+## Why It's Important
+
+Teams that ship agents tend to hit the same wall around their second month in production:
+
+- **Failures are semantic, not operational.** Your APM sees healthy HTTP calls. It cannot tell that the refund window was hallucinated.
+- **Fixes live in the wrong place.** The "fix" is usually a sentence in a system prompt or a paragraph of policy text, but it ships through a full code deploy, so it takes days instead of minutes.
+- **Knowledge is copy-pasted.** The refund policy lives in the system prompt, in the eval rubric, in a RAG chunk and in a Notion doc, and the four copies drift apart.
+- **No one can prove the fix worked.** Without a score attached to production traces and a gate in CI, "we fixed it" means "we haven't seen it again yet."
+
+The harness engineering loop answers each of these. The useful part is that the five steps share data. The same trace attributes that drive your dashboards also decide which context, prompt and evaluator apply, so one change in OpenLIT updates the agent's behavior _and_ the way it is graded.
+
+## How to Implement It
+
+We'll use a minimal `support-agent` service: an OpenAI-compatible chat model, one `lookup_order` tool and a refund policy. You need Docker and Python 3.9+.
+
+### Step 0: Start OpenLIT
+
+```bash
+git clone https://github.com/openlit/openlit.git
+cd openlit
+docker compose up -d
+```
+
+The UI is on `http://127.0.0.1:3000` (default login `user@openlit.io` / `openlituser`), and the OTLP receiver listens on `4318` (HTTP) and `4317` (gRPC). Create an API key under **Settings → API Keys**; the Rule Engine, Prompt Hub, Vault and offline evals all use it.
+
+```bash
+pip install openlit openai
+export OPENLIT_URL="http://127.0.0.1:3000"
+export OPENLIT_API_KEY="openlit-..."   # from Settings → API Keys
+```
+
+### Step 1: Observe — trace every agent step
+
+One `openlit.init()` call instruments the OpenAI client automatically. Wrapping the agent entry point in `@openlit.trace` groups each run's LLM calls and tool round-trips under a single parent span.
+
+```python
+import json
+import openlit
+from openai import OpenAI
+
+openlit.init(
+    otlp_endpoint="http://127.0.0.1:4318",
+    application_name="support-agent",
+    environment="production",
+    custom_span_attributes={"team": "support"},
+)
+
+client = OpenAI()
+
+@openlit.trace
+def run_support_agent(question: str, model: str = "gpt-4o-mini"):
+    messages = [
+        {"role": "system", "content": SYSTEM_PROMPT},
+        {"role": "user", "content": question},
+    ]
+    first = client.chat.completions.create(model=model, messages=messages, tools=TOOLS)
+    msg = first.choices[0].message
+    if msg.tool_calls:
+        messages.append(msg)
+        for call in msg.tool_calls:
+            messages.append({
+                "role": "tool",
+                "tool_call_id": call.id,
+                "content": json.dumps(lookup_order(**json.loads(call.function.arguments))),
+            })
+        return client.chat.completions.create(model=model, messages=messages).choices[0].message.content
+    return msg.content
+```
+
+No manual spans, no wrappers around `create()`. Every request now lands in **Monitor → Telemetry** with the service name, environment, model, token counts and cost already attached as OpenTelemetry GenAI attributes.
+
+![OpenLIT Telemetry page listing run_support_agent traces from the support-agent service with span counts and durations](/static/images/blogs/harness-engineering-loop-openlit/01-traces.webp)
+
+_Each `run_support_agent` row is one agent run: five spans, about one second, all from the `support-agent` service._
+
+Open any trace to see the full tree: the agent span, the first `chat gpt-4o` call that decided to use the tool, and the second call that wrote the answer.
+
+![Trace detail for run_support_agent showing two chat gpt-4o child spans, their HTTP POST spans, durations and the total cost](/static/images/blogs/harness-engineering-loop-openlit/02-trace-detail.webp)
+
+_The trace tree shows where time went (0.26 s for the tool decision, 0.82 s for the answer) and what the run cost._
+
+Because these are standard OTLP spans, you can export the same data to Grafana, Datadog or any other backend you already run. You don't need a separate agent runtime or a proprietary trace format.
+
+### Step 2: Evaluate — score answers, not just latency
+
+Tracing tells you _what happened_. Evaluations tell you whether it was _right_. Under **Monitor → Evaluations → Evaluators**, turn on the built-in LLM-as-a-judge types you care about. For a support agent, start with Hallucination, Toxicity and Bias.
+
+![OpenLIT Evaluators tab with Hallucination, Bias and Toxicity enabled; Hallucination is marked as linked from the rule Support agent in production](/static/images/blogs/harness-engineering-loop-openlit/03-evaluators.webp)
+
+_Hallucination is enabled and linked to a Rule Engine rule. We wire that up in Step 4._
+
+Then choose the judge on the **Configuration** tab. The judge's provider key comes from Vault rather than an environment variable, and **Auto Evaluation** runs enabled evaluators on new traces on a cron schedule with a configurable sample rate.
+
+![Evaluations Configuration tab showing the judge provider and model, an API key selected from Vault, and the Auto Evaluation toggle](/static/images/blogs/harness-engineering-loop-openlit/04-eval-config.webp)
+
+_The judge model and its Vault-backed API key. Auto Evaluation scores a sample of new traces on a schedule._
+
+Pass rates, cost per evaluation and failing traces then show up in the **Analytics** tab, so "the agent hallucinates sometimes" becomes a number you can track.
+
+### Step 3: Guard — stop bad inputs before they reach the model
+
+Evaluations grade answers after the fact. Guardrails act before the call. The SDK's `openlit.guard` module ships `PromptInjection`, `PII`, `SensitiveTopic`, `TopicRestriction`, `Moderation`, `Schema` and `Custom` guards. Most can run either LLM-based or regex-only:
+
+```python
+import openlit
+
+# LLM-based detection
+injection_guard = openlit.guard.PromptInjection(provider="openai")
+
+# Or regex-only, with no extra LLM call
+fast_guard = openlit.guard.PromptInjection(
+    custom_rules=[{"pattern": r"assume the role", "classification": "impersonation"}]
+)
+
+result = injection_guard.detect(text=user_message)
+```
+
+Put the regex guard on every request (it adds no model call) and the LLM guard on high-risk paths such as anything that can trigger a refund tool. Pass the user message through `detect()` before it reaches the agent, and refuse or hand off when it is flagged. The [guardrails docs](https://docs.openlit.io/latest/sdk/features/guardrails) cover each guard's options.
+
+### Step 4: Fix — change the harness, not the deploy
+
+Back to the 60-day refund. The real fix has three parts:
+
+1. Give the agent the **actual policy** as ground truth.
+2. Tighten the **system prompt** so it quotes the policy instead of improvising.
+3. Make sure the **hallucination judge** grades against that same policy.
+
+Doing that in code means three edits and a deploy. In OpenLIT it means one rule.
+
+#### 4a. Store the policy once, as Context
+
+**Develop → Contexts** holds named, versionable markdown such as policies, knowledge snippets and system-prompt fragments. Create a `Refund Policy` context:
+
+![OpenLIT Context detail page for Refund Policy showing the 30-day refund window content and the linked rule Support agent in production](/static/images/blogs/harness-engineering-loop-openlit/05-context.webp)
+
+_One source of truth for the refund window. The Rules panel on the right shows which rule returns it._
+
+#### 4b. Version the system prompt in Prompt Hub
+
+In **Prompt Hub**, create `support-agent-system` with `{{company}}` and `{{refund_days}}` variables, then publish the tightened instructions as version `1.1.0`. Version `1.0.0` stays one click away if you need to roll back.
+
+![Prompt Hub page for support-agent-system showing version 1.1.0 marked latest above 1.0.0, the prompt text with variables, and one linked rule](/static/images/blogs/harness-engineering-loop-openlit/06-prompt-hub.webp)
+
+_Prompt versions are independent of app deploys. 1.1.0 adds "quote the window verbatim" and a three-tool-call limit._
+
+#### 4c. Route both with the Rule Engine
+
+The [Rule Engine](https://docs.openlit.io/latest/openlit/prompts-experiments/rule-engine/overview) is what ties the loop together. A rule is a set of condition groups on trace fields (Service Name, Deployment Env, Model, cost, tokens and more) plus the entities it should return when they match: a Context, a Prompt or an Evaluation type.
+
+Our rule, `Support agent in production`, matches when the service is `support-agent`, the environment is `production` **and** the model is `gpt-4o-mini` or `gpt-4o`. It links the Refund Policy context, the `support-agent-system` prompt and the Hallucination evaluator. **Run Preview** checks it against the last 100 traces before you rely on it:
+
+![Rule Engine detail page with three AND conditions on Model, Service Name and Deployment Env, a Rule Preview listing matched traces, and associated entities Hallucination, support-agent-system and Refund Policy](/static/images/blogs/harness-engineering-loop-openlit/07-rule-detail.webp)
+
+_One rule, three linked entities. Rule Preview confirms it matches the support agent's real traces._
+
+Now the application asks OpenLIT what applies at runtime instead of hardcoding it:
+
+```python
+import openlit
+
+fields = {
+    "service.name": "support-agent",
+    "deployment.environment": "production",
+    "gen_ai.request.model": "gpt-4o-mini",
+}
+
+ctx = openlit.evaluate_rule(entity_type="context", fields=fields, include_entity_data=True)
+prompt = openlit.evaluate_rule(
+    entity_type="prompt",
+    fields=fields,
+    include_entity_data=True,
+    entity_inputs={"variables": {"company": "Acme", "refund_days": "30"}, "shouldCompile": True},
+)
+```
+
+Against our local instance, the context call returns the matching rule and the full policy:
+
+```json
+{
+  "matchingRuleIds": ["410c6dfa-baac-4432-b9f1-d7a97b72de7d"],
+  "entities": [{ "entity_type": "context", "entity_id": "e48b3d14-..." }],
+  "entity_data": {
+    "context:e48b3d14-...": {
+      "name": "Refund Policy",
+      "content": "# Refund policy\n\n- Refund window: **30 days** from delivery.\n- ...",
+      "status": "ACTIVE"
+    }
+  }
+}
+```
+
+The prompt call returns version `1.1.0` with `{{company}}` and `{{refund_days}}` filled in, and an `entity_type="evaluation"` call returns `hallucination`. The judge picks up the same Context as ground truth, so if the context says 30 days and the model says 60, that trace fails evaluation.
+
+Next quarter the policy changes to 45 days. You edit one Context, and both the agent and its grader move together, with no deploy.
+
+#### 4d. Keep the keys out of the code with Vault
+
+The last loose end is credentials. **Vault** stores provider keys encrypted (AES-256-GCM), and apps fetch them by key or tag at startup:
+
+```python
+import openlit
+
+openlit.get_secrets(tags=["support-agent"], should_set_env=True)
+# OPENAI_API_KEY is now in os.environ. Nothing lives in .env or the image.
+```
+
+![OpenLIT Vault list showing OPENAI_API_KEY, ANTHROPIC_KEY and LOCAL_MOCK_LLM_KEY with creator and last-updated date](/static/images/blogs/harness-engineering-loop-openlit/08-vault.webp)
+
+_Rotating a key means editing it here. The app and the eval judge both read the new value._
+
+### Step 5: Verify — prove it in CI and in production
+
+A fix is a hypothesis until you measure it. Verify on both sides of the deploy.
+
+**Before shipping**, run offline evals in your test suite with the same judge you use in production:
+
+```python
+import openlit
+
+def test_refund_window_is_not_hallucinated():
+    result = openlit.eval(
+        prompt="What's your refund policy?",
+        response=run_support_agent("What's your refund policy?"),
+        contexts=[REFUND_POLICY],
+        eval_types=["hallucination"],
+        print_results=False,
+    )
+    assert result.passed, f"Hallucination detected: {result.failed_evals}"
+```
+
+Use `openlit.eval_batch(dataset=...)` and assert on `result.pass_rate` to gate a whole regression set.
+
+**After shipping**, watch the same numbers on live traffic. The default LLM dashboard puts requests, latency, cost and hallucination, bias and toxicity counts side by side, so a regression in quality is as visible as a regression in latency:
+
+![OpenLIT LLM dashboard with total requests, average duration, total cost, average cost per request, and hallucination, bias and toxicity counts](/static/images/blogs/harness-engineering-loop-openlit/09-dashboard.webp)
+
+_Quality and cost on one screen. When the hallucination count climbs, open the failing traces and go round the loop again._
+
+When a new failure shows up, it starts back at Step 1: find it in a trace, score it, fix the harness, verify.
+
+## Benefits and Outcomes
+
+- **Minutes, not deploys, to fix behavior.** Context and prompt changes go live on the next `evaluate_rule()` call. Rollback is picking the previous prompt version.
+- **One source of truth.** The policy the agent reads is the policy the judge grades against, so they cannot drift.
+- **Quality becomes a metric.** Pass rates and hallucination counts sit next to latency and cost, with the failing traces one click away.
+- **Fewer secrets in the blast radius.** Provider keys live encrypted in Vault and are fetched at runtime, not baked into images and `.env` files.
+- **No lock-in.** Traces are OpenTelemetry GenAI spans you can send anywhere. The platform is Apache-2.0 and self-hosted, so your prompts, contexts and traces stay on your infrastructure.
+
+### How OpenLIT differs
+
+Most LLM observability tools stop at tracing plus a prompt registry. OpenLIT pairs that with a **conditional Rule Engine** that returns contexts, prompts _and_ evaluator configs from the same trace fields your telemetry already carries. The routing logic you'd otherwise scatter across `if model == ...` branches lives in one place you can preview against real traffic. And because the SDK is OpenTelemetry-native, the loop sits on the observability stack you already run instead of beside it.
+
+## When It's Required or Recommended
+
+Adopt the full loop when:
+
+- **Your agent answers questions with business consequences**, such as refunds, pricing, eligibility or compliance. Start with Context plus Hallucination evals.
+- **More than one team edits prompts.** Prompt Hub versions and rule-based routing stop "who changed the prompt?" incidents.
+- **You run several models or environments.** Rules let `gpt-4o` in production and a cheaper model in staging get different prompts and different eval coverage without code branches.
+- **Security or compliance asks where your API keys live.** Vault plus scoped API keys gives a clear answer.
+
+You can skip parts early on. A prototype with one prompt and one developer only needs Step 1. Add evaluations once real users arrive, and add the Rule Engine once you have more than one context or prompt variant to route.
+
+**Prerequisites:** Docker for the local stack, the `openlit` SDK (Python, TypeScript or Go), and an LLM key for the judge model if you enable LLM-as-a-judge evaluations.
+
+## Conclusion
+
+Agents fail quietly, and models alone won't fix that. What works is a harness you can see, score, guard, change and verify, with all five steps sharing the same data. With OpenLIT the whole loop runs on one self-hosted, OpenTelemetry-native platform:
+
+- **Observe** with `openlit.init()` and `@openlit.trace`
+- **Evaluate** with LLM-as-a-judge and Auto Evaluation
+- **Guard** with SDK guardrails
+- **Fix** with Context, Prompt Hub, the Rule Engine and Vault
+- **Verify** with `openlit.eval()` in CI and the quality dashboard in production
+
+Start with `docker compose up -d`, point one agent at it, and go round the loop once. The [Rule Engine docs](https://docs.openlit.io/latest/openlit/prompts-experiments/rule-engine/overview), [Context docs](https://docs.openlit.io/latest/openlit/prompts-experiments/context/overview) and [Evaluations docs](https://docs.openlit.io/latest/openlit/evaluations/overview) cover each step in depth, and the [OpenLIT GitHub repo](https://github.com/openlit/openlit) is where to ask questions or open issues.
+
+Which step of the loop is weakest in your agent today: seeing failures, scoring them, or shipping the fix?

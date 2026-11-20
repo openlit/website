@@ -26,7 +26,7 @@ tags: ['openlit', 'opentelemetry', 'llm', 'production', '<extra tag>']
 draft: false
 summary: <≤160 characters summary>
 authors: ['Aman'] # or add new author file first
-images: ['/static/images/<image>.webp']
+images: ['/static/images/blogs/<slug>/header.webp']
 ---
 
 # Your blog content starts here...
@@ -102,19 +102,42 @@ images: ['/static/images/<image>.webp']
 
 ### 4. Code & Media
 
-- Code blocks must match official docs (e.g., Python `openlit.init`, TypeScript `init`, Helm install commands).
+- Code blocks must match official docs (e.g., Python `openlit.init`, TypeScript `init`, Helm install commands). Take field names, operators and SDK calls from `docs.openlit.io` (or `../openlit/docs/latest`). Never invent an API.
 - Highlight OpenLIT auto-capturing spans/logs in narrative.
-- Add lightweight diagrams/screengrabs (webp) when useful; store in `/public/static/images/`.
 
-**Images and Media**
+**Header image (required for every post)**
 
-- Store images in `/public/static/images/`
-- Use WebP format when possible for performance
-- Include both light and dark mode versions if needed
-- Reference images using `/static/images/filename.webp`
+- Generate it from the shared template. Never hand-draw it or use stock art:
+  ```bash
+  node scripts/blog-header.mjs --slug <slug> \
+    --title "Short title, 8 words max" \
+    --kicker "Category or series name" \
+    --chips "Feature A,Feature B,Feature C"
+  ```
+- Output: `/public/static/images/blogs/<slug>/header.webp` (1200x630, the OG card ratio).
+- List it **first** in the `images` frontmatter, so it becomes the social card.
+- Use 3-5 chips naming the OpenLIT features the post uses. Don't put screenshots or photos in the header.
+
+**Screenshots (required: at least 6 per post)**
+
+- Add one screenshot per How-to step, plus one of the end result (dashboard, trace, eval score). A post with fewer than 6 is not ready.
+- Capture them from a **real** local OpenLIT (`docker compose up -d` in the openlit repo) with demo data. Never use mockups.
+- Use `scripts/blog-screenshots.mjs`. It logs in, drives headless Chrome through a shot list, and writes WebP files. Add a shot list for each post.
+- Capture at a 1440x900 viewport, 2x device scale, light theme. Crop to the panel that matters, not the whole browser.
+- Save as WebP, under 300 KB each, in `/public/static/images/blogs/<slug>/`, numbered by step: `01-rule-list.webp`, `02-conditions.webp`, ...
+- Every image gets alt text describing what it shows, plus a one-line italic caption underneath:
+
+  ```mdx
+  ![Rule Engine condition builder with Model equals gpt-4o](/static/images/blogs/<slug>/02-conditions.webp)
+
+  _A condition group: both conditions must match for the rule to fire._
+  ```
+
+- Never show real API keys, emails, hostnames or customer data. Use the demo user and `openlit-demo-*` key names.
 
 **Links and References**
 
+- Link to the hub post `/blogs/harness-engineering-loop-openlit`, the matching docs page, and one sibling post
 - Link to OpenLIT documentation
 - Reference authoritative sources
 - Include GitHub repositories when relevant
@@ -179,6 +202,7 @@ github: https://github.com/yourusername
 
 Use relevant tags from these categories:
 
+- **Feature (pick one)**: `prompt-hub`, `vault`, `rule-engine`, `evaluations`, `context`, `guardrails`, `agents`
 - **Technology**: `openlit`, `llm`, `genai`, `observability`, `monitoring`, `opentelemetry`
 - **Frameworks**: `langchain`, `llamaindex`, `openai`, `huggingface`
 - **Topics**: `performance`, `cost-optimization`, `security`, `deployment`
@@ -186,10 +210,7 @@ Use relevant tags from these categories:
 
 #### Image Handling
 
-- Place images in `/public/static/images/`
-- Use WebP format when possible for performance
-- Include both light and dark mode versions if needed
-- Reference images using `/static/images/filename.jpg`
+- See **4. Code & Media** above. Every post has a header from `scripts/blog-header.mjs` and at least 6 real screenshots in `/public/static/images/blogs/<slug>/`.
 
 ### Research Sources
 
@@ -228,7 +249,8 @@ Before publishing, ensure:
 
 - [ ] Correct MDX frontmatter format
 - [ ] Appropriate tags selected
-- [ ] Images optimized and properly referenced
+- [ ] Header image generated with `scripts/blog-header.mjs` and listed first in `images`
+- [ ] At least 6 real product screenshots (WebP, < 300 KB, alt text + caption, no secrets)
 - [ ] Links functional and relevant
 - [ ] Author profile exists or created
 - [ ] Website use script `npm run cloudflare-build` to build, make sure it doesn't break
