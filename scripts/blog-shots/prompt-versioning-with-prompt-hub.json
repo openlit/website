@@ -1,0 +1,79 @@
+{
+  "slug": "prompt-versioning-with-prompt-hub",
+  "login": {
+    "email": "user@openlit.io",
+    "password": "openlituser"
+  },
+  "dismiss": ["[aria-label=\"Dismiss founder call card\"]"],
+  "shots": [
+    {
+      "name": "01-create-prompt",
+      "path": "/prompt-hub/new",
+      "type": [
+        ["input[placeholder=\"my_prompt\"]", "support_reply"],
+        [
+          ".cm-content, .monaco-editor textarea, textarea",
+          "You are the support assistant for {{company}}.\n\nAnswer in a {{tone}} tone, in at most four sentences.\nUse the lookup_order tool before answering anything about a specific order.\nRefunds: customers have {{refund_days}} days from delivery. Quote this number exactly and never offer a longer window.\nIf you are not sure, say so and offer to hand the chat to a human."
+        ]
+      ],
+      "clicks": ["Major"],
+      "crop": {
+        "x": 256,
+        "y": 0,
+        "width": 1184,
+        "height": 600
+      }
+    },
+    {
+      "name": "02-bad-version",
+      "path": "/prompt-hub/0814ec08-3082-4049-8306-b68b6f7214e3?version=1.1.0",
+      "crop": {
+        "x": 256,
+        "y": 0,
+        "width": 1184,
+        "height": 520
+      }
+    },
+    {
+      "name": "03-versions",
+      "path": "/prompt-hub/0814ec08-3082-4049-8306-b68b6f7214e3",
+      "crop": {
+        "x": 256,
+        "y": 0,
+        "width": 1184,
+        "height": 520
+      }
+    },
+    {
+      "name": "04-prompt-list",
+      "path": "/prompt-hub",
+      "crop": {
+        "x": 256,
+        "y": 0,
+        "width": 1184,
+        "height": 340
+      }
+    },
+    {
+      "name": "05-edit-draft",
+      "path": "/prompt-hub/0814ec08-3082-4049-8306-b68b6f7214e3/edit",
+      "crop": {
+        "x": 256,
+        "y": 0,
+        "width": 1184,
+        "height": 600
+      }
+    },
+    {
+      "name": "06-trace-prompt-version",
+      "path": "/telemetry/traces/8ca184993243dde5",
+      "clicks": ["css:::-p-text(Span Attributes)"],
+      "crop": {
+        "x": 266,
+        "y": 205,
+        "width": 1164,
+        "height": 450
+      }
+    }
+  ]
+}

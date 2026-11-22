@@ -15,6 +15,11 @@
  *       "name": "01-traces",                        // -> public/static/images/blogs/<slug>/01-traces.webp
  *       "path": "/telemetry?tab=traces",
  *       "clickText": "run_support_agent",           // optional: click the first element with this text
+ *       "clicks": ["Evaluations@1", "css:button[aria-label=\"Chat\"]"],  // optional: several clicks, in order.
+ *                                                   //   "text@n" clicks the nth match, "css:<selector>" a selector
+ *                                                   //   (e.g. "css:::-p-text(Span Attributes)" for tabs that need a real mouse click)
+ *       "type": [["input[placeholder=\"my_prompt\"]", "support_reply"]],  // optional: click a field, then type
+ *                                                   //   (runs before clicks; "\n" presses Enter)
  *       "waitMs": 2500,                             // optional settle time
  *       "selector": "main",                         // optional: crop to this element
  *       "crop": { "x": 0, "y": 0, "width": 1440, "height": 900 }   // optional: crop in CSS px
@@ -105,15 +110,28 @@ async function main() {
     await page.goto(base + shot.path, { waitUntil: 'networkidle2' }).catch(() => {})
     await page.addStyleTag({ content: HIDE_CSS + (cfg.extraCss || '') })
     await sleep(shot.waitMs ?? 2500)
-    if (shot.clickText) {
-      await page.evaluate((t) => {
-        // Innermost element whose text is exactly `t` (works for buttons with icons too).
-        const matches = [...document.querySelectorAll('body *')].filter(
-          (n) => n.textContent.trim() === t
-        )
-        const el = matches.find((n) => !matches.some((m) => m !== n && n.contains(m)))
-        ;(el?.closest('button,a,[role="button"]') || el)?.click()
-      }, shot.clickText)
+    for (const [selector, text] of shot.type || []) {
+      await (await page.$(selector))?.click()
+      for (const [i, line] of text.split('\n').entries()) {
+        if (i) await page.keyboard.press('Enter')
+        if (line) await page.keyboard.type(line)
+      }
+    }
+    for (const spec of [shot.clickText, ...(shot.clicks || [])].filter(Boolean)) {
+      if (spec.startsWith('css:')) {
+        await (await page.$(spec.slice(4)))?.click()
+      } else {
+        await page.evaluate((spec) => {
+          // Innermost element whose text is exactly `t` (works for buttons with icons too).
+          const [t, n] = spec.split('@')
+          const matches = [...document.querySelectorAll('body *')].filter(
+            (el) => el.textContent.trim() === t
+          )
+          const leaves = matches.filter((el) => !matches.some((m) => m !== el && el.contains(m)))
+          const el = leaves[Number(n || 0)]
+          ;(el?.closest('button,a,[role="button"],[role="tab"]') || el)?.click()
+        }, spec)
+      }
       await sleep(shot.afterClickMs ?? 2500)
     }
     let clip = shot.crop
