@@ -1,0 +1,96 @@
+{
+  "slug": "harness-engineering-loop-openlit",
+  "login": {
+    "email": "user@openlit.io",
+    "password": "openlituser"
+  },
+  "dismiss": ["[aria-label=\"Dismiss founder call card\"]"],
+  "shots": [
+    {
+      "name": "01-traces",
+      "path": "/telemetry?tab=traces"
+    },
+    {
+      "name": "02-trace-detail",
+      "path": "/telemetry?tab=traces",
+      "clickText": "run_support_agent",
+      "crop": {
+        "x": 450,
+        "y": 0,
+        "width": 990,
+        "height": 900
+      }
+    },
+    {
+      "name": "03-evaluators",
+      "path": "/evaluations?tab=evaluators",
+      "crop": {
+        "x": 256,
+        "y": 0,
+        "width": 1184,
+        "height": 900
+      }
+    },
+    {
+      "name": "04-eval-config",
+      "path": "/evaluations?tab=configuration",
+      "crop": {
+        "x": 256,
+        "y": 0,
+        "width": 1184,
+        "height": 900
+      }
+    },
+    {
+      "name": "05-context",
+      "path": "/context/e48b3d14-680d-47f5-82f5-1f2e335b070c",
+      "crop": {
+        "x": 256,
+        "y": 0,
+        "width": 1184,
+        "height": 900
+      }
+    },
+    {
+      "name": "06-prompt-hub",
+      "path": "/prompt-hub/93ddffae-8835-46fc-b691-510bd28b3c47",
+      "crop": {
+        "x": 256,
+        "y": 0,
+        "width": 1184,
+        "height": 900
+      }
+    },
+    {
+      "name": "07-rule-detail",
+      "path": "/rule-engine/410c6dfa-baac-4432-b9f1-d7a97b72de7d",
+      "crop": {
+        "x": 256,
+        "y": 0,
+        "width": 1184,
+        "height": 900
+      },
+      "clickText": "Run Preview"
+    },
+    {
+      "name": "08-vault",
+      "path": "/vault",
+      "crop": {
+        "x": 256,
+        "y": 0,
+        "width": 1184,
+        "height": 900
+      }
+    },
+    {
+      "name": "09-dashboard",
+      "path": "/home",
+      "crop": {
+        "x": 256,
+        "y": 0,
+        "width": 1184,
+        "height": 345
+      }
+    }
+  ]
+}
