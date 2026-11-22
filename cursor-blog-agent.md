@@ -45,58 +45,46 @@ images: ['/static/images/blogs/<slug>/header.webp']
 ### 2. MDX Structure
 
 - File path: `/data/blogs/<kebab-case-name>.mdx`
-- Sections (in order):
-  1. Introduction
-  2. Why It's Important
-  3. How to Implement/Do It
-  4. Benefits and Outcomes
-  5. When It's Required/Recommended
-  6. Conclusion (CTA + question)
+- Every post follows this arc, in this order. **Do not use these as literal headings.** Write headings specific to the post ("Why a loop and not a dashboard", "Four things I found by breaking it"), never "Why It's Important" or "Benefits and Outcomes".
+  1. Opening: a concrete problem or scenario, no heading needed
+  2. Why it matters: the real pain, in plain sentences
+  3. The walkthrough: numbered steps with code and screenshots
+  4. What you get out of it
+  5. When it's worth it, and when it isn't
+  6. Wrap-up: short summary, links to docs and the hub post, an invitation to open an issue
 
-**Introduction (Required)**
+**Opening**
 
-- Hook the reader with a compelling opening
-- Clearly state what the blog will cover
-- Explain why this topic matters now
+- Start with a specific situation, a piece of code or a failure. No "In today's fast-moving AI landscape".
+- If the scenario is hypothetical, say so ("Picture...", "That's the scenario I built for this post"). Never invent customer stories, quotes or numbers.
 
-**Why It's Important (Required)**
+**Why it matters**
 
-- Business impact and technical benefits
-- Current industry challenges this addresses
-- Real-world scenarios where this applies
+- Real problems practitioners hit, written as short paragraphs, not a bullet list of bold claims.
 
-**How to Implement/Do It (Required)**
+**The walkthrough**
 
-- Step-by-step technical guidance
-- Code examples and configurations
-- Best practices and common pitfalls
-- Integration with OpenLIT where applicable
+- Step-by-step guidance with tested code and real screenshots
+- Common pitfalls you actually hit while testing, in the first person ("I sent... and it still matched")
 
-**Benefits and Outcomes (Required)**
+**What you get out of it**
 
-- Measurable advantages
-- Performance improvements
-- Cost savings or efficiency gains
-- Long-term strategic value
+- Concrete outcomes in prose. No marketing comparisons ("How OpenLIT differs", "unlike other tools") unless they are verified and linked.
 
-**When It's Required/Recommended (Required)**
+**When it's worth it**
 
-- Specific use cases and scenarios
-- Decision criteria for adoption
-- Timing considerations
-- Prerequisites and dependencies
+- Say honestly when the reader doesn't need the feature yet
+- Prerequisites
 
-**Conclusion**
+**Wrap-up**
 
-- Summarize key takeaways
-- Call to action (try OpenLIT, join community, etc.)
-- Links to relevant resources
+- One short paragraph of takeaways, then links. No forced closing question.
 
 ### 3. Content Standards
 
 - Minimum 1,200 words; aim for 1,500–2,500.
 - Write for practitioners; keep explanations crisp and actionable.
-- Every implementation section must reflect **automatic OpenLIT instrumentation** (no manual wrappers—just `openlit.init()`).
+- Every implementation section must reflect **automatic OpenLIT instrumentation** (no manual wrappers, just `openlit.init()`).
 - Reference actual doc syntax (Python + TypeScript examples, Helm commands).
 - Include at least one OpenLIT differentiator paragraph, ending with a question.
 
@@ -147,10 +135,22 @@ images: ['/static/images/blogs/<slug>/header.webp']
 
 #### Writing Style
 
-- **Technical but Accessible**: Write for developers but explain complex concepts clearly
-- **Practical Focus**: Emphasize real-world applications and hands-on examples
-- **OpenLIT Integration**: Always show how OpenLIT adds value to the discussed topic
-- **Current and Relevant**: Reference latest versions, trends, and best practices
+Posts should read like a maintainer explaining something they actually built and tested, not like generated copy.
+
+- Write in the first person ("I set up four rules", "what I'd do"). Use "you" for the reader. Contractions are fine.
+- Only claim experiences that happened while writing the post (what you ran, what surprised you). Never invent anecdotes, customers or metrics.
+- Prefer short paragraphs to bullet lists. Use lists for steps, options and reference material, not for arguments.
+- Technical but accessible: explain the concept once, plainly, then show it.
+
+**Avoid these patterns (they read as AI-written):**
+
+- Em dashes (—) and en dashes (–) in prose. Use a comma, a period, parentheses or a colon instead. Write UI paths as `Settings > API Keys`, not with arrows.
+- Bullet lists where every item starts with a **bold phrase.** followed by a sentence.
+- Template headings: "Introduction", "Why It's Important", "Benefits and Outcomes", "When It's Required or Recommended", "Conclusion".
+- Filler and hype: "In today's...", "seamless", "robust", "game-changer", "unlock", "leverage", "dive into", "delve", "it's worth noting", "the real magic".
+- "Not X, it's Y" contrasts, triplets for rhythm ("faster, cheaper, safer"), and slogans in captions.
+- Ending on a question to the reader ("Which step is weakest in your agent?").
+- Unverifiable comparisons with other tools.
 
 #### SEO and Discoverability
 
@@ -240,7 +240,8 @@ Before publishing, ensure:
 **Content Quality**
 
 - [ ] Thoroughly researched topic with current information
-- [ ] All required sections included and well-developed
+- [ ] Follows the arc in section 2 with post-specific headings (no template headings)
+- [ ] Passes the "Avoid these patterns" list: no em/en dashes in prose, no bold-lead bullet lists, no closing question
 - [ ] Code examples tested and functional
 - [ ] OpenLIT integration clearly demonstrated
 - [ ] Proper grammar, spelling, and technical accuracy
