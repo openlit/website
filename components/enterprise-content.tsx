@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import { ArrowRight, BookOpen, Check, Mail } from 'lucide-react'
+import ProductExplorer from '@/components/home/product-explorer'
 import ReadyToGetStarted from './common/ready-to-get-started'
 import {
   ENTERPRISE_CONTACT_HREF,
@@ -67,6 +68,13 @@ export default function EnterpriseContent() {
                 <Mail className="h-4 w-4" />
                 Contact us
               </a>
+              <a
+                href="#explore"
+                className="inline-flex items-center justify-center gap-2 rounded-md border border-stone-200 bg-white px-5 py-2.5 text-sm font-medium text-stone-700 transition hover:border-brandPrimary/40 dark:border-stone-700 dark:bg-stone-950 dark:text-stone-200"
+              >
+                Explore the product
+                <ArrowRight className="h-4 w-4" />
+              </a>
               <Link
                 href="/pricing"
                 className="inline-flex items-center justify-center gap-2 rounded-md border border-stone-200 bg-white px-5 py-2.5 text-sm font-medium text-stone-700 transition hover:border-brandPrimary/40 dark:border-stone-700 dark:bg-stone-950 dark:text-stone-200"
@@ -78,6 +86,8 @@ export default function EnterpriseContent() {
           </div>
         </div>
       </section>
+
+      <ProductExplorer />
 
       <div className="mx-auto w-full max-w-6xl px-4 py-10 md:px-6 md:py-12">
         <div className="mb-4">
