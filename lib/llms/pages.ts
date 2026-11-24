@@ -1,5 +1,5 @@
 import competitors, { type Competitor } from 'data/comparisons'
-import GLOSSARY_TERMS, { type GlossaryTerm } from 'data/glossary'
+import GLOSSARY_TERMS, { type GlossaryTerm, termQuestion } from 'data/glossary'
 import BEST_GUIDES, { type BestGuide } from 'data/best-guides'
 import siteMetadata from 'data/siteMetadata'
 import { HERO_DESCRIPTION, HERO_TITLE } from 'constants/hero'
@@ -385,7 +385,7 @@ export function glossaryTermMarkdown(term: GlossaryTerm) {
     .map((entry) => `- [${entry!.name}](${SITE}/glossary/${entry!.slug}.md)`)
     .join('\n')
 
-  return `# What is ${term.name.toLowerCase()}?
+  return `# ${termQuestion(term.name)}
 
 > ${term.definition}
 
@@ -422,6 +422,9 @@ ${links}
 
 - [How to monitor Claude Code usage and cost with OpenTelemetry](${SITE}/blogs/monitor-claude-code-usage-and-cost): Codex, Cursor, and OpenCode too
 - [OpenTelemetry GenAI semantic conventions explained](${SITE}/glossary/opentelemetry-genai-semantic-conventions.md)
+- [How to monitor Ollama with OpenTelemetry](${SITE}/blogs/monitor-ollama-with-opentelemetry): tokens, latency, and GPU metrics; does Ollama send telemetry?
+- [Open WebUI monitoring: token usage, cost, and telemetry](${SITE}/blogs/openlit-openwebui)
+- [Protect LLM apps from prompt injection](${SITE}/blogs/protect-prompt-injection): untrusted tool outputs and system prompt leaks
 `
 }
 

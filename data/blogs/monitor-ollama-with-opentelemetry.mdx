@@ -1,0 +1,103 @@
+---
+title: 'How to Monitor Ollama with OpenTelemetry: Tokens, Latency, and GPU Metrics'
+date: '2026-11-24'
+lastmod: '2026-11-24'
+tags: ['openlit', 'ollama', 'opentelemetry', 'monitoring', 'gpu-monitoring', 'self-hosted']
+draft: false
+summary: Monitor Ollama with OpenTelemetry using the open-source OpenLIT SDK. Trace every Ollama call with token counts and latency, add GPU metrics, and send it all to OpenLIT, Grafana, or any OTLP backend. Also answers whether Ollama sends telemetry.
+authors: ['OpenLIT']
+---
+
+**Short answer:** To monitor Ollama, add the open-source OpenLIT SDK to the app that calls Ollama (`pip install openlit`, then `openlit.init()`), or run it with zero code changes through `openlit-instrument`. Every Ollama call becomes an OpenTelemetry trace with the model, token usage, and latency, and `collect_system_metrics=True` adds GPU utilization, memory, temperature, and power. Send the data to a self-hosted OpenLIT instance or to Grafana, Prometheus, Datadog, or any OTLP backend.
+
+OpenLIT is free and open source under Apache 2.0. It supports the Ollama Python SDK client `>=0.2.0` and the Ollama TypeScript/JavaScript SDK client `>=0.5.0`.
+
+## Does Ollama send telemetry?
+
+No telemetry about your prompts leaves your machine when you run models locally. Ollama's FAQ says: "Ollama runs locally. We don't see your prompts or data when you run locally." For cloud-hosted models, Ollama processes prompts to provide the service and collects limited usage metadata, but states it does not store or log prompt and response content. You can turn cloud features off with `OLLAMA_NO_CLOUD=1` or `"disable_ollama_cloud": true` in `~/.ollama/server.json`. See [Ollama's FAQ](https://docs.ollama.com/faq) for the current wording.
+
+That also means Ollama does not give **you** much telemetry out of the box. Each API response includes counters such as `prompt_eval_count` (prompt tokens), `eval_count` (response tokens), `total_duration`, and `eval_duration` (in nanoseconds), but there is no dashboard, history, or per-user rollup. That is the gap OpenTelemetry instrumentation fills.
+
+## What can you monitor for Ollama?
+
+| Signal | What it tells you |
+| --- | --- |
+| Traces per call | Which model ran, the prompt and response, and where time went |
+| Token usage | Prompt and completion tokens per request, model, and application |
+| Latency | Request duration, to compare models and spot slowdowns |
+| Errors | Failed calls with the error recorded on the span |
+| GPU metrics | Utilization, memory, temperature, and power for NVIDIA and AMD GPUs |
+| Cost | Estimated cost when you route the same app to paid APIs too |
+
+OpenLIT records Ollama calls as OpenTelemetry spans that follow the [GenAI semantic conventions](https://openlit.io/glossary/opentelemetry-genai-semantic-conventions), so any OTLP-compatible backend can read them.
+
+## How do I set up Ollama monitoring?
+
+**1. Run an OpenTelemetry backend.** [Self-host OpenLIT](https://docs.openlit.io/latest/openlit/installation) with Docker Compose. It listens on `4318` (OTLP/HTTP) and `4317` (OTLP/gRPC), with the UI on `3000`.
+
+**2. Install the SDK.**
+
+```bash
+pip install openlit      # Python
+npm install openlit      # TypeScript / JavaScript
+```
+
+**3. Initialize OpenLIT in the app that calls Ollama.**
+
+```python
+import openlit
+import ollama
+
+openlit.init(otlp_endpoint="http://127.0.0.1:4318", collect_system_metrics=True)
+
+response = ollama.chat(
+    model="llama3.2",
+    messages=[{"role": "user", "content": "What is OpenTelemetry?"}],
+)
+```
+
+Or instrument without touching code:
+
+```bash
+export OTEL_EXPORTER_OTLP_ENDPOINT=http://127.0.0.1:4318
+export OPENLIT_COLLECT_SYSTEM_METRICS=true
+openlit-instrument python your_app.py
+```
+
+**4. Verify.** Send a prompt, then open OpenLIT on `http://127.0.0.1:3000`. The request appears with the model name, token counts, and duration.
+
+## Can I send Ollama metrics to Prometheus and Grafana?
+
+Yes. OpenLIT emits standard OTLP traces and metrics, so you can point the SDK at an OpenTelemetry Collector and export metrics to Prometheus and traces to Tempo, then build Grafana dashboards. See the [Prometheus and Tempo](https://docs.openlit.io/latest/sdk/destinations/prometheus-tempo) and [Grafana Cloud](https://docs.openlit.io/latest/sdk/destinations/grafanacloud) destination guides.
+
+## How do I monitor GPU usage for Ollama?
+
+Set `collect_system_metrics=True` (or `OPENLIT_COLLECT_SYSTEM_METRICS=true`) in the instrumented app. If Ollama runs on a separate GPU server with no app code to instrument, run the [OpenTelemetry GPU Collector](https://docs.openlit.io/latest/sdk/features/gpu) there instead. Both work with NVIDIA and AMD GPUs. For which GPU metrics actually matter, see [GPU monitoring for LLM inference](https://openlit.io/blogs/gpu-monitoring-for-llm-inference-what-to-track-and-why-it-matters).
+
+## What about vLLM, LiteLLM, and Open WebUI?
+
+The same `openlit.init()` call instruments other self-hosted LLM stacks:
+
+- **vLLM:** [monitor vLLM with OpenTelemetry](https://docs.openlit.io/latest/sdk/integrations/vllm)
+- **LiteLLM:** [monitor LiteLLM with OpenTelemetry](https://docs.openlit.io/latest/sdk/integrations/litellm)
+- **Open WebUI:** [monitor Open WebUI token usage and cost](https://openlit.io/blogs/openlit-openwebui)
+
+## FAQ
+
+### Does Ollama have a built-in OpenTelemetry exporter?
+
+Ollama's documentation does not describe a built-in OpenTelemetry exporter or metrics endpoint. Per-request timing and token counts come back in each API response. To get traces and metrics into OpenTelemetry, instrument the client app with OpenLIT.
+
+### Is OpenLIT free for Ollama monitoring?
+
+Yes. OpenLIT is open source under Apache 2.0 and free to self-host. Your Ollama telemetry stays on your own infrastructure.
+
+### Does OpenLIT work with the Ollama JavaScript SDK?
+
+Yes. The TypeScript SDK (`npm install openlit`) instruments the Ollama JavaScript client `>=0.5.0` with `openlit.init()`.
+
+## Related
+
+- [Ollama integration docs](https://docs.openlit.io/latest/sdk/integrations/ollama)
+- [Best open-source LLM observability tools](https://openlit.io/guides/best-open-source-llm-observability-tools)
+- [What is LLM observability?](https://openlit.io/glossary/llm-observability)

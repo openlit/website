@@ -9,6 +9,24 @@ export type GlossaryTerm = {
   faq?: { question: string; answer: string }[]
 }
 
+/**
+ * Term as it reads mid-sentence: lowercases a leading ordinary word
+ * ("Agent harness" -> "agent harness") but keeps acronyms and brand names
+ * ("LLM guardrails", "OpenTelemetry GenAI ...").
+ */
+export function termInSentence(name: string) {
+  const first = name.split(/[\s-]/)[0]
+  return first.slice(1) === first.slice(1).toLowerCase()
+    ? name.charAt(0).toLowerCase() + name.slice(1)
+    : name
+}
+
+/** "What is an agent harness?" style question for a term's H1. */
+export function termQuestion(name: string) {
+  const plural = /[^s]s$/.test(name)
+  return `What ${plural ? 'are' : 'is'} ${termInSentence(name)}?`
+}
+
 export const GLOSSARY_TERMS: GlossaryTerm[] = [
   {
     slug: 'agent-harness',
@@ -176,17 +194,67 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = [
   },
   {
     slug: 'guardrails',
-    name: 'Guardrails',
-    title: 'What Are LLM Guardrails? Prompt Injection and Topic Controls',
+    name: 'LLM guardrails',
+    title: 'What Are LLM Guardrails? Prompt Injection, PII, and Topic Controls',
     description:
-      'LLM guardrails are runtime checks that block or flag unsafe inputs and outputs: prompt injection, sensitive topics, and topic restriction for AI agents.',
+      'LLM guardrails are runtime checks that block or flag unsafe inputs and outputs: prompt injection, sensitive topics, topic restriction, and PII redaction for AI agents.',
     definition:
-      'LLM guardrails are runtime controls that detect or block unsafe prompts and responses—such as prompt injection, sensitive topics, and topic restriction—before they reach users or tools.',
+      'LLM guardrails are runtime controls that detect or block unsafe prompts and responses, such as prompt injection, jailbreaks, sensitive topics, off-topic requests, and leaked personal data, before they reach users, tools, or logs.',
     body: [
-      'Guardrails sit in the governance layer of the harness. They fail closed for safety-critical paths and should be traced so you can see when and why a request was blocked.',
-      'OpenLIT includes open-source guardrails for prompt injection and related checks, correlated with OpenTelemetry traces so blocked calls show up next to the agent step that triggered them.',
+      'Guardrails run on inputs, outputs, or both. Input guardrails catch prompt injection and jailbreak attempts, including instructions hidden in tool outputs or retrieved documents. Output guardrails catch leaked secrets, personal data, or responses outside an approved topic. Each check either blocks the request, rewrites it, or flags it for review.',
+      'Detectors are usually rule-based (regular expressions and keyword lists, which are fast and cheap) or model-based (an LLM judge or classifier, which catches paraphrased attacks but adds latency and cost). Production systems often run cheap rules first and escalate to a model only when needed.',
+      'Guardrails sit in the governance layer of an agent harness. They should fail closed on safety-critical paths and be traced, so you can see when and why a request was blocked. OpenLIT includes open-source guardrails for prompt injection, sensitive topics, topic restriction, and PII redaction (for example openlit.guard.PromptInjection), with LLM-based or regex-based detection, correlated with OpenTelemetry traces so blocked calls appear next to the agent step that triggered them.',
     ],
-    relatedSlugs: ['agent-harness', 'agent-evals', 'harness-engineering'],
+    relatedSlugs: ['agent-harness', 'agent-evals', 'llm-as-a-judge'],
+    faq: [
+      {
+        question: 'What are LLM guardrails?',
+        answer:
+          'LLM guardrails are runtime checks that detect or block unsafe prompts and responses, such as prompt injection, sensitive topics, off-topic requests, and personal data.',
+      },
+      {
+        question: 'What is the difference between guardrails and evals?',
+        answer:
+          'Guardrails run inline on each request and can block it. Evals score quality after the fact, on production traces or test datasets, to find regressions and gate releases.',
+      },
+      {
+        question: 'Are there open-source LLM guardrails?',
+        answer:
+          'Yes. OpenLIT (Apache 2.0) includes prompt injection, sensitive topic, topic restriction, and PII redaction guardrails for Python and TypeScript, traced with OpenTelemetry. Guide: https://openlit.io/blogs/protect-prompt-injection.',
+      },
+    ],
+  },
+  {
+    slug: 'llm-as-a-judge',
+    name: 'LLM-as-a-judge',
+    title: 'What Is LLM-as-a-Judge? How LLM Evaluation Scoring Works',
+    description:
+      'LLM-as-a-judge uses a language model to score another model or agent output for hallucination, relevance, toxicity, or custom criteria. How it works, limits, and tools.',
+    definition:
+      'LLM-as-a-judge is an evaluation method where one language model scores the output of another model or agent against defined criteria, such as hallucination, relevance, bias, toxicity, or a custom rubric, and returns a score, a label, and its reasoning.',
+    body: [
+      'A judge prompt gives the model the input, the output being graded, optional reference context, and a rubric, then asks for a score or a pass/fail verdict with an explanation. It scales human-style review to thousands of traces, which manual review cannot do.',
+      'Judges have known failure modes: they can prefer longer answers, favor outputs from their own model family, and drift when the judge model changes. Pin the judge model and prompt, calibrate against a sample of human labels, and combine judges with programmatic checks (exact match, schema validation, or regex) where the answer is checkable.',
+      'Use it online on sampled production traces to catch regressions, and offline on datasets in CI to gate releases. OpenLIT runs LLM-as-a-judge evaluators (hallucination, bias, toxicity, or custom) on traces, with a configurable judge model, scheduled Auto Evaluation, and pass-rate analytics, and the same criteria through the SDK for CI.',
+    ],
+    relatedSlugs: ['agent-evals', 'trajectory-evaluation', 'llm-observability'],
+    faq: [
+      {
+        question: 'What is LLM-as-a-judge?',
+        answer:
+          'LLM-as-a-judge uses a language model to grade another model or agent output against a rubric, returning a score or verdict with reasoning.',
+      },
+      {
+        question: 'Is LLM-as-a-judge reliable?',
+        answer:
+          'It is useful but imperfect. Pin the judge model and prompt, check it against human labels, and pair it with programmatic checks where the correct answer is known.',
+      },
+      {
+        question: 'Which tools support LLM-as-a-judge?',
+        answer:
+          'OpenLIT, Langfuse, Arize Phoenix, LangSmith, Braintrust, and Comet Opik all support LLM-as-a-judge evaluation. OpenLIT is open source under Apache 2.0 and runs judges on OpenTelemetry traces. Docs: https://docs.openlit.io/latest/openlit/evaluations/llm-as-a-judge.',
+      },
+    ],
   },
   {
     slug: 'trajectory-evaluation',
