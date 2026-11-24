@@ -111,7 +111,10 @@ async function main() {
     await page.addStyleTag({ content: HIDE_CSS + (cfg.extraCss || '') })
     await sleep(shot.waitMs ?? 2500)
     for (const [selector, text] of shot.type || []) {
-      await (await page.$(selector))?.click()
+      // Fail loudly: typing with nothing focused would save a misleading screenshot.
+      const field = await page.$(selector)
+      if (!field) throw new Error(`${shot.name}: no element matches type selector ${selector}`)
+      await field.click()
       for (const [i, line] of text.split('\n').entries()) {
         if (i) await page.keyboard.press('Enter')
         if (line) await page.keyboard.type(line)
