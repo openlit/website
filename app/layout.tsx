@@ -1,6 +1,6 @@
 import 'css/tailwind.css'
 
-import { Inter } from 'next/font/google'
+import localFont from 'next/font/local'
 import siteMetadata from 'data/siteMetadata'
 import { Metadata, Viewport } from 'next'
 import Script from 'next/script'
@@ -8,11 +8,12 @@ import { siteGraph, softwareApplicationJsonLd } from '@/components/structuredDat
 import JsonLd from '@/components/json-ld'
 import { shareImages } from 'app/seo'
 
-const inter = Inter({
-  subsets: ['latin'],
+// Inter (latin, variable 400-700) is bundled so the build never fetches from Google Fonts.
+const inter = localFont({
+  src: './fonts/inter-latin-var.woff2',
   display: 'swap',
   variable: '--font-inter',
-  weight: ['400', '500', '600', '700'],
+  weight: '400 700',
 })
 
 export const viewport: Viewport = {

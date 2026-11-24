@@ -27,7 +27,8 @@ interface LayoutProps {
 }
 
 export default function PostLayout({ content, authorDetails, next, prev, children }: LayoutProps) {
-  const { filePath, path, date, title, tags, images, layout } = content
+  const { filePath, path, date, lastmod, title, tags, images, layout } = content
+  const updated = lastmod && lastmod.slice(0, 10) > date.slice(0, 10) ? lastmod : null
   const displayImage = images && images.length > 0 ? images[0] : '/static/images/twitter-card.png'
 
   return (
@@ -51,6 +52,18 @@ export default function PostLayout({ content, authorDetails, next, prev, childre
                   {new Date(date).toLocaleDateString(siteMetadata.locale, postDateTemplate)}
                 </time>
               </dd>
+              {updated ? (
+                <dd className="mt-1 text-sm">
+                  Updated{' '}
+                  <time dateTime={updated}>
+                    {new Date(updated).toLocaleDateString(siteMetadata.locale, {
+                      year: 'numeric',
+                      month: 'long',
+                      day: 'numeric',
+                    })}
+                  </time>
+                </dd>
+              ) : null}
             </div>
           </dl>
           <h1 className="bg-gradient-to-r from-primary-400 via-orange-500 to-red-500 bg-clip-text text-3xl font-extrabold leading-9 text-transparent sm:text-4xl sm:leading-10 md:text-5xl md:leading-14">
