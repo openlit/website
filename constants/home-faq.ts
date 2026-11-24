@@ -120,7 +120,17 @@ export const HOME_FAQ_ITEMS: HomeFaqItem[] = [
   {
     question: 'How do I self-host LLM observability with OpenTelemetry?',
     answer:
-      'Deploy OpenLIT with Docker Compose or Helm (OpenLIT, ClickHouse, and an OpenTelemetry Collector), then instrument with openlit.init() or send OTLP from any OpenTelemetry SDK. Your traces stay on your infrastructure and can still export to Grafana, Datadog, or other OTLP backends. Installation guide: https://docs.openlit.io/latest/openlit/installation. Quickstart: https://docs.openlit.io/latest/openlit/quickstart-ai-observability.',
+      'Deploy OpenLIT with Docker Compose or Helm. OpenLIT receives OTLP directly on ports 4317 (gRPC) and 4318 (HTTP) and stores data in ClickHouse, so no separate collector is required. Then instrument with openlit.init() or send OTLP from any OpenTelemetry SDK. Your traces stay on your infrastructure and can still export to Grafana, Datadog, or other OTLP backends. Installation guide: https://docs.openlit.io/latest/openlit/installation. Quickstart: https://docs.openlit.io/latest/openlit/quickstart-ai-observability.',
+  },
+  {
+    question: 'Can I monitor LLMs with Prometheus, Grafana, and OpenTelemetry?',
+    answer:
+      'Yes. The OpenLIT SDK emits standard OpenTelemetry metrics and traces for LLM calls (tokens, cost, latency, and GPU metrics). Send them through an OpenTelemetry Collector to Prometheus for metrics and Tempo for traces, then chart them in Grafana, or use Grafana Cloud directly. Guides: https://docs.openlit.io/latest/sdk/destinations/prometheus-tempo and https://docs.openlit.io/latest/sdk/destinations/grafanacloud.',
+  },
+  {
+    question: 'How do I monitor Ollama, vLLM, or Open WebUI?',
+    answer:
+      'Add openlit.init() to the app that calls Ollama or vLLM, or run it with openlit-instrument and no code changes, to trace every call with tokens and latency and collect GPU metrics. For Open WebUI, add an OpenLIT pipeline to track token usage and cost per model. Guides: https://openlit.io/blogs/monitor-ollama-with-opentelemetry and https://openlit.io/blogs/openlit-openwebui.',
   },
   {
     question: 'Does OpenLIT do LLM-as-a-judge and prompt versioning?',

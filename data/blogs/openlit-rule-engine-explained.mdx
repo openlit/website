@@ -1,7 +1,7 @@
 ---
 title: 'Rule Engine Explained: Run the Right Eval, Context and Prompt on the Right Trace'
 date: '2026-11-20'
-lastmod: '2026-11-22'
+lastmod: '2026-11-24'
 tags:
   [
     'openlit',
@@ -21,6 +21,8 @@ images: ['/static/images/blogs/openlit-rule-engine-explained/header.webp']
 
 ![Rule Engine: The Right Context for Every Trace. Header with Rule Engine, Context, Prompt Hub and Evaluations chips](/static/images/blogs/openlit-rule-engine-explained/header.webp)
 
+**Short answer:** The OpenLIT Rule Engine replaces `if`/`else` routing in LLM app code with rules you define in the UI. Each rule matches trace fields such as service name, deployment environment, model, tokens or cost, and returns the Contexts, Prompt Hub prompts and evaluators that should apply. Your app calls `openlit.evaluate_rule()` (or `POST /api/rule-engine/evaluate`) at runtime, and OpenLIT's evaluations use the same rules, so the policy the agent is given and the policy it is graded against come from one place.
+
 If you've shipped an LLM feature and kept it running for a few months, there's a good chance you have a function like this somewhere:
 
 ```python
@@ -39,7 +41,7 @@ The [Rule Engine](https://docs.openlit.io/latest/openlit/prompts-experiments/rul
 
 I set up four rules for a demo support agent while writing this, and I poked at the matching logic with some deliberately bad inputs. A couple of the results surprised me, so they get their own section near the end. If you've read [the harness engineering loop post](/blogs/harness-engineering-loop-openlit), this is the longer version of its Step 4.
 
-## Why bother moving it out of code
+## Why move prompt and eval routing out of code?
 
 The obvious win is that you can change what the agent gets without deploying. Swap the policy text for one model, or point staging at a new prompt, and the next call picks it up.
 
@@ -47,7 +49,7 @@ The less obvious one is that OpenLIT's own evaluations read the same rules. When
 
 It also helps with eval cost. LLM judges aren't free, and running every judge on every trace adds up. A rule lets you say "only run the expensive ones on the expensive runs."
 
-## The setup
+## How do you set up a rule?
 
 The agent is the one from the hub post: traced with `openlit.init(application_name="support-agent", environment="production")`, calling `gpt-4o` and `gpt-4o-mini`. These are the four rules I ended up with:
 
@@ -120,7 +122,7 @@ Status works as an off switch. The canary rule is fully set up but Inactive, so 
 
 _Configured, but skipped until someone turns it on._
 
-## Calling it from your app
+## How do you call the Rule Engine from your app?
 
 You'll need an API key from **Settings > API Keys**. The evaluate endpoint takes it as a Bearer token, so there's no dashboard login involved.
 
@@ -182,7 +184,7 @@ def build_system_prompt(model: str, env: str) -> str:
 
 `openlit.evaluate_rule` picks up `OPENLIT_URL` and `OPENLIT_API_KEY` from the environment. The TypeScript (`Openlit.evaluateRule`) and Go (`openlit.EvaluateRule`) versions look the same. The [SDK Rule Engine reference](https://docs.openlit.io/latest/sdk/features/rule-engine) has the details.
 
-## Four things I found by breaking it
+## What should you know before depending on it?
 
 Once the rules were working, I sent the evaluate endpoint some inputs I knew were wrong, just to see what happened. Here's what's worth knowing before you depend on it.
 
@@ -196,7 +198,7 @@ Once the rules were working, I sent the evaluate endpoint some inputs I knew wer
 
 One smaller thing: number fields treat anything non-numeric as 0. A total cost of `"n/a"` becomes `0`, so it won't trip a `> 0.0004` rule.
 
-## When it's worth it
+## When is a rule engine worth it?
 
 If you have one prompt, one model and one environment, you don't need this yet. Fetching the prompt from Prompt Hub by name is plenty.
 
@@ -205,6 +207,24 @@ It starts paying off when you serve more than one model or environment and they 
 A decent rule of thumb: the day you write your first `if model == ...` branch, write a rule instead.
 
 To follow along you need OpenLIT running (`docker compose up -d`), some traces flowing so the suggestions and preview have data, and an API key.
+
+## FAQ
+
+### What is a rule engine for LLM apps?
+
+A rule engine moves routing decisions (which prompt, context or evaluator applies to a request) out of application code into rules that match request or trace attributes. In OpenLIT, rules match trace fields and return linked Contexts, prompts and evaluators.
+
+### What happens if a field is missing from the request?
+
+Conditions on that field are skipped, so a rule can still match. Send every field your rules use on every call.
+
+### Is rule matching case-sensitive?
+
+Yes. Matching is exact and case-sensitive, and `in` lists are split on commas without trimming spaces.
+
+### Can a rule limit which evaluators run?
+
+Yes. Link evaluators to a rule, and LLM judges run only on traces that match it, which keeps evaluation cost down.
 
 ## Wrapping up
 

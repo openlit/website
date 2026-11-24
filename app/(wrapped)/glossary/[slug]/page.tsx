@@ -8,7 +8,7 @@ import {
 } from '@/components/structuredData'
 import JsonLd from '@/components/json-ld'
 import FeaturePageHeader from '@/components/shell/feature-page-header'
-import GLOSSARY_TERMS, { getGlossaryTerm } from 'data/glossary'
+import GLOSSARY_TERMS, { getGlossaryTerm, termQuestion } from 'data/glossary'
 import { createFaqPageSchema } from 'constants/home-faq'
 import { BookMarked } from 'lucide-react'
 import { GLOSSARY_UPDATED } from 'constants/site-dates'
@@ -26,7 +26,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
     description: term.description,
     keywords: [
       term.name,
-      `what is ${term.name.toLowerCase()}`,
+      termQuestion(term.name).replace(/\?$/, ''),
       'agent harness engineering',
       'OpenLIT glossary',
     ],
