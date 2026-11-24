@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import type { GlossaryTerm } from 'data/glossary'
-import { GLOSSARY_TERMS, getGlossaryTerm } from 'data/glossary'
+import { GLOSSARY_TERMS, getGlossaryTerm, termInSentence } from 'data/glossary'
 import { MarkedWord } from '@/components/common/marker-underline'
 import ReadyToGetStarted from '@/components/common/ready-to-get-started'
 import { GLOSSARY_UPDATED, formatSiteDate } from 'constants/site-dates'
@@ -56,7 +56,8 @@ export function GlossaryTermContent({ term }: { term: GlossaryTerm }) {
         Glossary
       </p>
       <h1 className="mt-3 text-3xl font-bold tracking-tight text-stone-950 dark:text-stone-50 md:text-4xl">
-        What is <MarkedWord>{term.name.toLowerCase()}</MarkedWord>?
+        {/[^s]s$/.test(term.name) ? 'What are' : 'What is'}{' '}
+        <MarkedWord>{termInSentence(term.name)}</MarkedWord>?
       </h1>
       <p className="mt-4 text-lg leading-relaxed text-stone-800 dark:text-stone-100">
         {term.definition}
