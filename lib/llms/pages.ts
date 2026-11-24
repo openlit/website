@@ -749,5 +749,8 @@ ${keyPages}
 }
 
 export function buildLlmsFullTxt() {
-  return LLM_PAGES.map((page) => page.body().trim()).join('\n\n---\n\n') + '\n'
+  return (
+    LLM_PAGES.map((page) => withUpdated(page.body(), page.updated).trim()).join('\n\n---\n\n') +
+    '\n'
+  )
 }

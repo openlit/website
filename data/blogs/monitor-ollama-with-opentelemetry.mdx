@@ -8,7 +8,7 @@ summary: Monitor Ollama with OpenTelemetry using the open-source OpenLIT SDK. Tr
 authors: ['OpenLIT']
 ---
 
-**Short answer:** To monitor Ollama, add the open-source OpenLIT SDK to the app that calls Ollama (`pip install openlit`, then `openlit.init()`), or run it with zero code changes through `openlit-instrument`. Every Ollama call becomes an OpenTelemetry trace with the model, token usage, and latency, and `collect_system_metrics=True` adds GPU utilization, memory, temperature, and power. Send the data to a self-hosted OpenLIT instance or to Grafana, Prometheus, Datadog, or any OTLP backend.
+**Short answer:** To monitor Ollama, add the open-source OpenLIT SDK to the app that calls Ollama (`pip install openlit`, then `openlit.init()`), or run it with zero code changes through `openlit-instrument`. Every Ollama call becomes an OpenTelemetry trace with the model, token usage, and latency, and `collect_gpu_stats=True` adds GPU utilization, memory, temperature, and power. Send the data to a self-hosted OpenLIT instance or to Grafana, Prometheus, Datadog, or any OTLP backend.
 
 OpenLIT is free and open source under Apache 2.0. It supports the Ollama Python SDK client `>=0.2.0` and the Ollama TypeScript/JavaScript SDK client `>=0.5.0`.
 
@@ -48,7 +48,7 @@ npm install openlit      # TypeScript / JavaScript
 import openlit
 import ollama
 
-openlit.init(otlp_endpoint="http://127.0.0.1:4318", collect_system_metrics=True)
+openlit.init(otlp_endpoint="http://127.0.0.1:4318", collect_gpu_stats=True)
 
 response = ollama.chat(
     model="llama3.2",
@@ -60,7 +60,7 @@ Or instrument without touching code:
 
 ```bash
 export OTEL_EXPORTER_OTLP_ENDPOINT=http://127.0.0.1:4318
-export OPENLIT_COLLECT_SYSTEM_METRICS=true
+export OPENLIT_COLLECT_GPU_STATS=true
 openlit-instrument python your_app.py
 ```
 
@@ -72,7 +72,7 @@ Yes. OpenLIT emits standard OTLP traces and metrics, so you can point the SDK at
 
 ## How do I monitor GPU usage for Ollama?
 
-Set `collect_system_metrics=True` (or `OPENLIT_COLLECT_SYSTEM_METRICS=true`) in the instrumented app. If Ollama runs on a separate GPU server with no app code to instrument, run the [OpenTelemetry GPU Collector](https://docs.openlit.io/latest/sdk/features/gpu) there instead. Both work with NVIDIA and AMD GPUs. For which GPU metrics actually matter, see [GPU monitoring for LLM inference](https://openlit.io/blogs/gpu-monitoring-for-llm-inference-what-to-track-and-why-it-matters).
+Set `collect_gpu_stats=True` (or `OPENLIT_COLLECT_GPU_STATS=true`) in the instrumented app. GPU metrics come from the machine that app runs on, so this works when the app and Ollama share a GPU host. To also collect CPU, memory, disk, and network metrics, use `collect_system_metrics=True` instead; it includes GPU metrics when a GPU is detected, but needs `pip install opentelemetry-instrumentation-system-metrics`. If Ollama runs on a separate GPU server with no app code to instrument, run the [OpenTelemetry GPU Collector](https://docs.openlit.io/latest/sdk/features/gpu) there instead. Both work with NVIDIA and AMD GPUs. For which GPU metrics actually matter, see [GPU monitoring for LLM inference](https://openlit.io/blogs/gpu-monitoring-for-llm-inference-what-to-track-and-why-it-matters).
 
 ## What about vLLM, LiteLLM, and Open WebUI?
 
