@@ -1,23 +1,48 @@
 ---
-title: Monitoring LLM Usage in OpenWebUI with OpenLIT
+title: 'Open WebUI Monitoring: Track Token Usage, Cost, and Telemetry with OpenTelemetry'
 date: '2025-02-28'
-lastmod: '2025-03-01'
+lastmod: '2026-11-24'
 tags: ['openlit', 'open-webui', 'llms', 'observability', 'monitoring', 'opentelemetry']
 draft: false
-summary: This guide walks you through integrating OpenLIT with OpenWebUI using pipelines, covering installation, configuration, and practical use cases for monitoring and observability of LLMs including token tracking, cost analysis, and GPU metrics.
+summary: Monitor Open WebUI token usage, cost, latency, and GPU load with OpenTelemetry. Covers Open WebUI's built-in OTel export (HTTP, database, and user metrics) and how to add per-model token tracking with an OpenLIT pipeline.
 authors: ['Voldemort']
 images: ['/static/images/openlit-openwebui.jpg']
 ---
 
 ![](/static/images/openlit-openwebui.jpg)
 
+**Short answer:** Open WebUI has built-in OpenTelemetry export, but it covers the web server (HTTP requests, database and Redis queries, and user counts), not LLM token usage or cost. To track tokens, cost, latency per model, and GPU load, add an OpenLIT pipeline: the pipeline calls `openlit.init()` once, and every chat request through it becomes an OpenTelemetry trace with token counts. Send both streams to a self-hosted OpenLIT instance (free, Apache 2.0) or to Grafana or any OTLP backend.
+
 ## Overview
 
-OpenWebUI is a popular open-source interface for interacting with locally hosted LLMs like Ollama and self-hosted OpenAI-compatible servers. While it excels as a user-facing chat interface, its built-in monitoring capabilities are limited — you get basic conversation history but no visibility into token usage, inference latency, GPU load, or cost per query.
+Open WebUI is a popular open-source chat interface for locally hosted models such as Ollama and for OpenAI-compatible servers. It shows conversation history, but it does not show token usage, inference latency per model, GPU load, or cost per query.
 
-By integrating OpenLIT into OpenWebUI's pipeline system, you gain full OpenTelemetry-native observability: distributed traces for every LLM call, token and cost metrics, GPU performance tracking, and a centralized dashboard to analyse usage across sessions and models.
+By integrating OpenLIT into Open WebUI's pipeline system, you get OpenTelemetry-native observability for the LLM calls themselves: a trace for every LLM call, token and cost metrics, GPU performance tracking, and one dashboard to analyse usage across sessions and models.
 
-This guide explains how to configure OpenLIT with OpenWebUI using the pipelines middleware, what data you get, and how to interpret it.
+This guide explains how to configure OpenLIT with Open WebUI using the pipelines middleware, what data you get, and how to interpret it.
+
+## Does Open WebUI support OpenTelemetry?
+
+Yes. Open WebUI can export traces, metrics, and logs over OTLP when you set `ENABLE_OTEL=true` (plus `ENABLE_OTEL_TRACES`, `ENABLE_OTEL_METRICS`, and `ENABLE_OTEL_LOGS`) and point `OTEL_EXPORTER_OTLP_ENDPOINT` at a collector, which defaults to gRPC on port `4317`. It instruments FastAPI routes, SQLAlchemy, Redis, and outgoing HTTP calls, and exports these metrics:
+
+| Metric                     | What it measures                                |
+| -------------------------- | ----------------------------------------------- |
+| `http.server.requests`     | Request count by method, route, and status code |
+| `http.server.duration`     | Request duration in milliseconds                |
+| `webui.users.total`        | Registered users                                |
+| `webui.users.active`       | Users active in the last 3 minutes              |
+| `webui.users.active.today` | Users active since midnight UTC                 |
+
+There is no token or cost metric in that list, which is why you need LLM-level instrumentation for token tracking. OpenLIT accepts Open WebUI's native OTLP export too, so you can point `OTEL_EXPORTER_OTLP_ENDPOINT` at OpenLIT's gRPC port (`http://<openlit-host>:4317`) and see server health next to LLM traces. See [Open WebUI's OpenTelemetry docs](https://docs.openwebui.com/reference/monitoring/otel) for every variable.
+
+|                                   | Open WebUI native OTel | OpenLIT pipeline                            |
+| --------------------------------- | ---------------------- | ------------------------------------------- |
+| HTTP, database, and Redis traces  | Yes                    | No                                          |
+| Active and total users            | Yes                    | No                                          |
+| Token usage per request and model | No                     | Yes                                         |
+| Cost per request and model        | No                     | Yes                                         |
+| LLM latency per model             | No                     | Yes                                         |
+| GPU metrics                       | Host system metrics    | GPU utilization, memory, temperature, power |
 
 ## Why Observability Matters for OpenWebUI Deployments
 
@@ -240,6 +265,24 @@ Because the pipeline tags all traces with `application_name="openwebui"`, you ca
 **High latency on first request:**
 
 - Normal for Ollama: the first request loads the model into GPU memory (model loading). Subsequent requests are much faster once the model is resident.
+
+## FAQ
+
+### How do I track token usage in Open WebUI?
+
+Add an OpenLIT pipeline that calls `openlit.init()`. Each chat request then records prompt and completion tokens per model as OpenTelemetry data, which OpenLIT shows per model and over time. Open WebUI's built-in OpenTelemetry export does not include token metrics.
+
+### Can I send Open WebUI telemetry to Grafana?
+
+Yes. Both Open WebUI's native export and OpenLIT emit standard OTLP, so you can send them to Grafana (Tempo for traces, Prometheus or Mimir for metrics) directly or through OpenLIT.
+
+### Is OpenLIT free to use with Open WebUI?
+
+Yes. OpenLIT is open source under Apache 2.0 and free to self-host next to Open WebUI.
+
+### How do I monitor Ollama behind Open WebUI?
+
+The pipeline traces calls Open WebUI makes to Ollama. To instrument other apps that call Ollama directly, see [how to monitor Ollama with OpenTelemetry](https://openlit.io/blogs/monitor-ollama-with-opentelemetry).
 
 ## Conclusion and Next Steps
 

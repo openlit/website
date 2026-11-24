@@ -68,6 +68,28 @@ export function GuidesIndexContent() {
             OpenTelemetry GenAI semantic conventions explained
           </Link>
         </li>
+        <li>
+          <Link
+            href="/blogs/monitor-ollama-with-opentelemetry"
+            className="font-medium hover:text-brandPrimary"
+          >
+            How to monitor Ollama with OpenTelemetry
+          </Link>{' '}
+          (tokens, latency, and GPU metrics)
+        </li>
+        <li>
+          <Link href="/blogs/openlit-openwebui" className="font-medium hover:text-brandPrimary">
+            Open WebUI monitoring: token usage, cost, and telemetry
+          </Link>
+        </li>
+        <li>
+          <Link
+            href="/blogs/protect-prompt-injection"
+            className="font-medium hover:text-brandPrimary"
+          >
+            Protect LLM apps from prompt injection
+          </Link>
+        </li>
       </ul>
     </div>
   )

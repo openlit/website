@@ -19,6 +19,16 @@ import {
 } from '@/components/structuredData'
 import JsonLd from '@/components/json-ld'
 
+// Posts by "OpenLIT" are written by the organization, not a person.
+const ORG_AUTHOR_SLUG = 'OpenLIT'
+
+function resolveAuthors(slugs: string[]) {
+  return slugs
+    .map((slug) => allAuthors.find((p) => p.slug === slug))
+    .filter((author): author is Authors => Boolean(author))
+    .map((author) => coreContent(author))
+}
+
 export async function generateMetadata({
   params,
 }: {
@@ -27,10 +37,7 @@ export async function generateMetadata({
   const slug = decodeURI(params.slug.join('/'))
   const post = allBlogs.find((p) => p.slug === slug)
   const authorList = post?.authors || ['default']
-  const authorDetails = authorList.map((author) => {
-    const authorResults = allAuthors.find((p) => p.slug === author)
-    return coreContent(authorResults as Authors)
-  })
+  const authorDetails = resolveAuthors(authorList)
   if (!post) {
     return
   }
@@ -96,15 +103,15 @@ export default async function Page({ params }: { params: { slug: string[] } }) {
   const next = sortedCoreContents[postIndex - 1]
   const post = allBlogs.find((p) => p.slug === slug) as Blog
   const authorList = post?.authors || ['default']
-  const authorDetails = authorList.map((author) => {
-    const authorResults = allAuthors.find((p) => p.slug === author)
-    return coreContent(authorResults as Authors)
-  })
+  const authorDetails = resolveAuthors(authorList)
   const mainContent = coreContent(post)
   const jsonLd = post.structuredData
   jsonLd['@id'] = `${siteMetadata.siteUrl}/${post._raw.flattenedPath}#article`
   jsonLd['author'] = authorDetails.map((author) => ({
-    '@id': personIdForAuthor(author.slug, author.name),
+    '@id':
+      author.slug === ORG_AUTHOR_SLUG
+        ? SCHEMA_IDS.org
+        : personIdForAuthor(author.slug, author.name),
   }))
   jsonLd['publisher'] = { '@id': SCHEMA_IDS.org }
   jsonLd['isPartOf'] = { '@id': SCHEMA_IDS.website }
@@ -114,7 +121,11 @@ export default async function Page({ params }: { params: { slug: string[] } }) {
   }
 
   const authorNodes = authorDetails
-    .filter((author) => personIdForAuthor(author.slug, author.name) !== SCHEMA_IDS.founder)
+    .filter(
+      (author) =>
+        author.slug !== ORG_AUTHOR_SLUG &&
+        personIdForAuthor(author.slug, author.name) !== SCHEMA_IDS.founder
+    )
     .map(createAuthorPersonSchema)
 
   const breadcrumbSchema = createWebPageSchema(

@@ -1,7 +1,7 @@
 ---
 title: 'The Harness Engineering Loop, End to End: Observe, Evaluate, Guard, Fix, Verify'
 date: '2026-11-20'
-lastmod: '2026-11-22'
+lastmod: '2026-11-24'
 tags:
   [
     'openlit',
@@ -23,6 +23,8 @@ images: ['/static/images/blogs/harness-engineering-loop-openlit/header.webp']
 
 ![The Harness Engineering Loop, End to End: header showing OpenLIT feature chips for Evaluations, Rule Engine, Context, Prompt Hub and Vault](/static/images/blogs/harness-engineering-loop-openlit/header.webp)
 
+**Short answer:** The harness engineering loop is five steps for improving an AI agent without waiting for a better model: observe what the agent did, evaluate whether the answer was right, guard inputs and outputs, fix the harness (context, prompt, routing, keys) without redeploying, and verify the fix in CI and production. In OpenLIT, which is open source and self-hosted under Apache 2.0, that maps to `openlit.init()` tracing, LLM-as-a-judge evaluations, SDK guardrails, Context, Prompt Hub, the Rule Engine and Vault, and `openlit.eval()` checks.
+
 Picture a support agent telling a customer they have 60 days to return an order. The policy says 30. Nothing crashed, latency was normal, and every request came back `200 OK`. The agent was just wrong, confidently, and you'd only find out when the customer forwards the chat to someone who knows the policy.
 
 That's the scenario I built for this post, and it's a pretty typical way agents fail. It isn't an exception you can catch. Waiting for a better model won't fix it either. The fix lives in the harness: the context, prompts, tools, keys and guardrails you put around the model.
@@ -37,7 +39,7 @@ That's the scenario I built for this post, and it's a pretty typical way agents 
 
 Below I go through the whole loop with [OpenLIT](https://github.com/openlit/openlit) on one small support agent. Every screenshot is from a local OpenLIT instance I ran for this post, and everything here works on the free, self-hosted, Apache-2.0 version.
 
-## Why a loop and not a dashboard
+## Why is harness engineering a loop and not a dashboard?
 
 Agent problems tend to show up a month or two into production, and they look roughly the same everywhere.
 
@@ -51,7 +53,7 @@ And without a score on production traces and a check in CI, "we fixed it" really
 
 What makes this a loop rather than five separate tools is that the steps share data. The trace attributes behind your dashboards are also what decide which context, prompt and evaluator apply to a request. Change one thing in OpenLIT and both the agent's behavior and the way it's graded move with it.
 
-## Walking through it
+## How do you run the loop in OpenLIT?
 
 The agent is a small `support-agent` service: an OpenAI-compatible chat model, one `lookup_order` tool, and a refund policy. You'll need Docker and Python 3.9 or newer.
 
@@ -276,7 +278,7 @@ _Quality and cost on one screen. If the hallucination count starts climbing, ope
 
 When something new breaks, you're back at Step 1: find it in a trace, score it, fix the harness, verify.
 
-## What you get out of it
+## What do you get from the harness engineering loop?
 
 The biggest change for me is how fast behavior fixes go out. Context and prompt edits are live on the next `evaluate_rule()` call, and rolling back means pinning the previous version or republishing its text.
 
@@ -295,6 +297,20 @@ Probably not on day one. A prototype with one prompt and one developer only need
 The full loop is worth it when your agent answers questions that cost money if they're wrong, like refunds, pricing, eligibility or anything compliance cares about. Context plus Hallucination evals is the place to start there. It also helps once more than one team edits prompts (versioning and rules make "who changed the prompt?" much easier to answer), when you run several models or environments that need different prompts or eval coverage, and when someone from security asks where your API keys live.
 
 You'll need Docker for the local stack, the `openlit` SDK (Python, TypeScript or Go), and an LLM key for the judge if you turn on LLM-as-a-judge evaluations.
+
+## FAQ
+
+### What is the harness engineering loop?
+
+A five-step cycle for improving an AI agent's harness: observe, evaluate, guard, fix, verify. The steps share the same trace data, so changing a context or prompt changes both how the agent behaves and how it is graded.
+
+### Can I fix an agent's behavior without redeploying?
+
+Yes. In OpenLIT, Context and Prompt Hub edits are picked up on the next `evaluate_rule()` call, and rolling back means selecting the previous prompt version.
+
+### What do I need to run the loop?
+
+Docker for the local OpenLIT stack, the `openlit` SDK (Python, TypeScript or Go), and an LLM API key for the judge if you turn on LLM-as-a-judge evaluations. OpenLIT is free and self-hosted under Apache 2.0.
 
 ## Wrapping up
 
