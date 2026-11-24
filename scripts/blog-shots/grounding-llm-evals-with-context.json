@@ -1,0 +1,40 @@
+{
+  "slug": "grounding-llm-evals-with-context",
+  "login": { "email": "user@openlit.io", "password": "openlituser" },
+  "dismiss": ["[aria-label=\"Dismiss founder call card\"]"],
+  "shots": [
+    {
+      "name": "01-wrong-answer",
+      "path": "/telemetry/traces/3ee7087241f679b6",
+      "clicks": ["css:button[aria-label=\"Chat\"]"],
+      "crop": { "x": 266, "y": 212, "width": 552, "height": 340 }
+    },
+    {
+      "name": "02-context-list",
+      "path": "/context",
+      "crop": { "x": 256, "y": 0, "width": 1184, "height": 266 }
+    },
+    {
+      "name": "03-context-edit",
+      "path": "/context/e48b3d14-680d-47f5-82f5-1f2e335b070c",
+      "clicks": ["Edit"],
+      "crop": { "x": 256, "y": 0, "width": 1184, "height": 900 }
+    },
+    {
+      "name": "04-judge-prompt",
+      "path": "/evaluations/types/hallucination",
+      "crop": { "x": 256, "y": 0, "width": 1184, "height": 430 }
+    },
+    {
+      "name": "05-trace-eval",
+      "path": "/telemetry/traces/3ee7087241f679b6",
+      "clicks": ["Evaluations@1", "Hallucination"],
+      "crop": { "x": 826, "y": 205, "width": 600, "height": 580 }
+    },
+    {
+      "name": "06-evaluator-results",
+      "path": "/evaluations/evaluators/hallucination",
+      "crop": { "x": 256, "y": 0, "width": 1184, "height": 900 }
+    }
+  ]
+}

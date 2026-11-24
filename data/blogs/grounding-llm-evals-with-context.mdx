@@ -1,0 +1,146 @@
+---
+title: "Your LLM Judge Can't Tell 30 Days From 60. Give It the Policy."
+date: '2026-11-22'
+lastmod: '2026-11-22'
+tags: ['openlit', 'opentelemetry', 'context', 'evaluations', 'rule-engine', 'production']
+draft: false
+summary: 'I ran the same right and wrong answers past an LLM judge with and without ground truth. Without it, both scored 1.0. Here is how OpenLIT Context fixes that, with real results.'
+authors: ['Aman']
+images: ['/static/images/blogs/grounding-llm-evals-with-context/header.webp']
+---
+
+![Give Your LLM Judge the Actual Policy. Header with Context, Evaluations and Rule Engine chips](/static/images/blogs/grounding-llm-evals-with-context/header.webp)
+
+I wanted to know how much an LLM-as-a-judge actually knows about my product. So I took two answers to "How long do I have to return my order?", one right and one wrong, and ran each past the same Hallucination judge (Claude Sonnet 4.5) twice: once on its own, and once with our refund policy attached as ground truth.
+
+| Answer                                          | Judge alone               | Judge with the refund policy |
+| ----------------------------------------------- | ------------------------- | ---------------------------- |
+| "You have **60 days** from delivery to return…" | 1.0, `unsupported_claims` | 0.9, `factual_inaccuracy`    |
+| "You have **30 days** from delivery to return…" | 1.0, `unsupported_claims` | 0.0, pass                    |
+
+On its own, the judge gave the right answer and the wrong answer exactly the same score. Its explanation was the same both times: the response "makes specific factual claims... without any supporting context provided." That's a reasonable thing for a judge to say. It has no way of knowing that our refund window is 30 days, so every specific answer looks equally suspicious.
+
+Once it had the policy, it got both right, and it said why: "the context explicitly specifies the refund window is '30 days from delivery'."
+
+That's the whole argument for this post. Without ground truth, a hallucination judge can notice that an answer sounds very sure of itself, but it can't check the answer against your facts. Below is how I give it ground truth in OpenLIT using [Context](https://docs.openlit.io/latest/openlit/prompts-experiments/context/overview), on both production traces and in CI.
+
+## The failure I was trying to catch
+
+The demo is the support agent from [the harness engineering loop post](/blogs/harness-engineering-loop-openlit). It's traced with `openlit.init(application_name="support-agent", environment="production")`, and the system prompt tells it to "follow the refund policy exactly." Here's one of its traces:
+
+![Chat view of a chat gpt-4o span: system prompt asking the agent to follow the refund policy, the user asking to cancel a subscription, a lookup_order tool call, and the assistant replying that refunds are available for 60 days on all plans](/static/images/blogs/grounding-llm-evals-with-context/01-wrong-answer.webp)
+
+_The agent was told to follow the policy. It made up a 60-day window anyway._
+
+Nothing about this trace looks broken. The status is OK, latency is 0.39 s, and it cost under a fifth of a cent. The only problem is that the answer is wrong, and the only way to know that is to compare it to the policy.
+
+## Step 1: Put the policy in a Context
+
+A Context in OpenLIT is a named piece of markdown: a policy, some reference facts, part of a system prompt. You'll find them under **Develop > Contexts**.
+
+![Contexts list with Concise answer style and Refund Policy, both Active](/static/images/blogs/grounding-llm-evals-with-context/02-context-list.webp)
+
+_Two contexts for the support agent: the refund policy and a style guide._
+
+I keep the refund policy short and specific. The judge treats every line in it as fact, so anything vague here turns into vague grading.
+
+![Refund Policy context in edit mode with description, Active status, support and policy tags, and markdown content listing a 30 day refund window, 14 day prorated refunds for digital plans and 5-7 business days for refunds to land; a Rules panel shows the linked rule Support agent in production](/static/images/blogs/grounding-llm-evals-with-context/03-context-edit.webp)
+
+_Markdown content, a status and tags. The Rules panel on the right shows where it gets used._
+
+A Context on its own doesn't do anything. It has to be linked to at least one active rule in the [Rule Engine](https://docs.openlit.io/latest/openlit/prompts-experiments/rule-engine/overview). Mine is linked to `Support agent in production`, which matches when the service is `support-agent`, the environment is `production` and the model is `gpt-4o` or `gpt-4o-mini`. The same rule also links the Hallucination evaluator, so that judge runs on this traffic. I went through how rules match in [Rule Engine Explained](/blogs/openlit-rule-engine-explained).
+
+## Step 2: Know what the judge is told
+
+When OpenLIT evaluates a trace, it reads that trace's attributes (service name, environment, model and so on), runs them through your active rules, and collects the content of every Context that matches. That content goes into the judge's prompt along with the evaluation type's own instructions.
+
+The Hallucination instructions are on its page under **Evaluations**, and they're explicit about how context should be treated:
+
+![Hallucination evaluation type page showing the Prompt / Context box beginning with Hallucination evaluation context and the line that the context is always the source of truth, plus a Linked from rules panel naming Support agent in production](/static/images/blogs/grounding-llm-evals-with-context/04-judge-prompt.webp)
+
+_"The context is always the source of truth." You can edit this text per evaluation type._
+
+The underlying judge prompt goes further. It tells the model that if the context says 2+2=5 and the response says 4, the response fails. I like that, but it's worth sitting with for a second: the judge will defend whatever you put in the Context, including your mistakes. If someone fat-fingers "300 days" into the policy, every correct answer starts failing. Treat contexts like code.
+
+## Step 3: Evaluate a production trace
+
+On any trace, open **Evaluations** in the right panel and click **Run Evaluation**. I ran it on the 60-day trace above:
+
+![Evaluation panel for the span: source Manual, engine anthropic/claude-sonnet-4-5, rule 410c6dfa and context e48b3d14 applied, Hallucination score 0.9 with classification factual_inaccuracy and an explanation that the 60 day claim contradicts the 30 day refund policy context](/static/images/blogs/grounding-llm-evals-with-context/05-trace-eval.webp)
+
+_The run shows which rule and which Context were applied, so you can tell a grounded result from a guess._
+
+The part I look at first is **Rule Engine & Run Details**. If "Context" is missing there, the judge graded without ground truth, and the score means much less. Here it found the rule and the Refund Policy context, and the explanation quotes the policy directly.
+
+You don't have to click through traces one by one. With **Auto Evaluation** turned on in the Configuration tab, OpenLIT runs your enabled evaluators on new traces on a schedule, at whatever sample rate you pick, and the same rules decide the context.
+
+## Step 4: Run the same check in CI
+
+The SDK's `openlit.eval()` sends a prompt and response to the same evaluation engine your OpenLIT server uses, with the same rules and contexts. Pass `attributes` and it looks up context exactly the way a trace would. This is roughly the helper I'd put in a test suite:
+
+```python
+import openlit
+
+FIELDS = {
+    "service.name": "support-agent",
+    "deployment.environment": "production",
+    "gen_ai.request.model": "gpt-4o",
+}
+
+def judge(question: str, answer: str):
+    result = openlit.eval(
+        prompt=question,
+        response=answer,
+        eval_types=["hallucination"],
+        attributes=FIELDS,
+        print_results=False,
+    )
+    # No context means the judge is guessing. Fail loudly instead.
+    assert result.context_applied and result.context_applied.rule_matched, "no Context matched"
+    return result
+
+def test_refund_window():
+    answer = run_support_agent("How long do I have to return my order?")
+    result = judge("How long do I have to return my order?", answer)
+    assert result.passed, result.failed_evals
+```
+
+It needs `OPENLIT_URL` and `OPENLIT_API_KEY` in the environment. When I ran `judge()` against my instance, the 60-day answer came back with `passed=False` (1.0, `factual_inaccuracy`, Refund Policy context applied) and the 30-day answer with `passed=True` (0.0). I also pointed it at a service with no rule, `billing-bot`, and got `rule_matched=False`, which is exactly the case that assertion is there to catch.
+
+Offline results are stored too, so they show up next to the production ones on the evaluator's page:
+
+![Hallucination evaluator page with executions, average pass rate, failed count and total cost, and a Recent results table listing a manual factual_inaccuracy fail at 0.9, an offline_sdk pass at 0, an offline_sdk unsupported_claims fail at 1 and an offline_sdk factual_inaccuracy fail at 0.9](/static/images/blogs/grounding-llm-evals-with-context/06-evaluator-results.webp)
+
+_My experiment in one table. Same judge, different answers, with and without context. Each run cost about half a cent._
+
+## Things I'd watch for
+
+### The SDK fills in some attributes for you
+
+If your process has called `openlit.init(application_name=..., environment=...)`, or has `OTEL_SERVICE_NAME` or `OTEL_DEPLOYMENT_ENVIRONMENT` set, `openlit.eval()` adds `service.name` and `deployment.environment` on its own. Anything you pass in `attributes` wins. That's convenient, but it means the same test can pick up different context depending on where it runs, so I'd still pass the fields explicitly.
+
+### Omitted fields don't fail a rule
+
+The Rule Engine skips conditions on fields you didn't send. If your test sends only `service.name`, a rule that also checks the model can still match. That's usually what you want for context, but it's worth knowing when a test passes and you expected it not to. There's more on this in the Rule Engine post.
+
+### The judge believes the Context completely
+
+Keep each Context small, factual and owned by someone. A single wrong number in a policy turns into a wave of false failures.
+
+### Assert that context was applied
+
+As my table shows, a judge without ground truth can't tell right from wrong on product facts. A check on `context_applied` costs nothing and catches a misconfigured rule before it quietly turns your eval suite into a tone check.
+
+## When it's worth doing
+
+You don't need this for every evaluator. Toxicity and bias don't depend on your company's facts, and the judge does fine without context.
+
+It matters when correctness depends on something only you know: refund windows, prices, plan limits, eligibility rules, internal procedures. If a wrong answer there would cost money or trust, give the judge the source. Start with the one policy that would hurt most to get wrong, link it to the rule that covers that traffic, and check the run details on a few traces to see it applied.
+
+To try it you need OpenLIT running (`docker compose up -d`), an evaluation provider configured under **Evaluations > Configuration** (I used Anthropic, with the key stored in Vault), and an API key for the SDK.
+
+## Wrapping up
+
+An LLM judge only knows what you tell it. Without ground truth, mine scored a correct answer and a wrong one identically. With the refund policy attached as an OpenLIT Context, it separated them and quoted the policy in its explanation. The same rule hands that Context to production evaluations and to `openlit.eval()` in CI, so there's one copy of the policy, and both your agent and its grader read from it.
+
+The [Context docs](https://docs.openlit.io/latest/openlit/prompts-experiments/context/overview) cover creating and linking contexts, and the [Evaluations docs](https://docs.openlit.io/latest/openlit/evaluations/overview) cover the judge setup. For how this fits into the bigger loop of observing, evaluating and fixing an agent, see [the harness engineering loop](/blogs/harness-engineering-loop-openlit). If your judge does something surprising with context, I'd like to hear about it on [GitHub](https://github.com/openlit/openlit).
