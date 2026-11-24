@@ -3,6 +3,7 @@ import GLOSSARY_TERMS, { type GlossaryTerm, termQuestion } from 'data/glossary'
 import BEST_GUIDES, { type BestGuide } from 'data/best-guides'
 import siteMetadata from 'data/siteMetadata'
 import { HERO_DESCRIPTION, HERO_TITLE } from 'constants/hero'
+import { COMPARE_UPDATED, GLOSSARY_UPDATED, HOME_UPDATED } from 'constants/site-dates'
 import { HOME_FAQ_ITEMS } from 'constants/home-faq'
 import {
   OPENLIT_DEFINITION,
@@ -33,6 +34,8 @@ export type LlmPage = {
   title: string
   summary: string
   body: () => string
+  /** ISO date the page content last changed; shown as "Last updated" in the markdown. */
+  updated?: string
 }
 
 function formatPlanValue(value: PlanValue) {
@@ -533,6 +536,7 @@ export const LLM_PAGES: LlmPage[] = [
     title: HERO_TITLE,
     summary: HERO_DESCRIPTION,
     body: homeMarkdown,
+    updated: HOME_UPDATED,
   },
   {
     mdPath: '/pricing.md',
@@ -640,6 +644,7 @@ export const LLM_PAGES: LlmPage[] = [
     title: `OpenLIT vs ${competitor.name} (2026): Open-Source ${competitor.name} Alternative`,
     summary: competitor.description,
     body: () => comparePageMarkdown(competitor),
+    updated: COMPARE_UPDATED,
   })),
   ...GLOSSARY_TERMS.map((term) => ({
     mdPath: `/glossary/${term.slug}.md`,
@@ -647,6 +652,7 @@ export const LLM_PAGES: LlmPage[] = [
     title: term.title,
     summary: term.description,
     body: () => glossaryTermMarkdown(term),
+    updated: GLOSSARY_UPDATED,
   })),
 ]
 
@@ -663,7 +669,20 @@ export function markdownForPathname(pathname: string): string | null {
   }
   const mdPath = MARKDOWN_ALIASES[path] || (path === '/' ? '/index.md' : `${path}.md`)
   const page = LLM_PAGES.find((entry) => entry.mdPath === mdPath || entry.htmlPath === path)
-  return page ? page.body() : null
+  return page ? withUpdated(page.body(), page.updated) : null
+}
+
+/**
+ * AI crawlers get this markdown instead of the HTML, so they never see the
+ * page's JSON-LD dateModified. Put the date in the text, right under the H1.
+ */
+function withUpdated(markdown: string, updated?: string) {
+  if (!updated) return markdown
+  const line = `Last updated: ${updated}`
+  const h1 = markdown.match(/^# .*$/m)
+  if (!h1 || h1.index === undefined) return `${line}\n\n${markdown}`
+  const end = h1.index + h1[0].length
+  return `${markdown.slice(0, end)}\n\n${line}${markdown.slice(end)}`
 }
 
 export function getMarkdownBySlug(slug: string[] | undefined): string | null {
