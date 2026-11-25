@@ -17,6 +17,9 @@
  *       "clickText": "run_support_agent",           // optional: click the first element with this text
  *       "clicks": ["Evaluations@1", "css:button[aria-label=\"Chat\"]"],  // optional: several clicks, in order.
  *                                                   //   "text@n" clicks the nth match, "css:<selector>" a selector
+ *                                                   //   (e.g. "css:::-p-text(Span Attributes)" for tabs that need a real mouse click)
+ *       "type": [["input[placeholder=\"my_prompt\"]", "support_reply"]],  // optional: click a field, then type
+ *                                                   //   (runs before clicks; "\n" presses Enter)
  *       "waitMs": 2500,                             // optional settle time
  *       "selector": "main",                         // optional: crop to this element
  *       "crop": { "x": 0, "y": 0, "width": 1440, "height": 900 }   // optional: crop in CSS px
@@ -107,6 +110,16 @@ async function main() {
     await page.goto(base + shot.path, { waitUntil: 'networkidle2' }).catch(() => {})
     await page.addStyleTag({ content: HIDE_CSS + (cfg.extraCss || '') })
     await sleep(shot.waitMs ?? 2500)
+    for (const [selector, text] of shot.type || []) {
+      // Fail loudly: typing with nothing focused would save a misleading screenshot.
+      const field = await page.$(selector)
+      if (!field) throw new Error(`${shot.name}: no element matches type selector ${selector}`)
+      await field.click()
+      for (const [i, line] of text.split('\n').entries()) {
+        if (i) await page.keyboard.press('Enter')
+        if (line) await page.keyboard.type(line)
+      }
+    }
     for (const spec of [shot.clickText, ...(shot.clicks || [])].filter(Boolean)) {
       if (spec.startsWith('css:')) {
         await (await page.$(spec.slice(4)))?.click()

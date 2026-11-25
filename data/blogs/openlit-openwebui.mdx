@@ -25,24 +25,24 @@ This guide explains how to configure OpenLIT with Open WebUI using the pipelines
 
 Yes. Open WebUI can export traces, metrics, and logs over OTLP when you set `ENABLE_OTEL=true` (plus `ENABLE_OTEL_TRACES`, `ENABLE_OTEL_METRICS`, and `ENABLE_OTEL_LOGS`) and point `OTEL_EXPORTER_OTLP_ENDPOINT` at a collector, which defaults to gRPC on port `4317`. It instruments FastAPI routes, SQLAlchemy, Redis, and outgoing HTTP calls, and exports these metrics:
 
-| Metric | What it measures |
-| --- | --- |
-| `http.server.requests` | Request count by method, route, and status code |
-| `http.server.duration` | Request duration in milliseconds |
-| `webui.users.total` | Registered users |
-| `webui.users.active` | Users active in the last 3 minutes |
-| `webui.users.active.today` | Users active since midnight UTC |
+| Metric                     | What it measures                                |
+| -------------------------- | ----------------------------------------------- |
+| `http.server.requests`     | Request count by method, route, and status code |
+| `http.server.duration`     | Request duration in milliseconds                |
+| `webui.users.total`        | Registered users                                |
+| `webui.users.active`       | Users active in the last 3 minutes              |
+| `webui.users.active.today` | Users active since midnight UTC                 |
 
 There is no token or cost metric in that list, which is why you need LLM-level instrumentation for token tracking. OpenLIT accepts Open WebUI's native OTLP export too, so you can point `OTEL_EXPORTER_OTLP_ENDPOINT` at OpenLIT's gRPC port (`http://<openlit-host>:4317`) and see server health next to LLM traces. See [Open WebUI's OpenTelemetry docs](https://docs.openwebui.com/reference/monitoring/otel) for every variable.
 
-| | Open WebUI native OTel | OpenLIT pipeline |
-| --- | --- | --- |
-| HTTP, database, and Redis traces | Yes | No |
-| Active and total users | Yes | No |
-| Token usage per request and model | No | Yes |
-| Cost per request and model | No | Yes |
-| LLM latency per model | No | Yes |
-| GPU metrics | Host system metrics | GPU utilization, memory, temperature, power |
+|                                   | Open WebUI native OTel | OpenLIT pipeline                            |
+| --------------------------------- | ---------------------- | ------------------------------------------- |
+| HTTP, database, and Redis traces  | Yes                    | No                                          |
+| Active and total users            | Yes                    | No                                          |
+| Token usage per request and model | No                     | Yes                                         |
+| Cost per request and model        | No                     | Yes                                         |
+| LLM latency per model             | No                     | Yes                                         |
+| GPU metrics                       | Host system metrics    | GPU utilization, memory, temperature, power |
 
 ## Why Observability Matters for OpenWebUI Deployments
 

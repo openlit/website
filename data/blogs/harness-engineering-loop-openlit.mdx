@@ -177,7 +177,7 @@ _The refund window lives here and nowhere else. The Rules panel shows which rule
 
 #### 4b. Version the system prompt in Prompt Hub
 
-In **Prompt Hub** I created `support-agent-system` with `{{company}}` and `{{refund_days}}` variables, then published the stricter instructions as `1.1.0`. If it goes wrong, `1.0.0` is still there to roll back to.
+In **Prompt Hub** I created `support-agent-system` with `{{company}}` and `{{refund_days}}` variables, then published the stricter instructions as `1.1.0`. If it goes wrong, the app can pin `version="1.0.0"` in `get_prompt`, or you can republish the old text as a new version. There's no rollback button.
 
 ![Prompt Hub page for support-agent-system showing version 1.1.0 marked latest above 1.0.0, the prompt text with variables, and one linked rule](/static/images/blogs/harness-engineering-loop-openlit/06-prompt-hub.webp)
 
@@ -280,7 +280,7 @@ When something new breaks, you're back at Step 1: find it in a trace, score it, 
 
 ## What do you get from the harness engineering loop?
 
-The biggest change for me is how fast behavior fixes go out. Context and prompt edits are live on the next `evaluate_rule()` call, and rolling back means picking the previous prompt version.
+The biggest change for me is how fast behavior fixes go out. Context and prompt edits are live on the next `evaluate_rule()` call, and rolling back means pinning the previous version or republishing its text.
 
 The policy also stops living in four places. The agent reads it from the same Context the judge grades against, so the two can't disagree.
 

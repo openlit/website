@@ -20,14 +20,14 @@ That also means Ollama does not give **you** much telemetry out of the box. Each
 
 ## What can you monitor for Ollama?
 
-| Signal | What it tells you |
-| --- | --- |
-| Traces per call | Which model ran, the prompt and response, and where time went |
-| Token usage | Prompt and completion tokens per request, model, and application |
-| Latency | Request duration, to compare models and spot slowdowns |
-| Errors | Failed calls with the error recorded on the span |
-| GPU metrics | Utilization, memory, temperature, and power for NVIDIA and AMD GPUs |
-| Cost | Estimated cost when you route the same app to paid APIs too |
+| Signal          | What it tells you                                                   |
+| --------------- | ------------------------------------------------------------------- |
+| Traces per call | Which model ran, the prompt and response, and where time went       |
+| Token usage     | Prompt and completion tokens per request, model, and application    |
+| Latency         | Request duration, to compare models and spot slowdowns              |
+| Errors          | Failed calls with the error recorded on the span                    |
+| GPU metrics     | Utilization, memory, temperature, and power for NVIDIA and AMD GPUs |
+| Cost            | Estimated cost when you route the same app to paid APIs too         |
 
 OpenLIT records Ollama calls as OpenTelemetry spans that follow the [GenAI semantic conventions](https://openlit.io/glossary/opentelemetry-genai-semantic-conventions), so any OTLP-compatible backend can read them.
 
