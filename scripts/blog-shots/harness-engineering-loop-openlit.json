@@ -1,9 +1,5 @@
 {
   "slug": "harness-engineering-loop-openlit",
-  "login": {
-    "email": "user@openlit.io",
-    "password": "openlituser"
-  },
   "dismiss": ["[aria-label=\"Dismiss founder call card\"]"],
   "shots": [
     {

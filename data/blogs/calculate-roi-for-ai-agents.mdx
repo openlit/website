@@ -144,7 +144,7 @@ _The ticket from Step 1. The tool said the order was delivered 12 days ago, and 
 
 The other flags were the same kind of thing: a scripted "I've started a refund for order 41186" in reply to someone who only asked how long they had, and a reply promising 60 days when the policy says 30. Every one of those tickets counted as "resolved."
 
-Two notes on doing this for real. In production you'd turn on Auto Evaluation under **Evaluations > Configuration** with a sample rate (it's deterministic per trace) instead of clicking through traces. And 20 is a small sample: 2 of 20 gives a 95% confidence interval of roughly 3% to 30%. That's enough to know this agent isn't ready. It isn't enough to tell 85% from 90% on a good agent, which needs a couple of hundred judged tickets.
+Two notes on doing this for real. In production you'd turn on Auto Evaluation under **Evaluations > Configuration** with a sample rate (it's deterministic per trace) instead of clicking through traces. And 20 is a small sample: 2 of 20 gives a 95% Wilson score interval of roughly 3% to 30% (the stricter Clopper-Pearson interval is 1% to 32%). That's enough to know this agent isn't ready. It isn't enough to tell 85% from 90% on a good agent, which needs a couple of hundred judged tickets.
 
 ## Step 4: Put it in one query
 
@@ -180,7 +180,7 @@ tickets AS (
 SELECT
     countIf(t_outcome = 'resolved') AS resolved,
     countIf(t_judged AND t_outcome = 'resolved' AND NOT t_flagged)
-        / countIf(t_judged AND t_outcome = 'resolved') AS good_rate,
+        / nullIf(countIf(t_judged AND t_outcome = 'resolved'), 0) AS good_rate,
     sum(t_llm_cost) + sum(t_eval_cost) AS ai_cost,
     round((resolved * good_rate * human_cost
            - resolved * (1 - good_rate) * wrong_penalty
@@ -188,7 +188,7 @@ SELECT
 FROM tickets
 ```
 
-A few details in there came from getting it wrong first. The cost has to be summed per trace, because the `handle_ticket` span has no cost of its own. Only the Hallucination verdict should count as "wrong", since Bias and Toxicity ran on the same spans. And the judged-good rate is computed only over judged tickets, then applied to all resolved ones, which is what sampling means.
+A few details in there came from getting it wrong first. The cost has to be summed per trace, because the `handle_ticket` span has no cost of its own. Only the Hallucination verdict should count as "wrong", since Bias and Toxicity ran on the same spans. And the judged-good rate is computed only over judged tickets, then applied to all resolved ones, which is what sampling means. The `nullIf` makes a time window with no judged tickets show an empty value instead of a made-up ROI.
 
 I added it to a new [dashboard](https://docs.openlit.io/latest/openlit/dashboards/overview) as a Stat widget. The `{{filter.timeLimit.*}}` placeholders tie it to the dashboard's time picker:
 
@@ -225,9 +225,20 @@ def monthly_roi(
     savings = good * human_cost - wrong * wrong_penalty - agent_cost
     return {"ai_cost": round(ai_cost, 2), "net_savings": round(savings),
             "roi": round(savings / agent_cost, 2)}
+
+pilot = dict(
+    tickets=10_000,
+    resolution_rate=97 / 120,               # 97 of 120 pilot tickets resolved
+    llm_cost_per_ticket=0.015198 / 120,     # Costs page total / tickets
+    judged_per_month=200,
+    eval_cost_each=0.2078 / 20,             # eval spend / judged tickets
+    human_cost=6.0, wrong_penalty=4.0, fixed_monthly=4_000,
+)
+for good_rate in (0.10, 0.45, 0.60, 0.90):
+    print(good_rate, monthly_roi(good_rate=good_rate, **pilot))
 ```
 
-For 10,000 tickets a month, an 80.8% resolution rate, 200 judged tickets, $6 per human ticket, a $4 wrong-answer penalty and $4,000 of fixed cost, here's what the judged-good rate does:
+For 10,000 tickets a month, the pilot's 80.8% resolution rate (97 of 120, unrounded in the call above), 200 judged tickets, $6 per human ticket, a $4 wrong-answer penalty and $4,000 of fixed cost, here's what the judged-good rate does:
 
 | Judged-good rate | Model + eval cost | Net savings per month | ROI    |
 | ---------------- | ----------------- | --------------------- | ------ |
@@ -238,7 +249,7 @@ For 10,000 tickets a month, an 80.8% resolution rate, 200 judged tickets, $6 per
 
 Break-even is a judged-good rate of about 45%. Below that, the agent costs more than having people answer every ticket, because wrong answers cost extra. Above it, ROI climbs fast.
 
-Then I reran the 90% row at gpt-4o's price from Manage models, about 16.7 times gpt-4o-mini's per token. Model and eval cost went from $3.34 to $23.19 a month, and ROI went from 9.10x to 9.05x. If the bigger model moved the judged-good rate from 60% to 75%, it would be worth roughly $12,000 a month. For this kind of agent, model choice is a quality decision far more than a cost decision.
+Then I reran the 90% row at gpt-4o's price from Manage models, about 16.7 times gpt-4o-mini's per token. With `llm_cost_per_ticket` scaled by 2.5 / 0.15, model and eval cost went from $3.34 to $23.19 a month, and ROI went from 9.10x to 9.05x. If the bigger model moved the judged-good rate from 60% to 75%, it would be worth roughly $12,000 a month. For this kind of agent, model choice is a quality decision far more than a cost decision.
 
 ## What I'd watch for
 
@@ -280,7 +291,7 @@ Much less than quality when the agent replaces human work. In my projection, mov
 
 ### How many agent responses do you need to evaluate?
 
-Enough for the confidence interval you need. 2 good out of 20 gives roughly 3% to 30%, which is enough to reject an agent. Telling 85% from 90% takes a couple of hundred judged responses. Use a fixed monthly sample, since judging every response can cost more than the agent itself.
+Enough for the confidence interval you need. 2 good out of 20 gives a 95% Wilson interval of roughly 3% to 30%, which is enough to reject an agent. Telling 85% from 90% takes a couple of hundred judged responses. Use a fixed monthly sample, since judging every response can cost more than the agent itself.
 
 ### How does OpenLIT calculate LLM cost?
 
