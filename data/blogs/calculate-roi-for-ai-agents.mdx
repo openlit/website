@@ -1,0 +1,293 @@
+---
+title: 'How to Calculate the ROI of an AI Agent From Its Traces'
+date: '2026-11-25'
+lastmod: '2026-11-25'
+tags: ['openlit', 'opentelemetry', 'costs', 'evaluations', 'dashboards', 'agents', 'production']
+draft: false
+summary: 'AI agent ROI depends on how many tasks the agent gets right, far more than on token prices. A worked example with OpenLIT cost tracking, a sampled LLM judge and one SQL query.'
+authors: ['Aman']
+images: ['/static/images/blogs/calculate-roi-for-ai-agents/header.webp']
+---
+
+![Calculate AI Agent ROI From Your Traces. Header with Costs, Evaluations, Dashboards and Rule Engine chips](/static/images/blogs/calculate-roi-for-ai-agents/header.webp)
+
+**Short answer:** The ROI of an AI agent is the money it saves on tasks it completes correctly, minus what its wrong answers cost you, minus what it costs to run, divided by what it costs to run. Four of those inputs come from your traces: how many tasks the agent handled, how each one ended, how many of the finished ones were actually right, and the LLM and evaluation spend. Three come from you: what a task costs when a person does it, what a wrong answer costs, and your fixed monthly cost. In OpenLIT the cost is captured automatically on every LLM span, the outcome is one span attribute, and quality comes from an LLM judge run on a sample of traces.
+
+My support agent's first numbers looked great. It had handled 120 tickets, closed 81% of them without handing off to a person, and spent $0.00013 per ticket on model calls. Then I asked an LLM judge to check 20 of the "resolved" tickets, and it passed 2. With that one extra number, the same agent went from looking like a bargain to losing about $2.43 per ticket compared with having a person answer every one.
+
+That gap is what this post is about. I'll walk through how I measured each part of the ROI with [OpenLIT](https://github.com/openlit/openlit), the query that puts it together, and how the pilot numbers turn into a monthly figure.
+
+One thing to know up front: the agent is a stand-in. It runs against a mock OpenAI-compatible model with scripted replies, so the token counts and answers are fake, but everything OpenLIT did with them is real: the cost calculation, the traces, the judge (Claude Sonnet 4.5, run on real API calls), and the dashboard. I wrote the scripted replies quickly, and they turned out to be worse than I thought, which made for a better demo than I planned.
+
+## Why isn't cost per token enough?
+
+Most teams start with spend, because it's the number every provider dashboard shows. It's also the input that matters least for an agent that replaces human work. My pilot spent $0.0152 on 217 model calls. If I swapped the model for one that costs 16 times as much per token, the monthly projection later in this post barely moves.
+
+What moves it is the outcome. A ticket the agent resolves correctly saves you the cost of a person handling it. A ticket it hands off saves nothing, but costs little. A ticket it "resolves" with a wrong answer is the expensive one: the customer comes back, a person handles it anyway, and now they're handling an annoyed customer. A resolution rate alone can't tell those last two apart.
+
+So the work is mostly about measuring outcomes and quality. The cost side, OpenLIT already tracks for you.
+
+## What goes into the ROI formula?
+
+Here's the formula I used, per month:
+
+```
+good       = resolved tickets x judged-good rate
+wrong      = resolved tickets x (1 - judged-good rate)
+agent cost = LLM spend + evaluation spend + fixed monthly cost
+savings    = good x human cost per ticket - wrong x wrong-answer penalty - agent cost
+ROI        = savings / agent cost
+```
+
+The inputs split cleanly into what you measure and what you decide:
+
+| Input                             | Where it comes from                          | My pilot              |
+| --------------------------------- | -------------------------------------------- | --------------------- |
+| Tickets, resolved, handed off     | `ticket.outcome` attribute on the agent span | 120, 97, 23           |
+| Judged-good rate                  | LLM judge on a sample of resolved tickets    | 2 of 20 (10%)         |
+| LLM cost per ticket               | `gen_ai.usage.cost`, captured by the SDK     | $0.000127             |
+| Evaluation cost per judged ticket | OpenLIT evaluation runs                      | $0.0104               |
+| Human cost per ticket             | You (support team cost / tickets)            | $6, a placeholder     |
+| Wrong-answer penalty              | You (rework, refunds, churn risk)            | $4, a placeholder     |
+| Fixed monthly cost                | You (hosting, engineer time on the agent)    | $4,000, a placeholder |
+
+The three placeholders are round numbers I picked to show the math. They aren't benchmarks, and they matter a lot, so use your own.
+
+## Step 1: Record how each task ended
+
+`openlit.init()` instruments the OpenAI client automatically, so every model call becomes a span with token counts and a cost. What it can't know is whether the ticket got solved. That's one attribute on a parent span:
+
+```python
+import json
+import openlit
+from openai import OpenAI
+from opentelemetry import trace
+
+openlit.init(application_name="support-agent", environment="pilot")
+client = OpenAI()
+
+SYSTEM = """You are the support assistant for Acme.
+Refunds: 30 days from delivery. Always call lookup_order before answering about an order.
+Call handoff_to_human for damaged items, chargebacks, legal questions, or when the customer asks for a person.
+Keep answers under 80 words."""
+
+TOOLS = [
+    {"type": "function", "function": {"name": "lookup_order", "description": "Fetch an order by id",
+        "parameters": {"type": "object", "properties": {"order_id": {"type": "string"}}, "required": ["order_id"]}}},
+    {"type": "function", "function": {"name": "handoff_to_human", "description": "Send the ticket to a person",
+        "parameters": {"type": "object", "properties": {"reason": {"type": "string"}}, "required": ["reason"]}}},
+]
+
+def lookup_order(order_id: str) -> dict:
+    return {"order_id": order_id, "status": "shipped", "delivered_days_ago": 12}
+
+@openlit.trace
+def handle_ticket(ticket_id: str, question: str, model: str = "gpt-4o-mini") -> str:
+    span = trace.get_current_span()
+    span.set_attribute("ticket.id", ticket_id)
+    msgs = [{"role": "system", "content": SYSTEM}, {"role": "user", "content": question}]
+    first = client.chat.completions.create(model=model, messages=msgs, tools=TOOLS).choices[0].message
+    call = (first.tool_calls or [None])[0]
+    if call and call.function.name == "handoff_to_human":
+        span.set_attribute("ticket.outcome", "handoff")
+        return "I've passed this to our support team."
+    if call:
+        result = lookup_order(**json.loads(call.function.arguments))
+        msgs += [first.model_dump(exclude_none=True),
+                 {"role": "tool", "tool_call_id": call.id, "content": json.dumps(result)}]
+    answer = client.chat.completions.create(model=model, messages=msgs, tools=TOOLS).choices[0].message.content
+    span.set_attribute("ticket.outcome", "resolved")
+    return answer
+```
+
+`@openlit.trace` makes `handle_ticket` the parent span, so each ticket is one trace: the agent span, then one or two `chat gpt-4o-mini` spans underneath it, each with its own cost.
+
+![Trace of handle_ticket with two chat gpt-4o-mini child spans, a total cost of $0.000147, and span attributes showing ticket.id T-1069, ticket.outcome resolved and the answer Order 46089 shipped yesterday and is due on Friday](/static/images/blogs/calculate-roi-for-ai-agents/01-ticket-trace.webp)
+
+_One ticket: two model calls, $0.000147 in total, and `ticket.outcome` set to resolved. Remember this answer, it comes back in Step 3._
+
+"Resolved" here only means the agent answered without handing off. That's the most common definition of resolution, and it's the one that misled me. If you have a stronger signal, such as the customer not reopening the ticket within a week, record that too, as a second attribute or through [manual feedback](https://docs.openlit.io/latest/openlit/evaluations/manual-feedback) on the trace.
+
+## Step 2: Check what OpenLIT already counts as cost
+
+The SDK puts `gen_ai.usage.cost` on every LLM span at ingest time, using its pricing table. The [Costs page](https://docs.openlit.io/latest/openlit/costs/overview) (**Monitor > Costs**) adds it up, and it also counts what your evaluations cost, which turned out to matter more than I expected:
+
+![OpenLIT Costs analytics showing Total AI cost $0.223, App LLM cost $0.0152, Evaluations cost $0.2078, Total LLM requests 554 and a banner saying 337 spans are missing cost](/static/images/blogs/calculate-roi-for-ai-agents/02-costs-analytics.webp)
+
+_The judge cost 14 times more than the agent it was judging._
+
+Two things on this page are worth reading carefully.
+
+First, evaluation spend was $0.2078 against $0.0152 for the agent's own calls. My judge is Claude Sonnet 4.5 and the agent model is gpt-4o-mini, and each judged ticket ran all three evaluators I had enabled (Hallucination, Bias and Toxicity). One judged ticket cost about the same as 82 tickets of agent traffic. Evaluation is a real line in the ROI, and it's the reason you judge a sample, not everything.
+
+Second, "Total LLM requests" says 554, but the agent made 217 model calls. The difference is exactly my 120 `handle_ticket` spans plus the 217 HTTP spans under the model calls, and the "337 spans missing cost" banner is counting the same non-LLM spans. So for per-ticket math I don't use the page's averages. I group by trace instead, which is what the query in Step 4 does.
+
+The prices come from **Costs > Manage models**. If you've negotiated different rates or run a self-hosted model, change them here. New traffic picks them up through the [SDK pricing URL](https://docs.openlit.io/latest/openlit/costs/manage-models/sdk-pricing), and **Configuration** can backfill old spans.
+
+![Manage models with GPT-4o Mini selected, showing input price 0.15 and output price 0.6 per 1M tokens](/static/images/blogs/calculate-roi-for-ai-agents/03-model-price.webp)
+
+_The price behind every `gen_ai.usage.cost` on my gpt-4o-mini spans._
+
+## Step 3: Judge a sample of the resolved tickets
+
+This is the step that changed the answer. To judge pilot traffic against the real refund policy, I added a [Rule Engine](/blogs/openlit-rule-engine-explained) rule that matches `support-agent` in the `pilot` environment and links the Refund Policy context and the Hallucination evaluator. Without the policy, the judge can't tell a right refund window from a wrong one, as I found in [the post on grounding LLM judges](/blogs/grounding-llm-evals-with-context).
+
+![Rule Engine rule Support agent pilot with conditions Service Name equals support-agent and Deployment Env equals pilot, linked to the Hallucination evaluation type and the Refund Policy context](/static/images/blogs/calculate-roi-for-ai-agents/04-pilot-rule.webp)
+
+_The rule decides which context the judge gets for pilot traces._
+
+Then I picked 20 resolved tickets at random and ran the judge on the final answer of each, which is the same as clicking **Run Evaluation** on the trace. 18 were flagged. The judge's explanations were specific, and when I checked them, they were right:
+
+![Evaluation panel on a chat gpt-4o-mini span with a Hallucination score of 0.95, classification factual_inaccuracy, and an explanation that the response says the order shipped yesterday while the tool result says it was delivered 12 days ago](/static/images/blogs/calculate-roi-for-ai-agents/05-judge-flagged.webp)
+
+_The ticket from Step 1. The tool said the order was delivered 12 days ago, and the agent said it shipped yesterday._
+
+The other flags were the same kind of thing: a scripted "I've started a refund for order 41186" in reply to someone who only asked how long they had, and a reply promising 60 days when the policy says 30. Every one of those tickets counted as "resolved."
+
+Two notes on doing this for real. In production you'd turn on Auto Evaluation under **Evaluations > Configuration** with a sample rate (it's deterministic per trace) instead of clicking through traces. And 20 is a small sample: 2 of 20 gives a 95% confidence interval of roughly 3% to 30%. That's enough to know this agent isn't ready. It isn't enough to tell 85% from 90% on a good agent, which needs a couple of hundred judged tickets.
+
+## Step 4: Put it in one query
+
+The ticket-level numbers come from joining the traces with the evaluation results, grouped by trace. This is the query behind the "Savings per ticket" widget. The two constants at the top are the placeholders, so they're easy to change:
+
+```sql
+WITH
+    parseDateTimeBestEffort('{{filter.timeLimit.start}}') AS start_time,
+    parseDateTimeBestEffort('{{filter.timeLimit.end}}') AS end_time,
+    6.0 AS human_cost,     -- what a person-handled ticket costs you
+    4.0 AS wrong_penalty,  -- extra cost when a wrong answer comes back
+tickets AS (
+    SELECT
+        s.TraceId AS trace_id,
+        anyIf(s.SpanAttributes['ticket.outcome'], s.SpanName = 'handle_ticket') AS t_outcome,
+        sum(toFloat64OrZero(s.SpanAttributes['gen_ai.usage.cost'])) AS t_llm_cost,
+        max(e.span_id != '') AS t_judged,
+        max(has(e.verdicts, 'yes')) AS t_flagged,
+        sum(e.eval_cost) AS t_eval_cost
+    FROM otel_traces AS s
+    LEFT JOIN (
+        SELECT span_id,
+               arrayFilter((v, n) -> n = 'Hallucination', evaluationData.verdict, evaluationData.evaluation) AS verdicts,
+               toFloat64OrZero(meta['cost']) AS eval_cost
+        FROM openlit_evaluation
+    ) AS e ON e.span_id = s.SpanId
+    WHERE s.ServiceName = 'support-agent'
+      AND s.ResourceAttributes['deployment.environment'] = 'pilot'
+      AND s.Timestamp >= start_time AND s.Timestamp <= end_time
+    GROUP BY trace_id
+    HAVING t_outcome != ''
+)
+SELECT
+    countIf(t_outcome = 'resolved') AS resolved,
+    countIf(t_judged AND t_outcome = 'resolved' AND NOT t_flagged)
+        / countIf(t_judged AND t_outcome = 'resolved') AS good_rate,
+    sum(t_llm_cost) + sum(t_eval_cost) AS ai_cost,
+    round((resolved * good_rate * human_cost
+           - resolved * (1 - good_rate) * wrong_penalty
+           - ai_cost) / count(), 2) AS savings
+FROM tickets
+```
+
+A few details in there came from getting it wrong first. The cost has to be summed per trace, because the `handle_ticket` span has no cost of its own. Only the Hallucination verdict should count as "wrong", since Bias and Toxicity ran on the same spans. And the judged-good rate is computed only over judged tickets, then applied to all resolved ones, which is what sampling means.
+
+I added it to a new [dashboard](https://docs.openlit.io/latest/openlit/dashboards/overview) as a Stat widget. The `{{filter.timeLimit.*}}` placeholders tie it to the dashboard's time picker:
+
+![Widget editor for Savings per ticket on the Query tab, showing the SQL with human_cost 6.0 and wrong_penalty 4.0 at the top](/static/images/blogs/calculate-roi-for-ai-agents/06-widget-query.webp)
+
+_The assumptions live at the top of the query, where whoever reads the dashboard can see them._
+
+The other widgets reuse the same `tickets` block with a different final `SELECT`:
+
+![Support agent ROI dashboard with Tickets handled 120, Resolution rate 80.8%, Judged-good rate 10%, AI cost per ticket $0.0019, Savings per ticket -$2.43, and a bar chart of where tickets went](/static/images/blogs/calculate-roi-for-ai-agents/07-roi-dashboard.webp)
+
+_81% resolution and 10% judged-good, side by side. The bar chart shows how much of the resolved traffic was never judged._
+
+## How do you turn a pilot into a monthly ROI?
+
+A pilot gives you rates. The business case needs a month. This is the function I used, with the measured rates from the pilot and the placeholder costs:
+
+```python
+def monthly_roi(
+    tickets: int,              # expected tickets per month
+    resolution_rate: float,    # from ticket.outcome on your traces
+    good_rate: float,          # judged-good share of resolved tickets
+    llm_cost_per_ticket: float,
+    judged_per_month: int,     # how many tickets you send to the judge
+    eval_cost_each: float,
+    human_cost: float,         # what a person-handled ticket costs you
+    wrong_penalty: float,      # extra cost when a wrong answer comes back
+    fixed_monthly: float,      # hosting, OpenLIT, the engineer's time on it
+):
+    resolved = tickets * resolution_rate
+    good, wrong = resolved * good_rate, resolved * (1 - good_rate)
+    ai_cost = tickets * llm_cost_per_ticket + judged_per_month * eval_cost_each
+    agent_cost = ai_cost + fixed_monthly
+    savings = good * human_cost - wrong * wrong_penalty - agent_cost
+    return {"ai_cost": round(ai_cost, 2), "net_savings": round(savings),
+            "roi": round(savings / agent_cost, 2)}
+```
+
+For 10,000 tickets a month, an 80.8% resolution rate, 200 judged tickets, $6 per human ticket, a $4 wrong-answer penalty and $4,000 of fixed cost, here's what the judged-good rate does:
+
+| Judged-good rate | Model + eval cost | Net savings per month | ROI    |
+| ---------------- | ----------------- | --------------------- | ------ |
+| 10% (the pilot)  | $3.34             | -$28,253              | -7.06x |
+| 45%              | $3.34             | $38                   | 0.01x  |
+| 60%              | $3.34             | $12,163               | 3.04x  |
+| 90%              | $3.34             | $36,413               | 9.10x  |
+
+Break-even is a judged-good rate of about 45%. Below that, the agent costs more than having people answer every ticket, because wrong answers cost extra. Above it, ROI climbs fast.
+
+Then I reran the 90% row at gpt-4o's price from Manage models, about 16.7 times gpt-4o-mini's per token. Model and eval cost went from $3.34 to $23.19 a month, and ROI went from 9.10x to 9.05x. If the bigger model moved the judged-good rate from 60% to 75%, it would be worth roughly $12,000 a month. For this kind of agent, model choice is a quality decision far more than a cost decision.
+
+## What I'd watch for
+
+### Resolution rate is the number that lies
+
+Every flagged answer in my sample was "resolved." If I'd only tracked resolution, I would have reported 81% and a healthy ROI. Count a task as a success only when something checks it: a judge, a human review, or a downstream signal such as the ticket staying closed.
+
+### Evaluation belongs in the cost
+
+At the per-ticket level, judging was the biggest thing I paid for. That's fine, since it's what makes the rest of the numbers believable, but it belongs in the formula. Pick a fixed number of judged tickets per month that gives you a tight enough interval, rather than a percentage that grows with traffic.
+
+### Read cost per task, not cost per request
+
+The Costs page average is per span, and it counts spans that aren't model calls. Grouping by trace gives you cost per ticket, and grouping by outcome lets you see what handoffs cost (the model calls made before giving up).
+
+### Put the assumptions where people can see them
+
+Human cost per ticket and the wrong-answer penalty decide the answer as much as anything you measure. I keep them as named constants at the top of the query so a reviewer can see them and argue with them.
+
+## When is this worth doing?
+
+If your agent is still a prototype that changes every day, don't build an ROI dashboard yet. Track cost and outcomes on the traces, and judge a handful of answers by hand.
+
+It's worth doing when someone has to decide whether to roll the agent out, keep paying for it, or switch models. That's when a resolution rate on its own will mislead people, and a judged-good rate with an honest sample size won't.
+
+The balance also shifts with the task. For a support agent replacing a $6 ticket, token cost hardly matters. For a high-volume, low-value task, such as tagging millions of documents where the human alternative costs fractions of a cent, token cost can be most of the equation, and the cheaper model may win even at lower quality.
+
+To follow along you need OpenLIT running (`docker compose up -d`), the Python SDK, and an LLM judge configured under **Evaluations > Configuration**.
+
+## FAQ
+
+### How do you measure the ROI of an AI agent?
+
+Record the outcome of each task on its trace, judge a sample of the completed ones for correctness, and take LLM and evaluation spend from cost tracking. ROI is the savings from correct completions, minus the cost of wrong ones and the agent's running cost, divided by the running cost.
+
+### Does LLM token cost matter for AI agent ROI?
+
+Much less than quality when the agent replaces human work. In my projection, moving to a model with about 16.7 times the per-token price changed ROI from 9.10x to 9.05x. It matters more for high-volume tasks whose human alternative is very cheap.
+
+### How many agent responses do you need to evaluate?
+
+Enough for the confidence interval you need. 2 good out of 20 gives roughly 3% to 30%, which is enough to reject an agent. Telling 85% from 90% takes a couple of hundred judged responses. Use a fixed monthly sample, since judging every response can cost more than the agent itself.
+
+### How does OpenLIT calculate LLM cost?
+
+It multiplies each span's input and output token counts by the model's price per million tokens from Manage models. The SDK sets `gen_ai.usage.cost` at ingest, Auto Pricing can backfill spans that arrived without a cost, and the Costs page reports LLM and evaluation spend separately.
+
+## Wrapping up
+
+An agent's ROI is decided by how many tasks it gets right, so measure that directly. Put the outcome on the trace, judge a fixed sample against your real policies, let OpenLIT handle LLM and evaluation cost, and keep your business assumptions visible next to the query. My pilot's 81% resolution rate turned into a 10% judged-good rate and a negative ROI, and I'd much rather find that in a pilot than after rollout.
+
+The [cost tracking docs](https://docs.openlit.io/latest/openlit/costs/overview), [evaluation configuration](https://docs.openlit.io/latest/openlit/evaluations/configuration) and [dashboards](https://docs.openlit.io/latest/openlit/dashboards/overview) cover each piece in more detail. For the full loop of tracing, evaluating and fixing an agent, see [the harness engineering loop post](/blogs/harness-engineering-loop-openlit). If something behaves differently from what I described, open an issue on [GitHub](https://github.com/openlit/openlit).
