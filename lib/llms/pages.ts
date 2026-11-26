@@ -1,6 +1,12 @@
 import competitors, { type Competitor } from 'data/comparisons'
 import GLOSSARY_TERMS, { type GlossaryTerm, termQuestion } from 'data/glossary'
-import BEST_GUIDES, { type BestGuide } from 'data/best-guides'
+import BEST_GUIDES, {
+  alternativesShortAnswer,
+  comparePageTitle,
+  getAlternativesRoundup,
+  getAlternatives,
+  type BestGuide,
+} from 'data/best-guides'
 import siteMetadata from 'data/siteMetadata'
 import { HERO_DESCRIPTION, HERO_TITLE } from 'constants/hero'
 import { COMPARE_UPDATED, GLOSSARY_UPDATED, HOME_UPDATED } from 'constants/site-dates'
@@ -286,6 +292,13 @@ ${links}
 `
 }
 
+function roundupLine(compareSlug: string) {
+  const roundup = getAlternativesRoundup(compareSlug)
+  return roundup
+    ? `Full roundup: ${roundup.label}: ${SITE}${roundup.href}`
+    : `Ranked list with strengths and limits: ${SITE}/guides/best-llm-observability-tools.md`
+}
+
 export function comparePageMarkdown(competitor: Competitor) {
   const tables = competitor.features
     .map((category) => {
@@ -300,7 +313,24 @@ export function comparePageMarkdown(competitor: Competitor) {
     })
     .join('\n\n')
 
-  return `# OpenLIT vs ${competitor.name} (2026): Open-Source ${competitor.name} Alternative
+  const alternatives = getAlternatives(competitor.slug)
+  const alternativesSection = alternatives.length
+    ? `
+## What are the best ${competitor.name} alternatives?
+
+${alternativesShortAnswer(competitor.name, alternatives)}
+
+| Alternative | License | Self-host | Best for |
+| --- | --- | --- | --- |
+${alternatives
+  .map((tool) => `| ${tool.name} | ${tool.license} | ${tool.selfHost} | ${tool.bestFor} |`)
+  .join('\n')}
+
+${roundupLine(competitor.slug)}
+`
+    : ''
+
+  return `# ${comparePageTitle(competitor.slug, competitor.name)}
 
 > ${competitor.heroSubheadline}
 
@@ -308,7 +338,7 @@ export function comparePageMarkdown(competitor: Competitor) {
 - Markdown: ${SITE}/compare/${competitor.slug}.md
 
 ${competitor.description}
-
+${alternativesSection}
 ## Feature comparison
 
 ${tables}
@@ -641,7 +671,7 @@ export const LLM_PAGES: LlmPage[] = [
   ...competitors.map((competitor) => ({
     mdPath: `/compare/${competitor.slug}.md`,
     htmlPath: `/compare/${competitor.slug}`,
-    title: `OpenLIT vs ${competitor.name} (2026): Open-Source ${competitor.name} Alternative`,
+    title: comparePageTitle(competitor.slug, competitor.name),
     summary: competitor.description,
     body: () => comparePageMarkdown(competitor),
     updated: COMPARE_UPDATED,

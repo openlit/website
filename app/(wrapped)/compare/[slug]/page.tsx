@@ -7,6 +7,7 @@ import JsonLd from '@/components/json-ld'
 import FeaturePageHeader from '@/components/shell/feature-page-header'
 import { GitCompare } from 'lucide-react'
 import { COMPARE_UPDATED } from 'constants/site-dates'
+import { comparePageTitle } from '@/data/best-guides'
 
 export async function generateStaticParams() {
   return competitors.map((c) => ({ slug: c.slug }))
@@ -17,7 +18,7 @@ export async function generateMetadata({ params }: { params: { slug: string } })
   if (!competitor) return {}
 
   return genPageMetadata({
-    title: `OpenLIT vs ${competitor.name} (2026): Open-Source ${competitor.name} Alternative`,
+    title: comparePageTitle(competitor.slug, competitor.name),
     description: competitor.description,
     keywords: [
       competitor.tagline,
@@ -39,7 +40,7 @@ export default function CompareSlugPage({ params }: { params: { slug: string } }
   if (!competitor) notFound()
 
   const pageSchema = createComparisonPageSchema({
-    name: `OpenLIT vs ${competitor.name} (2026): Open-Source ${competitor.name} Alternative`,
+    name: comparePageTitle(competitor.slug, competitor.name),
     url: `https://openlit.io/compare/${params.slug}`,
     description: competitor.description,
     competitorName: competitor.name,

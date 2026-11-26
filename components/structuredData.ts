@@ -363,7 +363,7 @@ export function createComparisonPageSchema({
         name: competitorName,
         applicationCategory: 'DeveloperApplication',
       },
-      keywords: `OpenLIT vs ${competitorName}, ${competitorName} alternative open source, agent observability, agent evals, LLM observability comparison`,
+      keywords: `OpenLIT vs ${competitorName}, ${competitorName} alternatives, ${competitorName} alternative open source, agent observability, agent evals, LLM observability comparison`,
     },
   })
 }
