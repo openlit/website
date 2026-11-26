@@ -5,11 +5,13 @@
  *   npm i --no-save puppeteer-core          # once; uses your installed Chrome
  *   node scripts/blog-screenshots.mjs scripts/blog-shots/<slug>.json
  *
+ * Logs in with OPENLIT_EMAIL / OPENLIT_PASSWORD. Unset, it uses the default account that a local
+ * `docker compose up` creates (see the OpenLIT README). Keep credentials out of shot lists.
+ *
  * Shot list JSON:
  * {
  *   "slug": "my-post",
  *   "baseUrl": "http://localhost:3000",            // optional
- *   "login": { "email": "user@openlit.io", "password": "openlituser" },
  *   "shots": [
  *     {
  *       "name": "01-traces",                        // -> public/static/images/blogs/<slug>/01-traces.webp
@@ -89,15 +91,19 @@ async function main() {
   await page.setViewport({ width: 1440, height: 900, deviceScaleFactor: 2 })
   await page.emulateMediaFeatures([{ name: 'prefers-color-scheme', value: 'light' }])
 
-  if (cfg.login) {
-    await page.goto(`${base}/login`, { waitUntil: 'networkidle2' })
-    await page.type('#email', cfg.login.email)
-    await page.type('#password', cfg.login.password)
-    await Promise.all([
-      page.waitForNavigation({ waitUntil: 'networkidle2' }).catch(() => {}),
-      page.keyboard.press('Enter'),
-    ])
+  if (cfg.login) throw new Error(`${file}: remove "login"; set OPENLIT_EMAIL and OPENLIT_PASSWORD instead`)
+  const isLocal = ['localhost', '127.0.0.1'].includes(new URL(base).hostname)
+  if (!isLocal && !(process.env.OPENLIT_EMAIL && process.env.OPENLIT_PASSWORD)) {
+    throw new Error(`Set OPENLIT_EMAIL and OPENLIT_PASSWORD to capture from ${base}`)
   }
+  // Local fallback: the default account a fresh `docker compose up` seeds. Not a secret.
+  await page.goto(`${base}/login`, { waitUntil: 'networkidle2' })
+  await page.type('#email', process.env.OPENLIT_EMAIL || 'user@openlit.io')
+  await page.type('#password', process.env.OPENLIT_PASSWORD || 'openlituser')
+  await Promise.all([
+    page.waitForNavigation({ waitUntil: 'networkidle2' }).catch(() => {}),
+    page.keyboard.press('Enter'),
+  ])
 
   // Dismiss in-app promo cards (e.g. `[aria-label="Dismiss founder call card"]`) once; they stay dismissed.
   if (cfg.dismiss?.length) {

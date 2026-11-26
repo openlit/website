@@ -1,0 +1,86 @@
+{
+  "slug": "calculate-roi-for-ai-agents",
+  "dismiss": ["[aria-label=\"Dismiss founder call card\"]"],
+  "shots": [
+    {
+      "name": "01-ticket-trace",
+      "path": "/telemetry/traces/b2458a19176f14a4",
+      "clicks": ["css:::-p-text(Span Attributes)"],
+      "crop": {
+        "x": 266,
+        "y": 205,
+        "width": 1164,
+        "height": 690
+      }
+    },
+    {
+      "name": "02-costs-analytics",
+      "path": "/costs",
+      "crop": {
+        "x": 256,
+        "y": 100,
+        "width": 1184,
+        "height": 500
+      }
+    },
+    {
+      "name": "03-model-price",
+      "path": "/costs?tab=models",
+      "type": [["input[placeholder=\"Search models...\"]", "gpt-4o-mini"]],
+      "clicks": ["OpenAI", "GPT-4o Mini"],
+      "crop": {
+        "x": 256,
+        "y": 100,
+        "width": 1184,
+        "height": 780
+      }
+    },
+    {
+      "name": "04-pilot-rule",
+      "path": "/rule-engine/eaf0ae07-b1d7-417b-8bd0-3a22e3ee3eb5",
+      "crop": {
+        "x": 256,
+        "y": 45,
+        "width": 1184,
+        "height": 855
+      }
+    },
+    {
+      "name": "05-judge-flagged",
+      "path": "/telemetry/traces/30d51f53c103b52c",
+      "clicks": ["Evaluations@1", "Hallucination"],
+      "crop": {
+        "x": 826,
+        "y": 205,
+        "width": 600,
+        "height": 610
+      }
+    },
+    {
+      "name": "06-widget-query",
+      "path": "/d/313d7c96-3ee8-4ff4-8b00-c4d62931831c",
+      "clicks": [
+        "css:::-p-text(Actions)",
+        "css:::-p-text(Edit Layout)",
+        "css:::-p-xpath(//*[text()=\"Savings per ticket\"]/ancestor::div[contains(@class,\"react-grid-item\")]//div[contains(@class,\"cursor-pointer\")])",
+        "css:::-p-text(Query)"
+      ],
+      "crop": {
+        "x": 929,
+        "y": 0,
+        "width": 511,
+        "height": 820
+      }
+    },
+    {
+      "name": "07-roi-dashboard",
+      "path": "/d/313d7c96-3ee8-4ff4-8b00-c4d62931831c",
+      "crop": {
+        "x": 256,
+        "y": 45,
+        "width": 1184,
+        "height": 560
+      }
+    }
+  ]
+}
