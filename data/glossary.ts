@@ -144,6 +144,26 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = [
         answer:
           'OpenLIT, Langfuse, Arize Phoenix, LangSmith, Comet Opik, Braintrust, Helicone, Datadog LLM Observability, MLflow, and OpenLLMetry. See the comparison at https://openlit.io/guides/best-llm-observability-tools.',
       },
+      {
+        question: 'How do I set up logs and traces for LLM observability?',
+        answer:
+          'Use OpenTelemetry. Install the OpenLIT SDK (pip install openlit) and call openlit.init(otlp_endpoint="http://127.0.0.1:4318"), or run your app unchanged with openlit-instrument. Each LLM call becomes a trace span with the model, tokens, cost, and latency, prompts and completions are captured with the span, and token and cost metrics are exported too. Send it all over OTLP to a self-hosted OpenLIT instance or to any OpenTelemetry backend.',
+      },
+      {
+        question: 'How do I connect LLM traces to infrastructure metrics and logs?',
+        answer:
+          'Emit all three as OpenTelemetry signals with shared context. When your logs go through OpenTelemetry, a log written inside a span carries its trace ID, so a backend can jump from an LLM span to the matching log lines. Resource attributes such as service.name and deployment.environment (set by service_name and environment in openlit.init) tie spans to the host, container, and GPU metrics from the same service. OpenLIT can also collect GPU metrics (collect_gpu_stats=True) alongside the traces.',
+      },
+      {
+        question: 'How do I log LLM prompts and responses for governance?',
+        answer:
+          'Record them on the trace, keep the data in storage you control, and limit what is kept. The OpenLIT SDK captures prompts and responses by default; set capture_message_content=False to drop them, or max_content_length to truncate them. Because OpenLIT is self-hosted, the records stay in your own ClickHouse, where you set retention and access. Add guardrails to flag sensitive content.',
+      },
+      {
+        question: 'Is Helicone or Grafana better for monitoring LLM costs and latency?',
+        answer:
+          "They do different jobs. Helicone is mainly a proxy (AI gateway) that logs each LLM request and calculates its cost and latency. Grafana is a dashboard tool: it shows LLM costs and latency only if something exports them, for example OpenTelemetry metrics in Prometheus. OpenLIT can be that source: its SDK records cost and latency without a proxy and exports them over OTLP to Grafana, or you can use OpenLIT's own dashboards.",
+      },
     ],
   },
   {
