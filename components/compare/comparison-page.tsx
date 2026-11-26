@@ -6,6 +6,11 @@ import ReadyToGetStarted from '../common/ready-to-get-started'
 import Link from 'next/link'
 import { MarkedWord } from '@/components/common/marker-underline'
 import { COMPARE_UPDATED, formatSiteDate } from 'constants/site-dates'
+import {
+  alternativesShortAnswer,
+  getAlternatives,
+  getAlternativesRoundup,
+} from '@/data/best-guides'
 
 function FeatureValue({ value }: { value: boolean | string }) {
   if (value === true) {
@@ -71,6 +76,72 @@ function ComparisonTable({
   )
 }
 
+function Alternatives({ competitor }: { competitor: Competitor }) {
+  const tools = getAlternatives(competitor.slug)
+  const roundup = getAlternativesRoundup(competitor.slug)
+  if (tools.length === 0) return null
+  return (
+    <section aria-labelledby="alternatives" className="mb-16 max-w-4xl">
+      <h2 id="alternatives" className="text-2xl font-bold tracking-tight">
+        What are the best {competitor.name} alternatives?
+      </h2>
+      <p className="mt-3 text-base leading-relaxed text-stone-700 dark:text-stone-300">
+        {alternativesShortAnswer(competitor.name, tools)}
+      </p>
+      <div className="mt-6 overflow-x-auto rounded-xl border border-stone-200 dark:border-white/10">
+        <table className="w-full min-w-[640px] text-left text-sm">
+          <thead className="bg-stone-100 text-stone-700 dark:bg-stone-900 dark:text-stone-200">
+            <tr>
+              <th className="px-4 py-3 font-semibold">Alternative</th>
+              <th className="px-4 py-3 font-semibold">License</th>
+              <th className="px-4 py-3 font-semibold">Self-host</th>
+              <th className="px-4 py-3 font-semibold">Best for</th>
+            </tr>
+          </thead>
+          <tbody className="divide-y divide-stone-200 text-stone-600 dark:divide-white/10 dark:text-stone-300">
+            {tools.map((tool) => (
+              <tr key={tool.name}>
+                <td className="px-4 py-3 font-medium text-stone-900 dark:text-stone-50">
+                  {tool.compareSlug && tool.compareSlug !== competitor.slug ? (
+                    <Link href={`/compare/${tool.compareSlug}`} className="hover:text-brandPrimary">
+                      {tool.name}
+                    </Link>
+                  ) : (
+                    tool.name
+                  )}
+                </td>
+                <td className="px-4 py-3">{tool.license}</td>
+                <td className="px-4 py-3">{tool.selfHost}</td>
+                <td className="px-4 py-3">{tool.bestFor}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      {roundup ? (
+        <p className="mt-3 text-sm text-stone-500 dark:text-stone-400">
+          Full roundup:{' '}
+          <Link href={roundup.href} className="underline hover:text-brandPrimary">
+            {roundup.label}
+          </Link>
+          .
+        </p>
+      ) : (
+        <p className="mt-3 text-sm text-stone-500 dark:text-stone-400">
+          For a ranked list with strengths and limits, see{' '}
+          <Link
+            href="/guides/best-llm-observability-tools"
+            className="underline hover:text-brandPrimary"
+          >
+            the top 10 LLM observability platforms
+          </Link>
+          .
+        </p>
+      )}
+    </section>
+  )
+}
+
 export default function ComparisonPage({ competitor }: { competitor: Competitor }) {
   return (
     <div className="container py-10 md:py-12">
@@ -106,6 +177,8 @@ export default function ComparisonPage({ competitor }: { competitor: Competitor 
           <Github className="h-4 w-4" /> View on GitHub
         </a>
       </div>
+
+      <Alternatives competitor={competitor} />
 
       {/* Comparison Table */}
       <div className="mb-16 rounded-xl border border-white/10 p-4 sm:p-6 md:p-8">

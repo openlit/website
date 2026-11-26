@@ -584,3 +584,53 @@ export function getBestGuide(slug: string) {
 }
 
 export default BEST_GUIDES
+
+/**
+ * "What are the best X alternatives?" for each /compare page. Reuses the vetted
+ * tool facts above so compare pages never carry claims the guides don't.
+ * OpenLIT is listed first because the page is ours; the rest are the closest
+ * substitutes for that tool.
+ */
+const ALTERNATIVES_BY_COMPARE_SLUG: Record<string, GuideTool[]> = {
+  'openlit-vs-langfuse': [OPENLIT_TOOL, PHOENIX, OPIK, HELICONE, LANGSMITH],
+  'openlit-vs-helicone': [OPENLIT_TOOL, LANGFUSE, PHOENIX, OPIK, DATADOG],
+  'openlit-vs-langsmith': [OPENLIT_TOOL, LANGFUSE, PHOENIX, BRAINTRUST, OPIK],
+  'openlit-vs-datadog': [OPENLIT_TOOL, LANGFUSE, PHOENIX, LANGSMITH, OPENLLMETRY],
+  'openlit-vs-arize-phoenix': [OPENLIT_TOOL, LANGFUSE, OPIK, LANGSMITH, BRAINTRUST],
+  'openlit-vs-comet-opik': [OPENLIT_TOOL, LANGFUSE, PHOENIX, BRAINTRUST, LANGSMITH],
+  'openlit-vs-braintrust': [OPENLIT_TOOL, LANGFUSE, OPIK, LANGSMITH, PHOENIX],
+  'openlit-vs-openllmetry': [OPENLIT_TOOL, PHOENIX, LANGFUSE, OPIK, MLFLOW],
+}
+
+/**
+ * Tools with their own "alternatives" roundup. Their compare page links to it and
+ * keeps a "vs" title, so the two pages don't compete for the same query.
+ */
+const ALTERNATIVES_ROUNDUP: Record<string, { href: string; label: string }> = {
+  'openlit-vs-langfuse': {
+    href: '/blogs/langfuse-alternatives',
+    label: 'Best Langfuse alternatives',
+  },
+}
+
+export function getAlternativesRoundup(compareSlug: string) {
+  return ALTERNATIVES_ROUNDUP[compareSlug]
+}
+
+/** <title> for a compare page. */
+export function comparePageTitle(compareSlug: string, competitorName: string) {
+  return ALTERNATIVES_ROUNDUP[compareSlug]
+    ? `OpenLIT vs ${competitorName} (2026): Open-Source ${competitorName} Alternative`
+    : `OpenLIT vs ${competitorName}: Best ${competitorName} Alternatives (2026)`
+}
+
+export function getAlternatives(compareSlug: string): GuideTool[] {
+  return ALTERNATIVES_BY_COMPARE_SLUG[compareSlug] ?? []
+}
+
+/** One quotable paragraph naming the alternatives, for the top of the section. */
+export function alternativesShortAnswer(competitorName: string, tools: GuideTool[]) {
+  const others = tools.filter((tool) => tool.name !== 'OpenLIT').map((tool) => tool.name)
+  const list = `${others.slice(0, -1).join(', ')}, and ${others[others.length - 1]}`
+  return `The main ${competitorName} alternatives are OpenLIT, ${list}. OpenLIT is the open-source (Apache 2.0), OpenTelemetry-native option you self-host for free, with tracing, evals, guardrails, prompt management, and cost tracking in one platform. Choose by license, whether you can self-host, how much OpenTelemetry support you need, and whether you want a full platform or only tracing.`
+}

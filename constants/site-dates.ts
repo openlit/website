@@ -6,10 +6,10 @@
 export const HOME_UPDATED = '2026-11-20'
 
 /** Last real content change to data/comparisons.ts (the /compare/* pages). */
-export const COMPARE_UPDATED = '2026-10-01'
+export const COMPARE_UPDATED = '2026-11-26'
 
 /** Last real content change to data/glossary.ts (the /glossary/* pages). */
-export const GLOSSARY_UPDATED = '2026-11-20'
+export const GLOSSARY_UPDATED = '2026-11-26'
 
 /** "2026-11-20" -> "November 20, 2026", timezone-stable. */
 export function formatSiteDate(value: string) {

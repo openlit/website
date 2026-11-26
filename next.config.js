@@ -4,6 +4,63 @@ const withBundleAnalyzer = require('@next/bundle-analyzer')({
 })
 const DuplicatePackageCheckerPlugin = require('duplicate-package-checker-webpack-plugin')
 
+/**
+ * Reprints edge server JS as ASCII-only after minification.
+ *
+ * The minifier turns quoted keys such as "\u{1D51A}" (from html-entities, used by
+ * the blog renderer) into bare non-ASCII identifiers. On Cloudflare Pages,
+ * next-on-pages then failed to parse the blog bundle with
+ * "Unexpected character '\uFFFD'" at one of those characters, depending on
+ * where it landed in the file. ASCII-only output has no multi-byte characters
+ * left to break. Terser only parses and reprints here: no compress, no mangle.
+ */
+class AsciiOnlyEdgeOutputPlugin {
+  apply(compiler) {
+    const { Compilation, sources } = compiler.webpack
+    compiler.hooks.compilation.tap('AsciiOnlyEdgeOutputPlugin', (compilation) => {
+      compilation.hooks.processAssets.tapPromise(
+        {
+          name: 'AsciiOnlyEdgeOutputPlugin',
+          stage: Compilation.PROCESS_ASSETS_STAGE_OPTIMIZE_SIZE + 1,
+        },
+        async (assets) => {
+          const { minify } = require('next/dist/compiled/terser')
+          for (const name of Object.keys(assets)) {
+            if (!/\.(js|mjs)$/.test(name)) continue
+            const code = assets[name].source().toString()
+            if (/^[\x00-\x7f]*$/.test(code)) continue
+            let output
+            for (const module of [false, true]) {
+              try {
+                const result = await minify(code, {
+                  compress: false,
+                  mangle: false,
+                  module,
+                  ecma: 2020,
+                  format: { ascii_only: true, comments: 'some' },
+                })
+                output = result.code
+                break
+              } catch {
+                // Not a script; try again as an ES module.
+              }
+            }
+            if (output === undefined) {
+              compilation.warnings.push(
+                new compiler.webpack.WebpackError(
+                  `AsciiOnlyEdgeOutputPlugin: could not reprint ${name}; left unchanged`
+                )
+              )
+              continue
+            }
+            compilation.updateAsset(name, new sources.RawSource(output))
+          }
+        }
+      )
+    })
+  }
+}
+
 const ContentSecurityPolicy = `
   default-src 'self';
   script-src 'self' 'unsafe-eval' 'unsafe-inline' https://www.googletagmanager.com https://www.google-analytics.com https://www.youtube.com https://www.youtube-nocookie.com;
@@ -169,6 +226,9 @@ module.exports = () => {
     },
     webpack: (config, options) => {
       config.plugins.push(new DuplicatePackageCheckerPlugin())
+      if (!options.dev && options.nextRuntime === 'edge') {
+        config.plugins.push(new AsciiOnlyEdgeOutputPlugin())
+      }
 
       // Disabling source maps in development breaks HMR and causes
       // "Cannot read properties of undefined (reading 'call')" chunk errors.
