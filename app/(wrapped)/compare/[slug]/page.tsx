@@ -1,7 +1,8 @@
 import { notFound } from 'next/navigation'
 import { genPageMetadata } from 'app/seo'
 import ComparisonPage from 'components/compare/comparison-page'
-import competitors, { getCompetitor } from '@/data/comparisons'
+import competitors, { compareFaq, getCompetitor } from '@/data/comparisons'
+import { createFaqPageSchema } from 'constants/home-faq'
 import { createComparisonPageSchema, createJsonLdGraph } from '@/components/structuredData'
 import JsonLd from '@/components/json-ld'
 import FeaturePageHeader from '@/components/shell/feature-page-header'
@@ -54,7 +55,12 @@ export default function CompareSlugPage({ params }: { params: { slug: string } }
 
   return (
     <>
-      <JsonLd data={createJsonLdGraph([pageSchema])} />
+      <JsonLd
+        data={createJsonLdGraph([
+          pageSchema,
+          createFaqPageSchema(compareFaq(competitor), `https://openlit.io/compare/${params.slug}`),
+        ])}
+      />
       <FeaturePageHeader
         eyebrow="Compare"
         title={`OpenLIT vs ${competitor.name}`}

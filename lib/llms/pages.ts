@@ -1,4 +1,4 @@
-import competitors, { type Competitor } from 'data/comparisons'
+import competitors, { compareFaq, type Competitor } from 'data/comparisons'
 import GLOSSARY_TERMS, { type GlossaryTerm, termQuestion } from 'data/glossary'
 import BEST_GUIDES, {
   alternativesShortAnswer,
@@ -351,6 +351,10 @@ ${competitor.summary.chooseOpenlit.map((item) => `- ${item}`).join('\n')}
 
 ${competitor.summary.chooseCompetitor.map((item) => `- ${item}`).join('\n')}
 
+## FAQ
+
+${faqMarkdown(compareFaq(competitor))}
+
 ## Related
 
 - All comparisons: ${SITE}/compare.md
@@ -396,7 +400,7 @@ export function glossaryIndexMarkdown() {
 
   return `# Agent Harness Glossary
 
-> Definitions for agent harness, harness engineering, agent observability, agent evals, guardrails, and trajectory evaluation.
+> Definitions for agent harness, harness engineering, agent observability, LLM observability, agent evals, LLM evaluation, LLM-as-a-judge, guardrails, prompt management, and trajectory evaluation.
 
 - HTML: ${SITE}/glossary
 - Markdown: ${SITE}/glossary.md
@@ -650,7 +654,7 @@ export const LLM_PAGES: LlmPage[] = [
     htmlPath: '/glossary',
     title: 'Agent Harness Glossary',
     summary:
-      'Definitions for agent harness, harness engineering, agent observability, agent evals, guardrails, and trajectory evaluation.',
+      'Definitions for agent harness, harness engineering, agent observability, LLM observability, agent evals, LLM evaluation, LLM-as-a-judge, guardrails, prompt management, and trajectory evaluation.',
     body: glossaryIndexMarkdown,
   },
   {
@@ -724,6 +728,8 @@ const LLMS_KEY_PAGES: { label: string; href: string }[] = [
   ...BEST_GUIDES.map((guide) => ({ label: guide.title, href: `${SITE}/guides/${guide.slug}` })),
   { label: 'What is LLM observability?', href: `${SITE}/glossary/llm-observability` },
   { label: 'What is agent observability?', href: `${SITE}/glossary/agent-observability` },
+  { label: 'How to evaluate LLM outputs in production', href: `${SITE}/glossary/llm-evaluation` },
+  { label: 'How to manage and version prompts', href: `${SITE}/glossary/prompt-management` },
   { label: 'Pricing', href: `${SITE}/pricing` },
   { label: 'Enterprise Edition', href: `${SITE}/enterprise` },
   { label: 'Compare', href: `${SITE}/compare` },

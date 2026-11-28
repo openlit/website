@@ -1,6 +1,10 @@
 import { Check, X, Minus, ArrowRight, Github } from 'lucide-react'
 import { Fragment } from 'react'
-import competitors, { type Competitor, type ComparisonFeature } from '@/data/comparisons'
+import competitors, {
+  compareFaq,
+  type Competitor,
+  type ComparisonFeature,
+} from '@/data/comparisons'
 import siteMetadata from '@/data/siteMetadata'
 import ReadyToGetStarted from '../common/ready-to-get-started'
 import Link from 'next/link'
@@ -210,6 +214,21 @@ export default function ComparisonPage({ competitor }: { competitor: Competitor 
           </ul>
         </div>
       </div>
+
+      {/* Questions people ask about this comparison, from the data above */}
+      <section aria-labelledby="compare-faq" className="mb-16 max-w-4xl">
+        <h2 id="compare-faq" className="mb-4 text-2xl font-bold tracking-tight">
+          OpenLIT vs {competitor.name}: FAQ
+        </h2>
+        <div className="space-y-5">
+          {compareFaq(competitor).map((item) => (
+            <div key={item.question}>
+              <h3 className="font-semibold">{item.question}</h3>
+              <p className="mt-1 text-sm leading-relaxed opacity-80">{item.answer}</p>
+            </div>
+          ))}
+        </div>
+      </section>
 
       {/* Other comparisons */}
       <div className="mb-16">
