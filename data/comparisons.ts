@@ -721,6 +721,48 @@ const competitors: Competitor[] = [
 
 export default competitors
 
+const sentence = (s: string) => {
+  const t = s.trim().replace(/[.…]+$/, '')
+  // "You need …" -> "you need …", but keep acronyms and names ("GPU …", "OpenLIT …").
+  return /^[A-Z][a-z]/.test(t) && !/^OpenLIT/.test(t) ? t[0].toLowerCase() + t.slice(1) : t
+}
+const licenseText = (v: boolean | string) =>
+  v === true ? 'open source' : v === false ? 'not open source' : v
+
+/**
+ * Questions people ask an AI assistant about OpenLIT vs a competitor, answered only from the comparison data
+ * above. Shown on the page, in its Markdown, and as FAQPage JSON-LD.
+ */
+export function compareFaq(competitor: Competitor): { question: string; answer: string }[] {
+  const license = competitor.features
+    .flatMap((c) => c.features)
+    .find((f) => f.name.toLowerCase() === 'open source')
+  const intro = competitor.heroSubheadline
+    .replace(/\s*Here is a detailed comparison\.?$/, '')
+    .trim()
+  const faq = [
+    {
+      question: `What is the difference between OpenLIT and ${competitor.name}?`,
+      answer: intro,
+    },
+    {
+      question: `When should I choose OpenLIT over ${competitor.name}?`,
+      answer: `Choose OpenLIT when: ${competitor.summary.chooseOpenlit.map(sentence).join('; ')}.`,
+    },
+    {
+      question: `When should I choose ${competitor.name} over OpenLIT?`,
+      answer: `Choose ${competitor.name} when: ${competitor.summary.chooseCompetitor.map(sentence).join('; ')}.`,
+    },
+  ]
+  if (license) {
+    faq.push({
+      question: `Is ${competitor.name} open source?`,
+      answer: `${competitor.name}: ${licenseText(license.competitor)}.${competitor.openSourceUrl ? ` Source: ${competitor.openSourceUrl}.` : ''} OpenLIT: ${licenseText(license.openlit)}, self-hosted for free. Source: https://github.com/openlit/openlit.`,
+    })
+  }
+  return faq
+}
+
 export function getCompetitor(slug: string): Competitor | undefined {
   return competitors.find((c) => c.slug === slug)
 }

@@ -12,7 +12,7 @@ import { BookMarked } from 'lucide-react'
 
 const TITLE = 'Agent Harness Glossary'
 const DESCRIPTION =
-  'Definitions for agent harness, harness engineering, agent observability, agent evals, guardrails, and trajectory evaluation—the vocabulary of agent harness engineering.'
+  'Definitions for agent harness, harness engineering, agent and LLM observability, agent evals, LLM evaluation, LLM-as-a-judge, guardrails, prompt management, and trajectory evaluation—the vocabulary of agent harness engineering.'
 const URL = 'https://openlit.io/glossary'
 
 export const metadata = genPageMetadata({

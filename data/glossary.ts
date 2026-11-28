@@ -290,6 +290,77 @@ export const GLOSSARY_TERMS: GlossaryTerm[] = [
     ],
     relatedSlugs: ['agent-evals', 'agent-observability'],
   },
+  {
+    slug: 'llm-evaluation',
+    name: 'LLM evaluation',
+    title: 'How to Evaluate LLM Outputs in Production: Methods and Tools',
+    description:
+      'How to evaluate LLM outputs in production: score sampled traces with LLM-as-a-judge and programmatic checks, add human review, track pass rates, and gate releases in CI.',
+    definition:
+      'LLM evaluation is scoring the outputs of a language model or agent for quality, safety, and cost. In production that means scoring real traces, not only a test set, so you catch regressions users actually hit.',
+    body: [
+      'To evaluate LLM outputs in production: (1) trace every call so each output is stored with its prompt, model, and context; (2) sample those traces and score them with LLM-as-a-judge for subjective criteria such as hallucination, relevance, bias, or toxicity; (3) add programmatic checks (exact match, JSON schema validation, regex) wherever the right answer is checkable; (4) send a sample to human review to calibrate the judges; (5) track pass rates over time and alert when they drop.',
+      'Online evaluation runs on live traffic and tells you what is happening now. Offline evaluation runs the same criteria on a fixed dataset before a release, so a prompt or model change that lowers the pass rate fails CI instead of reaching users. Use both: offline to block known regressions, online to find new ones.',
+      'Pin the judge model and its prompt, and record which prompt version and model produced each output. Without that, a change in pass rate cannot be traced back to the change that caused it.',
+      'OpenLIT runs LLM-as-a-judge evaluators (hallucination, bias, toxicity, or custom criteria) on OpenTelemetry traces with a configurable judge model, scheduled Auto Evaluation, and pass-rate analytics, and exposes the same criteria through the SDK for CI. It is open source under Apache 2.0. Docs: https://docs.openlit.io/latest/openlit/evaluations/llm-as-a-judge.',
+    ],
+    relatedSlugs: ['llm-as-a-judge', 'agent-evals', 'trajectory-evaluation', 'llm-observability'],
+    faq: [
+      {
+        question: 'How do I evaluate LLM outputs in production?',
+        answer:
+          'Trace every LLM call, score a sample of production traces with LLM-as-a-judge and programmatic checks, calibrate the judges against human labels, and track pass rates over time with alerts on drops. Run the same criteria offline in CI before each release.',
+      },
+      {
+        question: 'What is the difference between online and offline LLM evaluation?',
+        answer:
+          'Online evaluation scores live production traces to find problems as they happen. Offline evaluation scores a fixed dataset before release and can block a deploy when quality drops.',
+      },
+      {
+        question: 'What metrics should I track when evaluating LLM outputs?',
+        answer:
+          'Pass rate per criterion (hallucination, relevance, toxicity, or a custom rubric), plus cost, latency, and error rate from the same traces, broken down by prompt version and model.',
+      },
+      {
+        question: 'Which open-source tools evaluate LLM outputs in production?',
+        answer:
+          'OpenLIT (Apache 2.0) runs LLM-as-a-judge evaluators on OpenTelemetry traces with scheduled Auto Evaluation. Langfuse (MIT core) and Comet Opik (Apache 2.0) also offer open-source evaluation; Arize Phoenix is source-available under Elastic License 2.0. See https://openlit.io/guides/best-open-source-llm-observability-tools.',
+      },
+    ],
+  },
+  {
+    slug: 'prompt-management',
+    name: 'Prompt management',
+    title: 'What Is Prompt Management? How to Version Prompts for LLM Apps',
+    description:
+      'Prompt management keeps LLM prompts out of code, in versioned storage the app fetches at runtime: semantic versions, variables, drafts, rollback, and the prompt version on every trace.',
+    definition:
+      'Prompt management is storing, versioning, and serving the prompts an LLM app uses from a central place instead of hard-coding them, so prompts can change without a deploy and every change can be traced and rolled back.',
+    body: [
+      'To version prompts for an LLM app: move each prompt out of the code into a prompt registry; publish every change as a new, permanent version instead of editing in place; fetch the prompt at runtime by name (latest, or a pinned version); fill variables at fetch time; and record the prompt name and version on each trace so you can tell which version produced an answer.',
+      'Keeping prompts out of code means non-engineers can change wording without a release. The risk is the same: a bad edit is live on the next call. Plan the way back before you need it. Pinning a version through configuration stops the bad version fastest; publishing the old text as a new version rolls everyone forward to a known good prompt.',
+      'Use drafts for work in progress so unfinished edits are never served, and handle a failed fetch explicitly: if the app cannot load its prompt, it should fall back to a safe response rather than run without its instructions.',
+      'OpenLIT Prompt Hub is open source (Apache 2.0). Each published version is permanent and numbered as a Major, Minor, or Patch bump; drafts are never served; variables such as {{company}} are filled at fetch time with openlit.get_prompt(); and download counts show which versions apps are fetching. Walkthrough: https://openlit.io/blogs/prompt-versioning-with-prompt-hub. Docs: https://docs.openlit.io/latest/openlit/prompts-experiments/prompt-hub/overview.',
+    ],
+    relatedSlugs: ['llm-evaluation', 'llm-observability', 'agent-harness'],
+    faq: [
+      {
+        question: 'How do I manage and version prompts for LLM apps?',
+        answer:
+          'Store prompts in a prompt registry instead of code, publish each change as a new permanent version, fetch prompts at runtime by name and version, fill variables at fetch time, and record the prompt version on every trace.',
+      },
+      {
+        question: 'How do I roll back a bad prompt version?',
+        answer:
+          'Pin the app to the last good version through configuration, or publish the old text again as a new version so every unpinned caller picks it up. In OpenLIT Prompt Hub old versions are read-only, so both approaches leave the full history intact.',
+      },
+      {
+        question: 'Is there an open-source prompt management tool?',
+        answer:
+          'Yes. OpenLIT Prompt Hub is open source under Apache 2.0, with versioned prompts, drafts, variables, and runtime fetching through the OpenLIT SDK. Langfuse also offers open-source prompt management.',
+      },
+    ],
+  },
 ]
 
 export function getGlossaryTerm(slug: string) {
